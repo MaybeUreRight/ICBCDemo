@@ -5,6 +5,9 @@
 
     <TextView
         android:id="@+id/item_category"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        style="@style/item_category"
+        android:layout_width="96dp"
+        android:gravity="center"
+        android:layout_height="match_parent"
+        android:text="@string/item_product_category" />
 </LinearLayout>

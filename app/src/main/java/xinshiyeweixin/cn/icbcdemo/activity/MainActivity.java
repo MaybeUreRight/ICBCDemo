@@ -1,40 +1,38 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
-import android.content.Context;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.OrientationHelper;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+
+import com.gcssloop.widget.PagerGridLayoutManager;
+import com.gcssloop.widget.PagerGridSnapHelper;
 
 import java.util.ArrayList;
 
+import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductInfoAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.Product;
 import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
-import xinshiyeweixin.cn.icbcdemo.view.HorizontalPageLayoutManager;
-import xinshiyeweixin.cn.icbcdemo.view.PagingItemDecoration;
-import xinshiyeweixin.cn.icbcdemo.view.PagingScrollHelper;
+import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 
-public class MainActivity extends FragmentActivity implements ProductInfoAdapter.OnRecycleViewItemClickListener, PagingScrollHelper.onPageChangeListener {
+public class MainActivity extends AppCompatActivity implements ProductItemOnclickListener, ProductCategoryItemOnclickListener {
 
-    //    private IndicatorViewPager indicatorViewPager;
     private RecyclerView product_cagetory;
     private RecyclerView product_list;
+    private ArrayList<ProductInfo> productInfos;
 
-    private PagingScrollHelper scrollHelper;
-    private HorizontalPageLayoutManager horizontalPageLayoutManager;
-    private PagingItemDecoration pagingItemDecoration;
+    private ProductInfoAdapter productCategoryAdapter;
+
     private ProductAdapter productAdapter;
+    private ArrayList<Product> products;
+
+    private MyPresentation myPresentation;
+    private ICBCApplication icbcApplication;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,40 +43,38 @@ public class MainActivity extends FragmentActivity implements ProductInfoAdapter
     }
 
     private void initView() {
-//        initViewPager();
+        productInfos = new ArrayList<>();
+        products = new ArrayList<>();
 
-
-        ArrayList<ProductInfo> list = new ArrayList<>();
-        initData(list);
-
+        initData(productInfos);
         product_cagetory = findViewById(R.id.product_category);
-
-        product_cagetory.setHasFixedSize(true);//设置固定大小
-        product_cagetory.setItemAnimator(new DefaultItemAnimator());//设置默认动画
-        LinearLayoutManager mLayoutManage = new LinearLayoutManager(this);
-        mLayoutManage.setOrientation(OrientationHelper.HORIZONTAL);//设置滚动方向，横向滚动
-        product_cagetory.setLayoutManager(mLayoutManage);
-        ProductInfoAdapter adapter = new ProductInfoAdapter(this, R.layout.item_category, list, this);
-        product_cagetory.setAdapter(adapter);
-
         product_list = findViewById(R.id.product_list);
-         productAdapter = new ProductAdapter(this, R.layout.item_product, list.get(0).productList);
+
+        productCategoryAdapter = new ProductInfoAdapter(this, productInfos);
+        product_cagetory.setAdapter(productCategoryAdapter);
+
+        // 1.水平分页布局管理器
+        PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(2, 5, PagerGridLayoutManager.HORIZONTAL);
+        product_list.setLayoutManager(layoutManager);
+
+        products.addAll(productInfos.get(0).productList);
+        productAdapter = new ProductAdapter(this, products);
         product_list.setAdapter(productAdapter);
 
-         scrollHelper = new PagingScrollHelper();
+        // 2.设置滚动辅助工具
+        PagerGridSnapHelper pageSnapHelper = new PagerGridSnapHelper();
+        pageSnapHelper.attachToRecyclerView(product_list);
 
-        scrollHelper.setUpRecycleView(product_list);
-        scrollHelper.setOnPageChangeListener(this);
 
-         horizontalPageLayoutManager = new HorizontalPageLayoutManager(2, 5);
-         pagingItemDecoration = new PagingItemDecoration(this, horizontalPageLayoutManager);
-
-        product_list.setLayoutManager(horizontalPageLayoutManager);
-        product_list.addItemDecoration(pagingItemDecoration);
-        scrollHelper.updateLayoutManger();
-        scrollHelper.scrollToPosition(0);
+        icbcApplication = (ICBCApplication) getApplication();
+        myPresentation = icbcApplication.getPresentation();
     }
 
+    /**
+     * 初始化数据（假数据）
+     *
+     * @param list
+     */
     private void initData(ArrayList<ProductInfo> list) {
         for (int i = 0; i < 10; i++) {
             ProductInfo info = new ProductInfo();
@@ -96,18 +92,18 @@ public class MainActivity extends FragmentActivity implements ProductInfoAdapter
     }
 
     @Override
-    public void onItemClick(ArrayList<Product> list, int position) {
-        product_list.setHasFixedSize(true);//设置固定大小
-        product_list.setItemAnimator(new DefaultItemAnimator());//设置默认动画
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(MainActivity.this, 2);
-        gridLayoutManager.setOrientation(OrientationHelper.HORIZONTAL);
-        product_list.setLayoutManager(gridLayoutManager);
-        ProductAdapter adapter = new ProductAdapter(MainActivity.this, R.layout.item_product, list);
-        product_list.setAdapter(adapter);
+    public void onProductItemOnclick(String videoPath) {
+        //暂时用假数据
+        String uri = "android.resource://" + getPackageName() + "/" + R.raw.demo;
+        this.myPresentation.startVideo(uri);
+
+//        this.myPresentation.startVideo(videoPath);
     }
 
     @Override
-    public void onPageChange(int index) {
-
+    public void onProductCategoryItemOnclick(ArrayList<Product> productList, int position) {
+        products.clear();
+        products.addAll(productList);
+        productAdapter.notifyDataSetChanged();
     }
 }

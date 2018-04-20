@@ -1,6 +1,7 @@
 package xinshiyeweixin.cn.icbcdemo.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,31 +13,32 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import xinshiyeweixin.cn.icbcdemo.R;
-import xinshiyeweixin.cn.icbcdemo.activity.MainActivity;
+import xinshiyeweixin.cn.icbcdemo.activity.ProductDetailActivity;
 import xinshiyeweixin.cn.icbcdemo.bean.Product;
+import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHoler> {
-    int ResourceID;
-    Context mContext;
-    ArrayList<Product> mData;
-//        private OnRecycleViewItemClickListener mOnItemClickListener;
+    private Context mContext;
+    private ArrayList<Product> mData;
+    private ProductItemOnclickListener productItemOnclickListener;
 
-    public ProductAdapter(Context context, int resourceID, ArrayList<Product> brings) {
+    public ProductAdapter(Context context, ArrayList<Product> brings) {
         mContext = context;
         mData = brings;
+        productItemOnclickListener = (ProductItemOnclickListener) this;
         if (mData == null) {
             mData = new ArrayList<>();
         }
-        ResourceID = resourceID;
     }
 
     @Override
     public void onBindViewHolder(MyViewHoler holder, int position) {
 
         //相当于listview的adapter中的getview方法
+        final Product product = mData.get(position);
 
-        holder.product_name.setText(mData.get(position).name);
-        holder.product_introduction.setText(mData.get(position).introduction);
+        holder.product_name.setText(product.name);
+        holder.product_introduction.setText(product.introduction);
         holder.product_thum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,12 +46,26 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             }
         });
         holder.itemView.setTag(position);//将位置保存在tag中
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //跳转到详情界面
+                mContext.startActivity(new Intent(mContext, ProductDetailActivity.class));
+            }
+        });
+        holder.product_thum.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                productItemOnclickListener.onProductItemOnclick(product.videoPath);
+            }
+        });
     }
 
     @Override
     public MyViewHoler onCreateViewHolder(ViewGroup parent, int viewType) {
         //负责创建视图
-        View view = LayoutInflater.from(mContext).inflate(ResourceID, null);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.item_product, null);
         return new MyViewHoler(view);
     }
 
@@ -68,7 +84,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             product_name = (TextView) itemView.findViewById(R.id.product_name);
             product_introduction = (TextView) itemView.findViewById(R.id.item_procut_introduction);
             product_thum = itemView.findViewById(R.id.item_procut_thum);
-
         }
     }
 }

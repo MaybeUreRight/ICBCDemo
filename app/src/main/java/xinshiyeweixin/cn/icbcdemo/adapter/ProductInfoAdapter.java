@@ -1,34 +1,29 @@
 package xinshiyeweixin.cn.icbcdemo.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.OrientationHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import xinshiyeweixin.cn.icbcdemo.R;
-import xinshiyeweixin.cn.icbcdemo.activity.MainActivity;
-import xinshiyeweixin.cn.icbcdemo.bean.Product;
 import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
+import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
 
 public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.MyViewHoler> {
-    int ResourceID;
-    Context mContext;
-    ArrayList<ProductInfo> mData;
-    private OnRecycleViewItemClickListener mOnItemClickListener;
+    private Context mContext;
+    private ArrayList<ProductInfo> productInfos;
+    private ProductCategoryItemOnclickListener productCategoryItemOnclickListener;
 
-    public ProductInfoAdapter(Context context, int resourceID, ArrayList<ProductInfo> brings, OnRecycleViewItemClickListener mOnItemClickListener) {
-        mContext = context;
-        mData = brings;
-        ResourceID = resourceID;
-        this.mOnItemClickListener = mOnItemClickListener;
+    public ProductInfoAdapter(Context mContext, ArrayList<ProductInfo> productInfos) {
+        this.mContext = mContext;
+        this.productInfos = productInfos;
+        this.productCategoryItemOnclickListener = (ProductCategoryItemOnclickListener) this;
     }
 
     @Override
@@ -36,12 +31,12 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
 
         //相当于listview的adapter中的getview方法
 
-        holder.category.setText(mData.get(position).cagetory);
+        holder.category.setText(productInfos.get(position).cagetory);
 
         holder.category.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList list = mData.get(position).productList;
+                ArrayList list = productInfos.get(position).productList;
                 if (list != null) {
                     Log.i("Demo", "list.size = " + list.size());
                 } else {
@@ -49,7 +44,7 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
                     Log.i("Demo", "list是空");
                 }
 
-                mOnItemClickListener.onItemClick(mData.get(position).productList, position);
+                productCategoryItemOnclickListener.onProductCategoryItemOnclick(productInfos.get(position).productList, position);
             }
         });
 
@@ -59,13 +54,13 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
     @Override
     public MyViewHoler onCreateViewHolder(ViewGroup parent, int viewType) {
         //负责创建视图
-        View view = LayoutInflater.from(mContext).inflate(ResourceID, null);
-        return new MyViewHoler(view);
+        LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.item_category, null);
+        return new MyViewHoler(linearLayout);
     }
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return productInfos.size();
     }
 
 
@@ -79,7 +74,4 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
         }
     }
 
-    public interface OnRecycleViewItemClickListener {
-        void onItemClick(ArrayList<Product> list, int position);
-    }
 }

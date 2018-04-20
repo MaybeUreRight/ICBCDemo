@@ -27,4 +27,9 @@
         android:id="@+id/product_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
+    <Button
+        android:layout_width="wrap_content"
+        android:text="呵呵"
+        android:id="@+id/turn"
+        android:layout_height="wrap_content" />
 </LinearLayout>
