@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="72dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal">
 
     <ImageView
@@ -14,11 +15,16 @@
         android:scaleType="centerInside"
         android:src="@drawable/icbc_icon" />
 
-    <TextView
-        android:background="@android:color/holo_blue_light"
-        android:id="@+id/viewpager"
+    <com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll
+        android:id="@+id/easylayoutscroll"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_marginLeft="12.5dp"
-        android:layout_weight="492" />
+        android:layout_weight="492"
+        android:padding="10dp"
+        app:duration="2000"
+        app:gradient="true"
+        app:interval="1000">
+
+    </com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll>
 </LinearLayout>

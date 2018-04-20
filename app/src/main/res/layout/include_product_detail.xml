@@ -21,7 +21,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <com.devilist.advancedtextview.SelectableTextView
+        <xinshiyeweixin.cn.icbcdemo.view.AlignTextView
             style="@style/product_detail_name_en"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -46,7 +46,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <com.devilist.advancedtextview.SelectableTextView
+        <xinshiyeweixin.cn.icbcdemo.view.AlignTextView
             style="@style/product_detail_price_high"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <com.devilist.advancedtextview.SelectableTextView
+        <xinshiyeweixin.cn.icbcdemo.view.AlignTextView
             style="@style/product_detail_price_normal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -96,7 +96,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <com.devilist.advancedtextview.SelectableTextView
+        <xinshiyeweixin.cn.icbcdemo.view.AlignTextView
             style="@style/product_detail_price_high"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <com.devilist.advancedtextview.SelectableTextView
+        <xinshiyeweixin.cn.icbcdemo.view.AlignTextView
             style="@style/product_detail_price_high"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

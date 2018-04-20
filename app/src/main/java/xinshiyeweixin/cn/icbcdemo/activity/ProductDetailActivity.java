@@ -3,12 +3,19 @@ package xinshiyeweixin.cn.icbcdemo.activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gcssloop.widget.PagerGridLayoutManager;
 import com.gcssloop.widget.PagerGridSnapHelper;
+import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutListener;
+import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.DetailAdapter;
@@ -17,7 +24,7 @@ import xinshiyeweixin.cn.icbcdemo.adapter.ProductInfoAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.DetailBean;
 
 public class ProductDetailActivity extends AppCompatActivity {
-    private TextView viewpager;
+    private EasyLayoutScroll easyLayoutScroll;
     private TextView productDetailNameCh;
     private TextView productDetailNameEn;
     private TextView productDetailPriceHigh;
@@ -66,7 +73,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void initView() {
         productDetail = (RecyclerView) findViewById(R.id.product_detail);
-        viewpager = (TextView) findViewById(R.id.viewpager);
+        easyLayoutScroll = findViewById(R.id.product_detail_titlecontainer).findViewById(R.id.easylayoutscroll);
         productDetailNameCh = (TextView) findViewById(R.id.product_detail_name_ch);
         productDetailNameEn = (TextView) findViewById(R.id.product_detail_name_en);
         productDetailPriceHigh = (TextView) findViewById(R.id.product_detail_price_high);
@@ -74,5 +81,35 @@ public class ProductDetailActivity extends AppCompatActivity {
         productDetailOriginal = (TextView) findViewById(R.id.product_detail_original);
         productDetailDesc = (TextView) findViewById(R.id.product_detail_desc);
 
+        initEasyLayoutScroll();
+
     }
+    private void initEasyLayoutScroll() {
+        //
+        ArrayList<String> data = new ArrayList<>();
+        data.add("测试条目1");
+        data.add("测试条目2");
+        data.add("测试条目3");
+        data.add("测试条目4");
+
+        List<View> views = new ArrayList<>();
+        for (int i = 0; i < data.size(); i++) {
+            LinearLayout moreView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_view_single, null);
+            TextView tv_title = moreView.findViewById(R.id.tv_title);
+            tv_title.setText(data.get(i));
+            views.add(moreView);
+        }
+        //设置数据集
+        easyLayoutScroll.setEasyViews(views);
+        //开始滚动
+        easyLayoutScroll.startScroll();
+
+        easyLayoutScroll.setOnItemClickListener(new EasyLayoutListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(int pos, View view) {
+                Toast.makeText(ProductDetailActivity.this, "您点击了第" + pos + "条索引", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
 }

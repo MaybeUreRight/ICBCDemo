@@ -4,11 +4,19 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.gcssloop.widget.PagerGridLayoutManager;
 import com.gcssloop.widget.PagerGridSnapHelper;
+import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutListener;
+import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
@@ -21,6 +29,8 @@ import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 
 public class MainActivity extends AppCompatActivity implements ProductItemOnclickListener, ProductCategoryItemOnclickListener {
+
+    private EasyLayoutScroll easylayoutscroll;
 
     private RecyclerView product_cagetory;
     private RecyclerView product_list;
@@ -44,6 +54,9 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
     }
 
     private void initView() {
+        easylayoutscroll = findViewById(R.id.titlecontainer).findViewById(R.id.easylayoutscroll);
+        initEasyLayoutScroll();
+
         productInfos = new ArrayList<>();
         products = new ArrayList<>();
 
@@ -52,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         product_list = findViewById(R.id.product_list);
 
         productCategoryAdapter = new ProductInfoAdapter(this, productInfos);
-        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         product_cagetory.setLayoutManager(linearLayoutManager);
         product_cagetory.setAdapter(productCategoryAdapter);
@@ -72,6 +85,34 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
 //        icbcApplication = (ICBCApplication) getApplication();
 //        myPresentation = icbcApplication.getPresentation();
+    }
+
+    private void initEasyLayoutScroll() {
+        //
+        ArrayList<String> data = new ArrayList<>();
+        data.add("测试条目1");
+        data.add("测试条目2");
+        data.add("测试条目3");
+        data.add("测试条目4");
+
+        List<View> views = new ArrayList<>();
+        for (int i = 0; i < data.size(); i++) {
+            LinearLayout moreView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_view_single, null);
+            TextView tv_title = moreView.findViewById(R.id.tv_title);
+            tv_title.setText(data.get(i));
+            views.add(moreView);
+        }
+        //设置数据集
+        easylayoutscroll.setEasyViews(views);
+        //开始滚动
+        easylayoutscroll.startScroll();
+
+        easylayoutscroll.setOnItemClickListener(new EasyLayoutListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(int pos, View view) {
+                Toast.makeText(MainActivity.this, "您点击了第" + pos + "条索引", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
