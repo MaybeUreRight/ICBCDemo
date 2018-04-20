@@ -2,6 +2,7 @@ package xinshiyeweixin.cn.icbcdemo.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.gcssloop.widget.PagerGridLayoutManager;
@@ -51,6 +52,9 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         product_list = findViewById(R.id.product_list);
 
         productCategoryAdapter = new ProductInfoAdapter(this, productInfos);
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        product_cagetory.setLayoutManager(linearLayoutManager);
         product_cagetory.setAdapter(productCategoryAdapter);
 
         // 1.水平分页布局管理器
@@ -66,8 +70,8 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         pageSnapHelper.attachToRecyclerView(product_list);
 
 
-        icbcApplication = (ICBCApplication) getApplication();
-        myPresentation = icbcApplication.getPresentation();
+//        icbcApplication = (ICBCApplication) getApplication();
+//        myPresentation = icbcApplication.getPresentation();
     }
 
     /**

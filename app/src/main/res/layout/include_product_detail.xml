@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/product_detail_name_ch"
+        style="@style/product_detail_name_ch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_46"
+        android:text="@string/product_detail_name" />
+    <!--名称-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_16"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.devilist.advancedtextview.SelectableTextView
+            style="@style/product_detail_name_en"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="2"
+            android:text="@string/product_detail_name_1"
+            app:forbiddenActionMenu="false"
+            app:textJustify="true" />
+
+        <TextView
+            android:id="@+id/product_detail_name_en"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:text="@string/product_detail_name_en" />
+        <!--// 是否启用两端对齐-->
+    </LinearLayout>
+    <!--市场价格-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.devilist.advancedtextview.SelectableTextView
+            style="@style/product_detail_price_high"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="2"
+            android:text="@string/product_detail_price_high_1"
+            app:forbiddenActionMenu="false"
+            app:textJustify="true" />
+
+        <TextView
+            android:id="@+id/product_detail_price_high"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:text="@string/product_detail_price_high" />
+        <!--// 是否启用两端对齐-->
+    </LinearLayout>
+    <!--销售形状-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.devilist.advancedtextview.SelectableTextView
+            style="@style/product_detail_price_normal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="2"
+            android:text="@string/product_detail_price_normal_1"
+            app:forbiddenActionMenu="false"
+            app:textJustify="true" />
+
+        <TextView
+            android:id="@+id/product_detail_price_normal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:text="@string/product_detail_price_normal" />
+        <!--// 是否启用两端对齐-->
+    </LinearLayout>
+    <!--原产地-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.devilist.advancedtextview.SelectableTextView
+            style="@style/product_detail_price_high"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="2"
+            android:text="@string/product_detail_original_1"
+            app:forbiddenActionMenu="false"
+            app:textJustify="true" />
+
+        <TextView
+            android:id="@+id/product_detail_original"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:maxLines="4"
+            android:text="@string/product_detail_price_original" />
+        <!--// 是否启用两端对齐-->
+    </LinearLayout>
+    <!--原产地-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <com.devilist.advancedtextview.SelectableTextView
+            style="@style/product_detail_price_high"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="2"
+            android:text="@string/product_detail_introduction_1"
+            app:forbiddenActionMenu="false"
+            app:textJustify="true" />
+
+        <TextView
+            android:id="@+id/product_detail_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="7"
+            android:maxLines="4"
+            android:ellipsize="end"
+            android:text="@string/product_detail_price_desc" />
+        <!--// 是否启用两端对齐-->
+    </LinearLayout>
+</LinearLayout>

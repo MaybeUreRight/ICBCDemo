@@ -23,11 +23,11 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
     public ProductInfoAdapter(Context mContext, ArrayList<ProductInfo> productInfos) {
         this.mContext = mContext;
         this.productInfos = productInfos;
-        this.productCategoryItemOnclickListener = (ProductCategoryItemOnclickListener) this;
+        this.productCategoryItemOnclickListener = (ProductCategoryItemOnclickListener) mContext;
     }
 
     @Override
-    public void onBindViewHolder(MyViewHoler holder, final int position) {
+    public void onBindViewHolder(final MyViewHoler holder, final int position) {
 
         //相当于listview的adapter中的getview方法
 
@@ -40,10 +40,9 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
                 if (list != null) {
                     Log.i("Demo", "list.size = " + list.size());
                 } else {
-
                     Log.i("Demo", "list是空");
                 }
-
+                holder.item_category_flag.setVisibility(View.VISIBLE);
                 productCategoryItemOnclickListener.onProductCategoryItemOnclick(productInfos.get(position).productList, position);
             }
         });
@@ -54,8 +53,8 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
     @Override
     public MyViewHoler onCreateViewHolder(ViewGroup parent, int viewType) {
         //负责创建视图
-        LinearLayout linearLayout = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.item_category, null);
-        return new MyViewHoler(linearLayout);
+        View view =  LayoutInflater.from(mContext).inflate(R.layout.item_category, null);
+        return new MyViewHoler(view);
     }
 
     @Override
@@ -66,11 +65,12 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
 
     class MyViewHoler extends RecyclerView.ViewHolder {
         private final TextView category;
+        private View item_category_flag;
 
         public MyViewHoler(View itemView) {
             super(itemView);
             category = (TextView) itemView.findViewById(R.id.item_category);
-
+            item_category_flag = itemView.findViewById(R.id.item_category_flag);
         }
     }
 

@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/item_category"
         style="@style/item_category"
         android:layout_width="96dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dimen_8"
         android:gravity="center"
-        android:layout_height="match_parent"
         android:text="@string/item_product_category" />
-</LinearLayout>
+
+    <View
+        android:id="@+id/item_category_flag"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/dimen_1"
+        android:layout_alignLeft="@id/item_category"
+        android:layout_alignRight="@id/item_category"
+        android:layout_below="@id/item_category"
+        android:layout_marginTop="5dp"
+        android:background="@color/category"
+        android:visibility="gone" />
+</RelativeLayout>

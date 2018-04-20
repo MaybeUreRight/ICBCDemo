@@ -10,12 +10,14 @@
 
     <style name="item_product_name">
         <item name="android:textSize">11sp</item>
+        <item name="android:gravity">center</item>
         <item name="android:background">@android:color/holo_purple</item>
         <item name="android:textColor">#FFFFFF</item>
     </style>
 
     <style name="item_product_introduction">
         <item name="android:textSize">10sp</item>
+        <item name="android:gravity">center</item>
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:background">@android:color/holo_purple</item>
     </style>
@@ -23,5 +25,55 @@
     <style name="item_category">
         <item name="android:textSize">15sp</item>
         <item name="android:textColor">#000000</item>
+    </style>
+
+    <style name="item_category_selected">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/category</item>
+    </style>
+
+    <style name="product_detail_back">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#666666</item>
+    </style>
+
+    <style name="product_detail_name_ch">
+        <item name="android:textSize">23sp</item>
+        <item name="android:textColor">#333333</item>
+    </style>
+
+    <style name="product_detail_name_en">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#333333</item>
+    </style>
+
+    <style name="product_detail_price_high">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#999999</item>
+    </style>
+
+    <style name="product_detail_price_normal">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#c9131c</item>
+    </style>
+
+    <style name="product_detail_desc">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#333333</item>
+    </style>
+
+    <style name="product_detail_desc_d">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">#666666</item>
+    </style>
+
+    <style name="item_detail_shorcut">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">#333333</item>
+    </style>
+
+    <style name="item_detail_desc">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">#666666</item>
     </style>
 </resources>

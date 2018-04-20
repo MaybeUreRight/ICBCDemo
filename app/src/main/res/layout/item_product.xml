@@ -1,34 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_horizontal"
+    app:cardElevation="@dimen/dimen_8"
+    app:cardCornerRadius="@dimen/dimen_5"
+    app:contentPadding="@dimen/dimen_8"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/product_name"
-        style="@style/item_product_name"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:lines="1"
-        android:paddingBottom="@dimen/dimen_6"
-        android:paddingTop="@dimen/dimen_7"
-        android:text="@string/item_product_name" />
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/item_procut_thum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:scaleType="centerInside"
-        android:src="@drawable/test" />
+        <TextView
+            android:id="@+id/product_name"
+            style="@style/item_product_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:paddingBottom="@dimen/dimen_6"
+            android:paddingTop="@dimen/dimen_7"
+            android:text="@string/item_product_name" />
 
-    <TextView
-        android:id="@+id/item_procut_introduction"
-        style="@style/item_product_introduction"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:lines="2"
-        android:paddingBottom="@dimen/dimen_16"
-        android:paddingTop="@dimen/dimen_14"
-        android:text="@string/item_product_introduction" />
-</LinearLayout>
+        <ImageView
+            android:id="@+id/item_procut_thum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:src="@drawable/test" />
+
+        <TextView
+            android:id="@+id/item_procut_introduction"
+            style="@style/item_product_introduction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lines="2"
+            android:paddingBottom="@dimen/dimen_16"
+            android:paddingTop="@dimen/dimen_14"
+            android:text="@string/item_product_introduction" />
+    </LinearLayout>
+</android.support.v7.widget.CardView>
