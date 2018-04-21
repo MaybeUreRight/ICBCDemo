@@ -41,7 +41,9 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.MyViewHole
     @Override
     public MyViewHoler onCreateViewHolder(ViewGroup parent, int viewType) {
         //负责创建视图
-        View view = LayoutInflater.from(mContext).inflate(R.layout.item_detail, null);
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View view = inflater.inflate(R.layout.item_detail,parent,false);
         return new MyViewHoler(view);
     }
 

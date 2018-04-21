@@ -53,7 +53,9 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
     @Override
     public MyViewHoler onCreateViewHolder(ViewGroup parent, int viewType) {
         //负责创建视图
-        View view =  LayoutInflater.from(mContext).inflate(R.layout.item_category, null);
+
+        LayoutInflater inflater = LayoutInflater.from(mContext);
+        View view = inflater.inflate(R.layout.item_category,parent,false);
         return new MyViewHoler(view);
     }
 

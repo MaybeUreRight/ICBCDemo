@@ -22,6 +22,7 @@ import xinshiyeweixin.cn.icbcdemo.adapter.DetailAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductInfoAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.DetailBean;
+import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
 
 public class ProductDetailActivity extends AppCompatActivity {
     private EasyLayoutScroll easyLayoutScroll;
@@ -31,6 +32,11 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView productDetailPriceNormal;
     private TextView productDetailOriginal;
     private TextView productDetailDesc;
+
+    private TextView textViewPrice;
+    private JustifyTextView justifyTextViewName;
+    private JustifyTextView justifyTextViewOriginal;
+    private JustifyTextView justifyTextViewIntro;
 
     private RecyclerView productDetail;
     private ArrayList<DetailBean> detailBeans;
@@ -80,6 +86,15 @@ public class ProductDetailActivity extends AppCompatActivity {
         productDetailPriceNormal = (TextView) findViewById(R.id.product_detail_price_normal);
         productDetailOriginal = (TextView) findViewById(R.id.product_detail_original);
         productDetailDesc = (TextView) findViewById(R.id.product_detail_desc);
+
+        textViewPrice = findViewById(R.id.tv_price);
+        justifyTextViewName = findViewById(R.id.jtv_name);
+        justifyTextViewOriginal = findViewById(R.id.jtv_original);
+        justifyTextViewIntro = findViewById(R.id.jtv_intro);
+
+        justifyTextViewName.setTitleWidth(textViewPrice);
+        justifyTextViewOriginal.setTitleWidth(textViewPrice);
+        justifyTextViewIntro.setTitleWidth(textViewPrice);
 
         initEasyLayoutScroll();
 

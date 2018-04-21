@@ -29,6 +29,7 @@
         android:id="@+id/product_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dimen_14"
-        android:background="@android:color/white" />
+        android:background="@android:color/white"
+        android:paddingLeft="@dimen/dimen_10"
+        android:paddingRight="@dimen/dimen_10" />
 </LinearLayout>

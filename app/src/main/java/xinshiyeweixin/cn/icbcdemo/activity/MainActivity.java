@@ -18,8 +18,11 @@ import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.wasabeef.recyclerview.animators.FlipInLeftYAnimator;
+import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
+import xinshiyeweixin.cn.icbcdemo.adapter.GridSpacingItemDecoration;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductInfoAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.Product;
@@ -71,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         product_cagetory.setAdapter(productCategoryAdapter);
 
         // 1.水平分页布局管理器
-        PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(2, 5, PagerGridLayoutManager.HORIZONTAL);
+        PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(2, 2, PagerGridLayoutManager.HORIZONTAL);
         product_list.setLayoutManager(layoutManager);
 
         products.addAll(productInfos.get(0).productList);
@@ -150,5 +153,6 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         products.clear();
         products.addAll(productList);
         productAdapter.notifyDataSetChanged();
+        product_list.scrollToPosition(0);
     }
 }
