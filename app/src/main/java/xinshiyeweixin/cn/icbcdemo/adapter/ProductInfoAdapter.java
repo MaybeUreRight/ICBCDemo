@@ -19,11 +19,13 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
     private Context mContext;
     private ArrayList<ProductInfo> productInfos;
     private ProductCategoryItemOnclickListener productCategoryItemOnclickListener;
+    private int currentPosition;
 
     public ProductInfoAdapter(Context mContext, ArrayList<ProductInfo> productInfos) {
         this.mContext = mContext;
         this.productInfos = productInfos;
         this.productCategoryItemOnclickListener = (ProductCategoryItemOnclickListener) mContext;
+        currentPosition = 0;
     }
 
     @Override
@@ -32,6 +34,11 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
         //相当于listview的adapter中的getview方法
 
         holder.category.setText(productInfos.get(position).cagetory);
+        if (position == currentPosition) {
+            holder.item_category_flag.setVisibility(View.VISIBLE);
+        } else {
+            holder.item_category_flag.setVisibility(View.INVISIBLE);
+        }
 
         holder.category.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -42,7 +49,7 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
                 } else {
                     Log.i("Demo", "list是空");
                 }
-                holder.item_category_flag.setVisibility(View.VISIBLE);
+                currentPosition = position;
                 productCategoryItemOnclickListener.onProductCategoryItemOnclick(productInfos.get(position).productList, position);
             }
         });
@@ -55,7 +62,7 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
         //负责创建视图
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        View view = inflater.inflate(R.layout.item_category,parent,false);
+        View view = inflater.inflate(R.layout.item_category, parent, false);
         return new MyViewHoler(view);
     }
 

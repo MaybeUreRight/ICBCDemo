@@ -5,4 +5,5 @@ public class Product {
     public String picUrl;
     public String videoPath;
     public String introduction;
+    public boolean recommend;
 }

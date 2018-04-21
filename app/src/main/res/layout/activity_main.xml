@@ -23,7 +23,9 @@
         android:id="@+id/product_category"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/white" />
+        android:layout_marginTop="@dimen/dimen_5"
+        android:background="@android:color/white"
+        android:paddingBottom="@dimen/dimen_10" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/product_list"

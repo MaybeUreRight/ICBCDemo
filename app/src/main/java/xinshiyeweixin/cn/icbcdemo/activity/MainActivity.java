@@ -1,5 +1,6 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         // 1.水平分页布局管理器
         PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(2, 2, PagerGridLayoutManager.HORIZONTAL);
         product_list.setLayoutManager(layoutManager);
+        product_list.addItemDecoration(new MyItemDecoration(2,20,true));
 
         products.addAll(productInfos.get(0).productList);
         productAdapter = new ProductAdapter(this, products);
@@ -128,11 +130,16 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
             ProductInfo info = new ProductInfo();
             info.cagetory = getString(R.string.item_product_category) + " -> " + i;
             info.productList = new ArrayList<>();
-            for (int j = 0; j < 23; j++) {
+            for (int j = 0; j < 13; j++) {
                 Product product = new Product();
                 product.name = getString(R.string.item_product_name) + " -> " + j;
                 product.picUrl = "https://i03piccdn.sogoucdn.com/66766b011ffe1eac";
                 product.introduction = "秋田犬（拉丁学名：Japanese Akita），别名日本秋田犬、日系秋田犬，原产地日本。其祖先被称呼为山地狩猎犬，是大型的熊猎犬。除了协助猎熊外，它还被利用来捕...";
+                if (5 - i > 0) {
+                    product.recommend=true;
+                }else{
+                    product.recommend=false;
+                }
                 info.productList.add(product);
             }
             list.add(info);
@@ -154,5 +161,43 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         products.addAll(productList);
         productAdapter.notifyDataSetChanged();
         product_list.scrollToPosition(0);
+
+        productCategoryAdapter.notifyDataSetChanged();
+    }
+
+
+    public class MyItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public MyItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
+                }
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
     }
 }

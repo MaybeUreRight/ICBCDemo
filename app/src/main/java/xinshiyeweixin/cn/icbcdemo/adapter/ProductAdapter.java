@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -86,6 +87,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHo
             product_name = (TextView) itemView.findViewById(R.id.product_name);
             product_introduction = (TextView) itemView.findViewById(R.id.item_procut_introduction);
             product_thum = itemView.findViewById(R.id.item_procut_thum);
+            int height = itemView.getHeight();
+            int div = (height - product_name.getHeight() - product_introduction.getHeight() - product_thum.getHeight()) / 2;
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) product_thum.getLayoutParams();
         }
     }
 }
