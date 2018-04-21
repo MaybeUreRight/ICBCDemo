@@ -15,8 +15,6 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_above="@id/product_detail"
-        android:layout_below="@id/product_detail_titlecontainer"
         android:layout_marginLeft="@dimen/dimen_21"
         android:layout_weight="520">
 
@@ -39,6 +37,7 @@
                     android:src="@drawable/bigger" />
                 <!--立即购买-->
                 <TextView
+                    android:id="@+id/buy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/dimen_17"
@@ -51,25 +50,28 @@
                 android:id="@+id/product_detail_info"
                 layout="@layout/include_product_detail"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/dimen_10" />
         </LinearLayout>
         <!--返回-->
         <LinearLayout
+            android:id="@+id/back_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dimen_11"
-            android:background="@android:color/holo_green_light">
+            android:layout_marginTop="@dimen/dimen_11">
 
             <ImageView
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:scaleType="centerInside"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:scaleType="fitXY"
                 android:src="@drawable/back" />
 
             <TextView
-                style="@style/item_product_introduction"
+                android:textSize="16sp"
+                android:layout_marginLeft="@dimen/dimen_9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:text="@string/back" />
         </LinearLayout>
     </RelativeLayout>

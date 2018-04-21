@@ -24,7 +24,7 @@ import xinshiyeweixin.cn.icbcdemo.adapter.ProductInfoAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.DetailBean;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
 
-public class ProductDetailActivity extends AppCompatActivity {
+public class ProductDetailActivity extends AppCompatActivity implements View.OnClickListener {
     private EasyLayoutScroll easyLayoutScroll;
     private TextView productDetailNameCh;
     private TextView productDetailNameEn;
@@ -32,6 +32,8 @@ public class ProductDetailActivity extends AppCompatActivity {
     private TextView productDetailPriceNormal;
     private TextView productDetailOriginal;
     private TextView productDetailDesc;
+
+    private TextView buy;
 
     private TextView textViewPrice;
     private JustifyTextView justifyTextViewName;
@@ -78,6 +80,10 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        findViewById(R.id.back_container).setOnClickListener(this);
+
+        buy = findViewById(R.id.buy);
+        buy.setOnClickListener(this);
         productDetail = (RecyclerView) findViewById(R.id.product_detail);
         easyLayoutScroll = findViewById(R.id.product_detail_titlecontainer).findViewById(R.id.easylayoutscroll);
         productDetailNameCh = (TextView) findViewById(R.id.product_detail_name_ch);
@@ -99,6 +105,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         initEasyLayoutScroll();
 
     }
+
     private void initEasyLayoutScroll() {
         //
         ArrayList<String> data = new ArrayList<>();
@@ -127,4 +134,17 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buy:
+                //TODO 弹出二维码
+                break;
+            case R.id.back_container:
+                onBackPressed();
+                break;
+            default:
+                break;
+        }
+    }
 }

@@ -23,7 +23,7 @@
 
         <xinshiyeweixin.cn.icbcdemo.view.JustifyTextView
             android:id="@+id/jtv_name"
-            style="@style/product_detail_name_en"
+            style="@style/product_detail_price_high"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
@@ -71,7 +71,7 @@
         android:orientation="horizontal">
 
         <TextView
-            style="@style/product_detail_price_normal"
+            style="@style/product_detail_price_high"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
@@ -80,6 +80,7 @@
 
         <TextView
             android:id="@+id/product_detail_price_normal"
+            style="@style/product_detail_price_normal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="7"
