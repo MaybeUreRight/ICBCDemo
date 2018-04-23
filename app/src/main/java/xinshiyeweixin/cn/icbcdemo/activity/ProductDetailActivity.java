@@ -1,5 +1,6 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -19,10 +20,9 @@ import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.DetailAdapter;
-import xinshiyeweixin.cn.icbcdemo.adapter.ProductAdapter;
-import xinshiyeweixin.cn.icbcdemo.adapter.ProductInfoAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.DetailBean;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
+import xinshiyeweixin.cn.icbcdemo.view.QRCodeDialog;
 
 public class ProductDetailActivity extends AppCompatActivity implements View.OnClickListener {
     private EasyLayoutScroll easyLayoutScroll;
@@ -43,6 +43,8 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
     private RecyclerView productDetail;
     private ArrayList<DetailBean> detailBeans;
     private DetailAdapter detailAdapter;
+
+    private QRCodeDialog qrCodeDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +141,8 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         switch (v.getId()) {
             case R.id.buy:
                 //TODO 弹出二维码
+                qrCodeDialog = new QRCodeDialog(this);
+                qrCodeDialog.show();
                 break;
             case R.id.back_container:
                 onBackPressed();

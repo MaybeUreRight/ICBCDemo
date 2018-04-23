@@ -4,6 +4,7 @@
     <string name="back">返回</string>
     <string name="buy">立即购买</string>
     <string name="item_product_name">商品名称</string>
+    <string name="scan_qrcode">扫描二维码</string>
 
     <string name="item_detail_shortcut">铂金钻戒</string>
     <string name="item_detail_desc">经典钻戒的款式 好看的款式</string>
