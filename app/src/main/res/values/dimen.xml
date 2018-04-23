@@ -27,5 +27,6 @@
     <dimen name="dimen_17">17dp</dimen>
     <dimen name="dimen_18">18dp</dimen>
     <dimen name="dimen_21">21dp</dimen>
+    <dimen name="dimen_30">30dp</dimen>
     <dimen name="dimen_46">46dp</dimen>
 </resources>

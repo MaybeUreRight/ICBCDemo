@@ -14,10 +14,21 @@
         <item name="android:textColor">#FFFFFF</item>
     </style>
 
+    <style name="item_product_name_normal">
+        <item name="android:textSize">15sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#333333</item>
+    </style>
+
     <style name="item_product_introduction">
         <item name="android:textSize">10sp</item>
         <item name="android:gravity">center</item>
         <item name="android:textColor">#FFFFFF</item>
+    </style>
+    <style name="item_product_introduction_normal">
+        <item name="android:textSize">10sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textColor">#666666</item>
     </style>
 
     <style name="item_category">

@@ -3,6 +3,7 @@ package xinshiyeweixin.cn.icbcdemo.activity;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -128,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
     private void initData(ArrayList<ProductInfo> list) {
         for (int i = 0; i < 10; i++) {
             ProductInfo info = new ProductInfo();
-            info.cagetory = getString(R.string.item_product_category) + " -> " + i;
+            info.cagetory = getString(R.string.item_product_category) + i;
             info.productList = new ArrayList<>();
             for (int j = 0; j < 13; j++) {
                 Product product = new Product();

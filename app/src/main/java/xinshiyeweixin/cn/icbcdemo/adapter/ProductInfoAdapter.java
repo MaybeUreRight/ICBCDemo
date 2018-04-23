@@ -66,6 +66,7 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
         return new MyViewHoler(view);
     }
 
+
     @Override
     public int getItemCount() {
         return productInfos.size();

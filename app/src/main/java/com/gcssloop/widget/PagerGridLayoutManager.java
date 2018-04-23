@@ -49,15 +49,15 @@ import static com.gcssloop.widget.PagerConfig.Logi;
  * 2. 支持水平分页和垂直分页
  * 3. 杜绝高内存占用
  */
-public class PagerGridLayoutManager extends RecyclerView.LayoutManager
-        implements RecyclerView.SmoothScroller.ScrollVectorProvider {
+public class PagerGridLayoutManager extends RecyclerView.LayoutManager implements RecyclerView.SmoothScroller.ScrollVectorProvider {
     private static final String TAG = PagerGridLayoutManager.class.getSimpleName();
 
     public static final int VERTICAL = 0;           // 垂直滚动
     public static final int HORIZONTAL = 1;         // 水平滚动
 
     @IntDef({VERTICAL, HORIZONTAL})
-    public @interface OrientationType {}            // 滚动类型
+    public @interface OrientationType {
+    }            // 滚动类型
 
     @OrientationType
     private int mOrientation;                       // 默认水平滚动
