@@ -9,19 +9,16 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import xinshiyeweixin.cn.icbcdemo.bean.DaoMaster;
+import xinshiyeweixin.cn.icbcdemo.bean.DaoSession;
+import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 
 public class ICBCApplication extends Application {
+    public static ICBCApplication application;
+
     private MediaRouter mediaRouter = null;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        this.mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
-        this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
-        UpdatePresent();
-    }
-
+    private MyPresentation myPresentation = null;
 
     private MediaRouter.SimpleCallback simpleCallback = new MediaRouter.SimpleCallback() {
         @Override
@@ -43,7 +40,21 @@ public class ICBCApplication extends Application {
         }
     };
 
-    private MyPresentation myPresentation = null;
+    public DaoSession productInfoDaoSession;
+    public DaoSession productDaoSession;
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        application = this;
+        this.mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
+        this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
+//        UpdatePresent();
+
+        productDaoSession = createDaoSession(ConstantValue.DATABASE_PRODUCT);
+        productInfoDaoSession = createDaoSession(ConstantValue.DATABASE_PRODUCTINFO);
+    }
 
     private void UpdatePresent() {
         DisplayManager mDisplayManager;// 屏幕管理类
@@ -83,9 +94,20 @@ public class ICBCApplication extends Application {
         }
     }
 
-
     public MyPresentation getPresentation() {
         return this.myPresentation;
     }
 
+    /**
+     * 创建DaoSession实例
+     *
+     * @param databaseName 数据库名称
+     * @return DaoSession实例
+     * @since 2018年4月29日
+     */
+    private DaoSession createDaoSession(String databaseName) {
+        DaoMaster.OpenHelper openHelper = new DaoMaster.DevOpenHelper(getApplicationContext(), databaseName, null);
+        DaoMaster daoMaster = new DaoMaster(openHelper.getWritableDatabase());
+        return daoMaster.newSession();
+    }
 }

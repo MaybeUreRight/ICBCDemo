@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -22,6 +23,7 @@ import java.util.List;
 
 import jp.wasabeef.recyclerview.animators.FlipInLeftYAnimator;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
+import top.wuhaojie.installerlibrary.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.GridSpacingItemDecoration;
@@ -29,6 +31,7 @@ import xinshiyeweixin.cn.icbcdemo.adapter.ProductAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductInfoAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.Product;
 import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
+import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
@@ -78,9 +81,9 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         // 1.水平分页布局管理器
         PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(2, 2, PagerGridLayoutManager.HORIZONTAL);
         product_list.setLayoutManager(layoutManager);
-        product_list.addItemDecoration(new MyItemDecoration(2,20,true));
+        product_list.addItemDecoration(new MyItemDecoration(2, 20, true));
 
-        products.addAll(productInfos.get(0).productList);
+        products.addAll(productInfos.get(0).getProductList());
         productAdapter = new ProductAdapter(this, products);
         product_list.setAdapter(productAdapter);
 
@@ -91,6 +94,38 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
 //        icbcApplication = (ICBCApplication) getApplication();
 //        myPresentation = icbcApplication.getPresentation();
+
+
+        //TODO 测试静默安装
+//        testInstall();
+    }
+
+    private void testInstall() {
+        AutoInstaller installer = AutoInstaller.getDefault(this);
+        installer.setOnStateChangedListener(new AutoInstaller.OnStateChangedListener() {
+            @Override
+            public void onStart() {
+                // 当后台安装线程开始时回调
+                Log.i("Demo", "onStart");
+            }
+
+            @Override
+            public void onComplete() {
+                // 当请求安装完成时回调
+                Log.i("Demo", "onComplete");
+
+            }
+
+            @Override
+            public void onNeed2OpenService() {
+                // 当需要用户手动打开 `辅助功能服务` 时回调
+                // 可以在这里提示用户打开辅助功能
+                Log.i("Demo", "onNeed2OpenService");
+
+            }
+        });
+
+        installer.installFromUrl("http://shouji.360tpcdn.com/180416/d018437e1686ea7c38f6db83dd324ceb/com.changba_866.apk");
     }
 
     private void initEasyLayoutScroll() {
@@ -129,21 +164,23 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
     private void initData(ArrayList<ProductInfo> list) {
         for (int i = 0; i < 10; i++) {
             ProductInfo info = new ProductInfo();
-            info.cagetory = getString(R.string.item_product_category) + i;
-            info.productList = new ArrayList<>();
+            info.setCagetory(getString(R.string.item_product_category) + i);
+            info.setProductList(new ArrayList<Product>());
             for (int j = 0; j < 13; j++) {
                 Product product = new Product();
-                product.name = getString(R.string.item_product_name) + " -> " + j;
-                product.picUrl = "https://i03piccdn.sogoucdn.com/66766b011ffe1eac";
-                product.introduction = "秋田犬（拉丁学名：Japanese Akita），别名日本秋田犬、日系秋田犬，原产地日本。其祖先被称呼为山地狩猎犬，是大型的熊猎犬。除了协助猎熊外，它还被利用来捕...";
-                if (5 - i > 0) {
-                    product.recommend=true;
-                }else{
-                    product.recommend=false;
+                product.setName(getString(R.string.item_product_name) + " -> " + j);
+                product.setPicUrl("https://i03piccdn.sogoucdn.com/66766b011ffe1eac");
+                product.setIntroduction("秋田犬（拉丁学名：Japanese Akita），别名日本秋田犬、日系秋田犬，原产地日本。其祖先被称呼为山地狩猎犬，是大型的熊猎犬。除了协助猎熊外，它还被利用来捕...");
+                if (5 - j > 0) {
+                    product.setRecommend(true);
+                } else {
+                    product.setRecommend(false);
                 }
-                info.productList.add(product);
+                info.getProductList().add(product);
+//                DAOUtil.insertProduct(product);
             }
             list.add(info);
+            DAOUtil.insertProductInfo(info);
         }
     }
 
@@ -157,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
     }
 
     @Override
-    public void onProductCategoryItemOnclick(ArrayList<Product> productList, int position) {
+    public void onProductCategoryItemOnclick(List<Product> productList, int position) {
         products.clear();
         products.addAll(productList);
         productAdapter.notifyDataSetChanged();

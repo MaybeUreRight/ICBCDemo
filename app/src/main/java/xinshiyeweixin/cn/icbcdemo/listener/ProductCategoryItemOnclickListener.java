@@ -1,6 +1,6 @@
 package xinshiyeweixin.cn.icbcdemo.listener;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.bean.Product;
 
@@ -11,5 +11,5 @@ public interface ProductCategoryItemOnclickListener {
      * @param productList
      * @param position
      */
-    void onProductCategoryItemOnclick(ArrayList<Product> productList, int position);
+    void onProductCategoryItemOnclick(List<Product> productList, int position);
 }

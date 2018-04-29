@@ -46,8 +46,8 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         if (holder instanceof RecommendViewHoler) {//推荐商品
             RecommendViewHoler recommendViewHoler = (RecommendViewHoler) holder;
-            recommendViewHoler.product_name.setText(product.name);
-            recommendViewHoler.product_introduction.setText(product.introduction);
+            recommendViewHoler.product_name.setText(product.getName());
+            recommendViewHoler.product_introduction.setText(product.getIntroduction());
             recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -66,13 +66,13 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    productItemOnclickListener.onProductItemOnclick(product.videoPath);
+                    productItemOnclickListener.onProductItemOnclick(product.getVideoPath());
                 }
             });
         } else if (holder instanceof NormalViewHoler) {//普通商品
             NormalViewHoler normalViewHoler = (NormalViewHoler) holder;
-            normalViewHoler.product_name_normal.setText(product.name);
-            normalViewHoler.product_introduction_normal.setText(product.introduction);
+            normalViewHoler.product_name_normal.setText(product.getName());
+            normalViewHoler.product_introduction_normal.setText(product.getIntroduction());
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -91,7 +91,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    productItemOnclickListener.onProductItemOnclick(product.videoPath);
+                    productItemOnclickListener.onProductItemOnclick(product.getVideoPath());
                 }
             });
         } else {//其他类型ITEM
@@ -103,7 +103,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        boolean recommend = products.get(position).recommend;
+        boolean recommend = products.get(position).getRecommend();
         if (recommend) {//推荐
             return RECOMMEND;
         } else {//普通

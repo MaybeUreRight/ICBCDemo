@@ -14,6 +14,9 @@ import android.widget.TextView;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.utils.DisplayUtil;
 
+/**
+ * 二维码扫描的弹框
+ */
 public class QRCodeDialog extends Dialog {
 
     private Context mContext;

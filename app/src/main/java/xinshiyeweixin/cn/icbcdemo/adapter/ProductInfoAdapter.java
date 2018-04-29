@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
@@ -33,7 +34,7 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
 
         //相当于listview的adapter中的getview方法
 
-        holder.category.setText(productInfos.get(position).cagetory);
+        holder.category.setText(productInfos.get(position).getCagetory());
         if (position == currentPosition) {
             holder.item_category_flag.setVisibility(View.VISIBLE);
         } else {
@@ -43,14 +44,14 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
         holder.category.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList list = productInfos.get(position).productList;
+                List list = productInfos.get(position).getProductList();
                 if (list != null) {
                     Log.i("Demo", "list.size = " + list.size());
                 } else {
                     Log.i("Demo", "list是空");
                 }
                 currentPosition = position;
-                productCategoryItemOnclickListener.onProductCategoryItemOnclick(productInfos.get(position).productList, position);
+                productCategoryItemOnclickListener.onProductCategoryItemOnclick(productInfos.get(position).getProductList(), position);
             }
         });
 
