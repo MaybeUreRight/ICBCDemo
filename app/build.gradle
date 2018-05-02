@@ -43,4 +43,5 @@ dependencies {
     implementation 'com.github.a-voyager:AutoInstaller:v1.0'
 
     implementation 'org.greenrobot:greendao:3.2.2' // add library
+
 }

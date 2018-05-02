@@ -47,6 +47,14 @@ public class DAOUtil {
         productDao.update(product);
     }
 
+    public static List<ProductInfo> queryProductInfoData(String category, int limitCount) {
+        return productInfoDao.queryBuilder()
+                .where(ProductInfoDao.Properties.Cagetory.eq(category))
+                .limit(limitCount)
+                .orderAsc(ProductInfoDao.Properties.Cagetory)
+                .list();
+    }
+
     /**
      * 查询所有数据
      *
@@ -92,6 +100,15 @@ public class DAOUtil {
         productInfo.setCagetory(name);
         productInfoDao.update(productInfo);
 
+    }
+
+
+    public static List<Product> queryProductData(Long productInfoId, int limitCount) {
+        return productDao.queryBuilder()
+                .where(ProductDao.Properties.ProductInfoId.eq(productInfoId))
+                .limit(limitCount)
+                .orderAsc(ProductDao.Properties.Name)
+                .list();
     }
 
     /**

@@ -34,6 +34,7 @@ import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
 import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 
 public class MainActivity extends AppCompatActivity implements ProductItemOnclickListener, ProductCategoryItemOnclickListener {
@@ -162,25 +163,44 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
      * @param list
      */
     private void initData(ArrayList<ProductInfo> list) {
-        for (int i = 0; i < 10; i++) {
-            ProductInfo info = new ProductInfo();
-            info.setCagetory(getString(R.string.item_product_category) + i);
-            info.setProductList(new ArrayList<Product>());
-            for (int j = 0; j < 13; j++) {
-                Product product = new Product();
-                product.setName(getString(R.string.item_product_name) + " -> " + j);
-                product.setPicUrl("https://i03piccdn.sogoucdn.com/66766b011ffe1eac");
-                product.setIntroduction("秋田犬（拉丁学名：Japanese Akita），别名日本秋田犬、日系秋田犬，原产地日本。其祖先被称呼为山地狩猎犬，是大型的熊猎犬。除了协助猎熊外，它还被利用来捕...");
-                if (5 - j > 0) {
-                    product.setRecommend(true);
+        List<ProductInfo> productInfos = DAOUtil.queryAllProductInfo();
+        if (productInfos != null && productInfos.size() > 0) {
+            //TODO 本地数据库已经有数据，先加载本地数据库的数据
+            for (ProductInfo info : productInfos) {
+                Long id = info.getId();
+                List<Product> products = DAOUtil.queryProductData(id, 150);
+
+                List<Product> productList = info.getProductList();
+                if (productList == null) {
+                    productList = new ArrayList<>();
                 } else {
-                    product.setRecommend(false);
+                    productList.clear();
                 }
-                info.getProductList().add(product);
-//                DAOUtil.insertProduct(product);
+                productList.addAll(products);
             }
-            list.add(info);
-            DAOUtil.insertProductInfo(info);
+            list.addAll(productInfos);
+        } else {
+            //TODO 本地数据库没有数据，请求新数据(没有接口，所以这里用假数据)
+            for (int i = 0; i < 10; i++) {
+                ProductInfo info = new ProductInfo();
+                info.setCagetory(getString(R.string.item_product_category) + i);
+                DAOUtil.insertProductInfo(info);
+                for (int j = 0; j < 13; j++) {
+                    Product product = new Product();
+                    product.setId(null);
+                    product.setName(getString(R.string.item_product_name) + " -> " + j);
+                    product.setPicUrl("https://i03piccdn.sogoucdn.com/66766b011ffe1eac");
+                    product.setIntroduction("秋田犬（拉丁学名：Japanese Akita），别名日本秋田犬、日系秋田犬，原产地日本。其祖先被称呼为山地狩猎犬，是大型的熊猎犬。除了协助猎熊外，它还被利用来捕...");
+                    product.setProductInfoId(info.getId());
+                    if (5 - j > 0) {
+                        product.setRecommend(true);
+                    } else {
+                        product.setRecommend(false);
+                    }
+                    DAOUtil.insertProduct(product);
+                }
+                list.add(info);
+            }
         }
     }
 

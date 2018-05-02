@@ -1,56 +1,106 @@
 package xinshiyeweixin.cn.icbcdemo.utils;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 
+/**
+ * 基于Gson的一个工具类
+ */
 public class GsonUtils {
-    static volatile Gson gson = GsonHolder.gson;
-
-    /**
-     * 对象转换为json
-     *
-     * @param object
-     * @return
-     */
-    public static String convertToString(Object object) {
-        return gson.toJson(object);
+    private GsonUtils() {
     }
 
     /**
-     * JSON转换为对象1--普通类型
+     * 将一个对象转换为JSON格式的串
      *
-     * @param json
-     * @param classOfT
-     * @param <T>
-     * @return
+     * @param object 任意对象
+     * @return JSON格式的字符串
      */
-    public static <T> T convertJsonToObject(String json, Class<T> classOfT) {
-        return gson.fromJson(json, classOfT);
+    public static String convertVO2String(Object object) {
+        try {
+            Gson gson = new Gson();
+            return gson.toJson(object);
+        } catch (Exception e) {
+            Log.e("Demo", "convertVO2String \r\n  error = \r\n    " + Log.getStackTraceString(e));
+            return null;
+        }
     }
 
     /**
-     * JSON转换为对象-针对泛型的类型
+     * 将一个JSON格式的字符串转换为Java对象
      *
-     * @param json
-     * @param typeOfT
-     * @param <T>
-     * @return
+     * @param jsonStr     要转换的JSON格式的字符串
+     * @param targetClass 要将这个JSON格式的字符串转换为什么类型的对象
+     * @return 转换之后的Java对象
      */
-    public static <T> T fromJson(String json, Type typeOfT) {
-        return gson.fromJson(json, typeOfT);
+    public static <T> T convertString2Object(String jsonStr, Class<T> targetClass) {
+        try {
+            Gson gson = new Gson();
+            if (isJson(jsonStr)) {
+                return gson.fromJson(jsonStr, targetClass);
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            Log.e("Demo", "convertString2Object \r\n  error = \r\n    " + Log.getStackTraceString(e));
+            return null;
+        }
     }
 
-    private static class GsonHolder {
-        private static final Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()//打开Export注解，但打开了这个注解,副作用，要转换和不转换都要加注解
-//              .serializeNulls()  //是否序列化空值
-                .setDateFormat("yyyy-MM-dd HH:mm:ss")//序列化日期格式  "yyyy-MM-dd"
-//              .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)//会把字段首字母大写
-                .setPrettyPrinting() //自动格式化换行
-//              .setVersion(1.0)  //需要结合注解使用，有的字段在1。0的版本的时候解析，但0。1版本不解析
-                .create();
+    /**
+     * 将一个json转换成一个集合对象
+     *
+     * @param jsonStr   要转换的JSON格式的字符串
+     * @param typeToken TypeToken<这里指定集合类型和泛型信息>
+     * @return 转换之后的集合对象
+     */
+    public static <T> T convertString2Collection(String jsonStr, TypeToken<T> typeToken) {
+        try {
+            Gson gson = new Gson();
+            if (isJson(jsonStr)) {
+                T t = gson.fromJson(jsonStr, typeToken.getType());
+                return t;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            Log.e("Demo", "convertString2Collection \r\n  error = \r\n    " + Log.getStackTraceString(e));
+            return null;
+        }
     }
 
+    public static boolean isJson(String json) {
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+            jsonObject = null;
+            return true;
+        } catch (JSONException e1) {
+            Log.e("Demo", "isJson \r\n  error = \r\n    " + Log.getStackTraceString(e1));
+            return false;
+        }
+    }
+
+    public static ArrayList<String> convertJson2Array(String str) {
+        ArrayList<String> strs = new ArrayList<String>();
+        try {
+            JSONArray arr = new JSONArray(str);
+            for (int i = 0; i < arr.length(); i++) {
+                strs.add(arr.getString(i));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return strs;
+    }
 }
+

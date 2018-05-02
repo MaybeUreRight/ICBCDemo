@@ -3,6 +3,7 @@ package xinshiyeweixin.cn.icbcdemo.bean;
 import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 import org.greenrobot.greendao.annotation.Generated;
+import org.greenrobot.greendao.annotation.ToOne;
 
 @Entity
 public class Product {
