@@ -1,9 +1,13 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
+import android.Manifest;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,20 +22,20 @@ import com.gcssloop.widget.PagerGridSnapHelper;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutListener;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import jp.wasabeef.recyclerview.animators.FlipInLeftYAnimator;
-import jp.wasabeef.recyclerview.animators.LandingAnimator;
 import top.wuhaojie.installerlibrary.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
-import xinshiyeweixin.cn.icbcdemo.adapter.GridSpacingItemDecoration;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductInfoAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.Product;
 import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
 import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
+import xinshiyeweixin.cn.icbcdemo.http.ReqProgressCallBack;
+import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
@@ -52,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
     private MyPresentation myPresentation;
     private ICBCApplication icbcApplication;
+
+    public static final int REQUEST_RUN_PERMISSION = 111;
 
 
     @Override
@@ -99,11 +105,47 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
         //TODO 测试静默安装
 //        testInstall();
+        downloadNewVersion();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.i("Demo", "requestCode = " + requestCode);
+        Log.i("Demo", "permissions = " + GsonUtils.convertVO2String(permissions));
+        Log.i("Demo", "grantResults = " + GsonUtils.convertVO2String(grantResults));
+    }
+
+    private void downloadNewVersion() {
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+
+
+        RequestManager requestManager = RequestManager.getInstance(this);
+        String destFileDir = Environment.getExternalStorageDirectory() + File.separator;
+        requestManager.downLoadFile("http://3d.leygoo.cn/apk/app-release.apk", destFileDir, new ReqProgressCallBack<Object>() {
+            @Override
+            public void onProgress(long total, long current) {
+                Log.i("Demo", "total = " + total + "\r\ncurrent" + current);
+            }
+
+            @Override
+            public void onReqSuccess(Object result) {
+                Log.i("Demo", "result = " + GsonUtils.convertVO2String(result));
+            }
+
+            @Override
+            public void onReqFailed(String errorMsg) {
+                Log.i("Demo", "errorMsg = " + errorMsg);
+
+            }
+        });
+
     }
 
     private void testInstall() {
-        AutoInstaller installer = AutoInstaller.getDefault(this);
-        installer.setOnStateChangedListener(new AutoInstaller.OnStateChangedListener() {
+        AutoInstaller.Builder builder = new AutoInstaller.Builder(this);
+        builder.setMode(AutoInstaller.MODE.ROOT_ONLY);
+        builder.setOnStateChangedListener(new AutoInstaller.OnStateChangedListener() {
             @Override
             public void onStart() {
                 // 当后台安装线程开始时回调
@@ -126,7 +168,8 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
             }
         });
 
-        installer.installFromUrl("http://shouji.360tpcdn.com/180416/d018437e1686ea7c38f6db83dd324ceb/com.changba_866.apk");
+        AutoInstaller installer = builder.build();
+        installer.installFromUrl("http://3d.leygoo.cn/apk/app-release.apk");
     }
 
     private void initEasyLayoutScroll() {
