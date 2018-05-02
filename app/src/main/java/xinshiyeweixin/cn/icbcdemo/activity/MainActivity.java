@@ -1,7 +1,9 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
 import android.Manifest;
+import android.content.pm.PackageManager;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -114,31 +116,49 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         Log.i("Demo", "requestCode = " + requestCode);
         Log.i("Demo", "permissions = " + GsonUtils.convertVO2String(permissions));
         Log.i("Demo", "grantResults = " + GsonUtils.convertVO2String(grantResults));
+
+        boolean flag = true;
+        for (int result : grantResults) {
+            if (result != 0) {
+                flag=false;
+            }
+        }
+        if (flag) {
+            RequestManager requestManager = RequestManager.getInstance(this);
+            String destFileDir = Environment.getExternalStorageDirectory() + File.separator;
+            requestManager.downLoadFile("http://3d.leygoo.cn/apk/app-release.apk", destFileDir, new ReqProgressCallBack<Object>() {
+                @Override
+                public void onProgress(long total, long current) {
+                    Log.i("Demo", "total = " + total + "\r\ncurrent" + current);
+                }
+
+                @Override
+                public void onReqSuccess(Object result) {
+                    Log.i("Demo", "result = " + GsonUtils.convertVO2String(result));
+                }
+
+                @Override
+                public void onReqFailed(String errorMsg) {
+                    Log.i("Demo", "errorMsg = " + errorMsg);
+
+                }
+            });
+        }else{
+            Log.i("Demo", "falg = false");
+        }
     }
 
     private void downloadNewVersion() {
         String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-
-
-        RequestManager requestManager = RequestManager.getInstance(this);
-        String destFileDir = Environment.getExternalStorageDirectory() + File.separator;
-        requestManager.downLoadFile("http://3d.leygoo.cn/apk/app-release.apk", destFileDir, new ReqProgressCallBack<Object>() {
-            @Override
-            public void onProgress(long total, long current) {
-                Log.i("Demo", "total = " + total + "\r\ncurrent" + current);
+        if (Build.VERSION.SDK_INT >= 23) {
+            for (String str : permissions) {
+                if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
+                    this.requestPermissions(permissions,REQUEST_RUN_PERMISSION);
+                }
             }
+        }
 
-            @Override
-            public void onReqSuccess(Object result) {
-                Log.i("Demo", "result = " + GsonUtils.convertVO2String(result));
-            }
 
-            @Override
-            public void onReqFailed(String errorMsg) {
-                Log.i("Demo", "errorMsg = " + errorMsg);
-
-            }
-        });
 
     }
 
