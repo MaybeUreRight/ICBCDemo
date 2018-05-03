@@ -16,6 +16,7 @@ import xinshiyeweixin.cn.icbcdemo.bean.DaoMaster;
 import xinshiyeweixin.cn.icbcdemo.bean.DaoSession;
 import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
+import xinshiyeweixin.cn.icbcdemo.utils.Utils;
 
 public class ICBCApplication extends Application {
     public static ICBCApplication application;
@@ -51,6 +52,7 @@ public class ICBCApplication extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
+        Utils.init(application);
         this.mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
         this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
 //        UpdatePresent();

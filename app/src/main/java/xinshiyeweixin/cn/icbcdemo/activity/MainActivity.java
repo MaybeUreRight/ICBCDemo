@@ -38,7 +38,10 @@ import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
 import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.utils.AppUtils;
+import xinshiyeweixin.cn.icbcdemo.utils.FileUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
+import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 
 public class MainActivity extends AppCompatActivity implements ProductItemOnclickListener, ProductCategoryItemOnclickListener {
@@ -108,10 +111,10 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.i("Demo", "onRequestPermissionsResult");
-//        Log.i("Demo", "requestCode = " + requestCode);
-//        Log.i("Demo", "permissions = " + GsonUtils.convertVO2String(permissions));
-//        Log.i("Demo", "grantResults = " + GsonUtils.convertVO2String(grantResults));
+        LogUtils.i( "onRequestPermissionsResult");
+//        LogUtils.i( "requestCode = " + requestCode);
+//        LogUtils.i( "permissions = " + GsonUtils.convertVO2String(permissions));
+//        LogUtils.i( "grantResults = " + GsonUtils.convertVO2String(grantResults));
 
         boolean flag = true;
         for (int result : grantResults) {
@@ -122,30 +125,36 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         if (flag) {
             downloadNewVersion();
         } else {
-            Log.i("Demo", "falg = false");
+            LogUtils.i( "falg = false");
         }
     }
 
     private void downloadNewVersion() {
-        Log.i("Demo", "downloadNewVersion");
+        LogUtils.i("downloadNewVersion");
+//        Environment.getExternalStorageDirectory() + File.separator, "ICBC_update.apk"
+
         RequestManager requestManager = RequestManager.getInstance(this);
         String destFileDir = Environment.getExternalStorageDirectory() + File.separator;
         requestManager.downLoadFile("http://3d.leygoo.cn/apk/app-release.apk", destFileDir, new ReqProgressCallBack<Object>() {
             @Override
             public void onProgress(long total, long current) {
-//                    Log.i("Demo", "total = " + total + "\r\ncurrent" + current);
-                Log.i("Demo", "下载进度 ： " + current * 100.0 / total + " % ");
+//                    LogUtils.i( "total = " + total + "\r\ncurrent" + current);
+                LogUtils.i("下载进度 ：\r\n" + current * 100 / total + " % ");
             }
 
             @Override
             public void onReqSuccess(Object result) {
-                Log.i("Demo", "result = " + GsonUtils.convertVO2String(result));
-                autoInstall((File) result);
+                LogUtils.i( "result = " + GsonUtils.convertVO2String(result));
+//                autoInstall((File) result);
+//                AppUtils.installAppSilent((File) result);
+//                AppUtils.installApp((File) result);
+                File file = new File(Environment.getExternalStorageDirectory() + File.separator, "ICBC_update.apk");
+//                AppUtils.installApp(file);
             }
 
             @Override
             public void onReqFailed(String errorMsg) {
-                Log.i("Demo", "errorMsg = " + errorMsg);
+                LogUtils.i( "errorMsg = " + errorMsg);
 
             }
         });
@@ -155,54 +164,60 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
      * 检车是否具有运行时权限（读.写）
      */
     private void checkPermissions() {
-        Log.i("Demo", "checkPermissions");
+        LogUtils.i( "checkPermissions");
+        File temp = new File(Environment.getExternalStorageDirectory() + File.separator, "ICBC_update.apk");
+        if (FileUtils.isFileExists(temp)) {
+            LogUtils.i("删除已存在的新版本APK");
+            FileUtils.deleteFile(temp);
+        }
         String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
         if (Build.VERSION.SDK_INT >= 23) {
             boolean tempBoolean = true;
             for (String str : permissions) {
                 if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
-                    Log.i("Demo", str + " -- > 无权限");
+                    LogUtils.i( str + " -- > 无权限");
                     this.requestPermissions(permissions, REQUEST_RUN_PERMISSION);
                     tempBoolean = false;
                 } else {
-                    Log.i("Demo", str + " -- > 有权限");
+                    LogUtils.i( str + " -- > 有权限");
                 }
             }
             if (tempBoolean) {
-                downloadNewVersion();
+//                downloadNewVersion();
+                autoInstall();
             }
         }
     }
 
-    private void autoInstall(File file) {
+    private void autoInstall() {
         AutoInstaller.Builder builder = new AutoInstaller.Builder(this);
 //        builder.setMode(AutoInstaller.MODE.ROOT_ONLY);
-        builder.setMode(AutoInstaller.MODE.AUTO_ONLY);
+        builder.setMode(AutoInstaller.MODE.BOTH);
         builder.setOnStateChangedListener(new AutoInstaller.OnStateChangedListener() {
             @Override
             public void onStart() {
                 // 当后台安装线程开始时回调
-                Log.i("Demo", "onStart");
+                LogUtils.i( "onStart");
             }
 
             @Override
             public void onComplete() {
                 // 当请求安装完成时回调
-                Log.i("Demo", "onComplete");
+                LogUtils.i( "onComplete");
             }
 
             @Override
             public void onNeed2OpenService() {
                 // 当需要用户手动打开 `辅助功能服务` 时回调
                 // 可以在这里提示用户打开辅助功能
-                Log.i("Demo", "onNeed2OpenService");
+                LogUtils.i( "onNeed2OpenService");
 
             }
         });
 
         AutoInstaller installer = builder.build();
-//        installer.installFromUrl("http://3d.leygoo.cn/apk/app-release.apk");
-        installer.install2(file);
+        installer.installFromUrl("http://3d.leygoo.cn/apk/app-release.apk");
+//        installer.install2(file);
     }
 
     private void initEasyLayoutScroll() {
