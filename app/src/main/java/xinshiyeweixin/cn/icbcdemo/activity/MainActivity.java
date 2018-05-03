@@ -7,8 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,7 +26,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import top.wuhaojie.installerlibrary.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductAdapter;
@@ -38,6 +35,7 @@ import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
 import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
 import xinshiyeweixin.cn.icbcdemo.http.ReqProgressCallBack;
 import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
+import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
@@ -104,67 +102,82 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 //        icbcApplication = (ICBCApplication) getApplication();
 //        myPresentation = icbcApplication.getPresentation();
 
-
-        //TODO 测试静默安装
-//        testInstall();
-        downloadNewVersion();
+        checkPermissions();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.i("Demo", "requestCode = " + requestCode);
-        Log.i("Demo", "permissions = " + GsonUtils.convertVO2String(permissions));
-        Log.i("Demo", "grantResults = " + GsonUtils.convertVO2String(grantResults));
+        Log.i("Demo", "onRequestPermissionsResult");
+//        Log.i("Demo", "requestCode = " + requestCode);
+//        Log.i("Demo", "permissions = " + GsonUtils.convertVO2String(permissions));
+//        Log.i("Demo", "grantResults = " + GsonUtils.convertVO2String(grantResults));
 
         boolean flag = true;
         for (int result : grantResults) {
             if (result != 0) {
-                flag=false;
+                flag = false;
             }
         }
         if (flag) {
-            RequestManager requestManager = RequestManager.getInstance(this);
-            String destFileDir = Environment.getExternalStorageDirectory() + File.separator;
-            requestManager.downLoadFile("http://3d.leygoo.cn/apk/app-release.apk", destFileDir, new ReqProgressCallBack<Object>() {
-                @Override
-                public void onProgress(long total, long current) {
-                    Log.i("Demo", "total = " + total + "\r\ncurrent" + current);
-                }
-
-                @Override
-                public void onReqSuccess(Object result) {
-                    Log.i("Demo", "result = " + GsonUtils.convertVO2String(result));
-                }
-
-                @Override
-                public void onReqFailed(String errorMsg) {
-                    Log.i("Demo", "errorMsg = " + errorMsg);
-
-                }
-            });
-        }else{
+            downloadNewVersion();
+        } else {
             Log.i("Demo", "falg = false");
         }
     }
 
     private void downloadNewVersion() {
-        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-        if (Build.VERSION.SDK_INT >= 23) {
-            for (String str : permissions) {
-                if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
-                    this.requestPermissions(permissions,REQUEST_RUN_PERMISSION);
-                }
+        Log.i("Demo", "downloadNewVersion");
+        RequestManager requestManager = RequestManager.getInstance(this);
+        String destFileDir = Environment.getExternalStorageDirectory() + File.separator;
+        requestManager.downLoadFile("http://3d.leygoo.cn/apk/app-release.apk", destFileDir, new ReqProgressCallBack<Object>() {
+            @Override
+            public void onProgress(long total, long current) {
+//                    Log.i("Demo", "total = " + total + "\r\ncurrent" + current);
+                Log.i("Demo", "下载进度 ： " + current * 100.0 / total + " % ");
             }
-        }
 
+            @Override
+            public void onReqSuccess(Object result) {
+                Log.i("Demo", "result = " + GsonUtils.convertVO2String(result));
+                autoInstall((File) result);
+            }
 
+            @Override
+            public void onReqFailed(String errorMsg) {
+                Log.i("Demo", "errorMsg = " + errorMsg);
 
+            }
+        });
     }
 
-    private void testInstall() {
+    /**
+     * 检车是否具有运行时权限（读.写）
+     */
+    private void checkPermissions() {
+        Log.i("Demo", "checkPermissions");
+        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+        if (Build.VERSION.SDK_INT >= 23) {
+            boolean tempBoolean = true;
+            for (String str : permissions) {
+                if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
+                    Log.i("Demo", str + " -- > 无权限");
+                    this.requestPermissions(permissions, REQUEST_RUN_PERMISSION);
+                    tempBoolean = false;
+                } else {
+                    Log.i("Demo", str + " -- > 有权限");
+                }
+            }
+            if (tempBoolean) {
+                downloadNewVersion();
+            }
+        }
+    }
+
+    private void autoInstall(File file) {
         AutoInstaller.Builder builder = new AutoInstaller.Builder(this);
-        builder.setMode(AutoInstaller.MODE.ROOT_ONLY);
+//        builder.setMode(AutoInstaller.MODE.ROOT_ONLY);
+        builder.setMode(AutoInstaller.MODE.AUTO_ONLY);
         builder.setOnStateChangedListener(new AutoInstaller.OnStateChangedListener() {
             @Override
             public void onStart() {
@@ -176,7 +189,6 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
             public void onComplete() {
                 // 当请求安装完成时回调
                 Log.i("Demo", "onComplete");
-
             }
 
             @Override
@@ -189,7 +201,8 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         });
 
         AutoInstaller installer = builder.build();
-        installer.installFromUrl("http://3d.leygoo.cn/apk/app-release.apk");
+//        installer.installFromUrl("http://3d.leygoo.cn/apk/app-release.apk");
+        installer.install2(file);
     }
 
     private void initEasyLayoutScroll() {

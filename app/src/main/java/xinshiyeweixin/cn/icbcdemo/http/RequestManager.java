@@ -599,7 +599,7 @@ public class RequestManager {
                     for (long readCount; (readCount = source.read(buf, 2048)) != -1; ) {
                         sink.write(buf, readCount);
                         current += readCount;
-                        Log.e(TAG, "current------>" + current);
+//                        Log.e(TAG, "current------>" + current);
                         progressCallBack(remaining, current, callBack);
                     }
                 } catch (Exception e) {
@@ -647,14 +647,14 @@ public class RequestManager {
                 FileOutputStream fos = null;
                 try {
                     long total = response.body().contentLength();
-                    Log.e(TAG, "total------>" + total);
+//                    Log.e(TAG, "total------>" + total);
                     long current = 0;
                     is = response.body().byteStream();
                     fos = new FileOutputStream(file);
                     while ((len = is.read(buf)) != -1) {
                         current += len;
                         fos.write(buf, 0, len);
-                        Log.e(TAG, "current------>" + current);
+//                        Log.e(TAG, "current------>" + current);
                     }
                     fos.flush();
                     successCallBack((T) file, callBack);
@@ -685,7 +685,7 @@ public class RequestManager {
      */
     public <T> void downLoadFile(String fileUrl, final String destFileDir, final ReqProgressCallBack<T> callBack) {
 //        final String fileName = MD5.encode(fileUrl);
-        final String fileName = "ICBC_" + BuildConfig.VERSION_CODE + ".apk";
+        final String fileName = "ICBC_update.apk";
         final File file = new File(destFileDir, fileName);
         if (file.exists()) {
             successCallBack((T) file, callBack);
@@ -708,14 +708,14 @@ public class RequestManager {
                 FileOutputStream fos = null;
                 try {
                     long total = response.body().contentLength();
-                    Log.e(TAG, "total------>" + total);
+//                    Log.e(TAG, "total------>" + total);
                     long current = 0;
                     is = response.body().byteStream();
                     fos = new FileOutputStream(file);
                     while ((len = is.read(buf)) != -1) {
                         current += len;
                         fos.write(buf, 0, len);
-                        Log.e(TAG, "current------>" + current);
+//                        Log.e(TAG, "current------>" + current);
                         progressCallBack(total, current, callBack);
                     }
                     fos.flush();

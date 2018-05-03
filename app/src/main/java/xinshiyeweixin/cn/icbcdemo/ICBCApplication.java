@@ -3,11 +3,14 @@ package xinshiyeweixin.cn.icbcdemo;
 import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.sqlite.SQLiteDatabase;
 import android.hardware.display.DisplayManager;
 import android.media.MediaRouter;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+
+import org.greenrobot.greendao.database.Database;
 
 import xinshiyeweixin.cn.icbcdemo.bean.DaoMaster;
 import xinshiyeweixin.cn.icbcdemo.bean.DaoSession;
@@ -107,7 +110,9 @@ public class ICBCApplication extends Application {
      */
     private DaoSession createDaoSession(String databaseName) {
         DaoMaster.OpenHelper openHelper = new DaoMaster.DevOpenHelper(getApplicationContext(), databaseName, null);
-        DaoMaster daoMaster = new DaoMaster(openHelper.getWritableDatabase());
+        SQLiteDatabase database = openHelper.getWritableDatabase();
+//        org.greenrobot.greendao.database.Database database = openHelper.getEncryptedReadableDb("123");
+        DaoMaster daoMaster = new DaoMaster(database);
         return daoMaster.newSession();
     }
 }

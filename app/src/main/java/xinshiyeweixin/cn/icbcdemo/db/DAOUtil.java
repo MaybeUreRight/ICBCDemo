@@ -107,7 +107,7 @@ public class DAOUtil {
         return productDao.queryBuilder()
                 .where(ProductDao.Properties.ProductInfoId.eq(productInfoId))
                 .limit(limitCount)
-                .orderAsc(ProductDao.Properties.Name)
+                .orderDesc(ProductDao.Properties.Recommend)
                 .list();
     }
 
