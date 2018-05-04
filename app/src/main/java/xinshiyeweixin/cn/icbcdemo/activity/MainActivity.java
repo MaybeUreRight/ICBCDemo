@@ -21,6 +21,8 @@ import com.gcssloop.widget.PagerGridLayoutManager;
 import com.gcssloop.widget.PagerGridSnapHelper;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutListener;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
+import com.lxj.okhttpdownloader.download.DownloadEngine;
+import com.lxj.okhttpdownloader.download.DownloadInfo;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -46,7 +48,11 @@ import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 
 public class MainActivity extends AppCompatActivity implements ProductItemOnclickListener, ProductCategoryItemOnclickListener {
-
+    /**
+     * TODO 多线程下载视频
+     * TODO 视频本地地址存入数据库并更新
+     * TODO
+     */
     private EasyLayoutScroll easylayoutscroll;
 
     private RecyclerView product_cagetory;
@@ -107,15 +113,34 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 //        myPresentation = icbcApplication.getPresentation();
 
         checkPermissions();
+
+        //开启多线程下载视频
+        downloadVideo("123");
+
+    }
+
+    /**
+     * 下载视频
+     *
+     * @param taskId
+     */
+    private void downloadVideo(String taskId) {
+        //TODO taskId还没定
+        DownloadEngine engine = DownloadEngine.create(this);
+        engine.setMaxTaskCount(5);
+        engine.addDownloadObserver(new DownloadEngine.DownloadObserver() {
+            @Override
+            public void onDownloadUpdate(DownloadInfo downloadInfo) {
+                LogUtils.i(downloadInfo);
+            }
+        }, taskId);
+        //TODO 下载完毕后，需要将视频本地地址存入数据库，并更新数据库
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        LogUtils.i( "onRequestPermissionsResult");
-//        LogUtils.i( "requestCode = " + requestCode);
-//        LogUtils.i( "permissions = " + GsonUtils.convertVO2String(permissions));
-//        LogUtils.i( "grantResults = " + GsonUtils.convertVO2String(grantResults));
+        LogUtils.i("onRequestPermissionsResult");
 
         boolean flag = true;
         for (int result : grantResults) {
@@ -126,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         if (flag) {
             downloadNewVersion();
         } else {
-            LogUtils.i( "falg = false");
+            LogUtils.i("falg = false");
         }
     }
 
@@ -145,24 +170,24 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
             @Override
             public void onReqSuccess(Object result) {
-                LogUtils.i( "result = " + GsonUtils.convertVO2String(result));
+                LogUtils.i("result = " + GsonUtils.convertVO2String(result));
                 File file = new File(Environment.getExternalStorageDirectory() + File.separator, "ICBC_update.apk");
                 AppUtils2.installApp(file, BuildConfig.APPLICATION_ID + ".fileprovider");
             }
 
             @Override
             public void onReqFailed(String errorMsg) {
-                LogUtils.i( "errorMsg = " + errorMsg);
+                LogUtils.i("errorMsg = " + errorMsg);
 
             }
         });
     }
 
     /**
-     * 检车是否具有运行时权限（读.写）
+     * 检查是否具有运行时权限（读.写）
      */
     private void checkPermissions() {
-        LogUtils.i( "checkPermissions");
+        LogUtils.i("checkPermissions");
         File temp = new File(Environment.getExternalStorageDirectory() + File.separator, "ICBC_update.apk");
         if (FileUtils.isFileExists(temp)) {
             LogUtils.i("删除已存在的新版本APK");
@@ -173,11 +198,11 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
             boolean tempBoolean = true;
             for (String str : permissions) {
                 if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
-                    LogUtils.i( str + " -- > 无权限");
+                    LogUtils.i(str + " -- > 无权限");
                     this.requestPermissions(permissions, REQUEST_RUN_PERMISSION);
                     tempBoolean = false;
                 } else {
-                    LogUtils.i( str + " -- > 有权限");
+                    LogUtils.i(str + " -- > 有权限");
                 }
             }
             if (tempBoolean) {
@@ -195,20 +220,20 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
             @Override
             public void onStart() {
                 // 当后台安装线程开始时回调
-                LogUtils.i( "onStart");
+                LogUtils.i("onStart");
             }
 
             @Override
             public void onComplete() {
                 // 当请求安装完成时回调
-                LogUtils.i( "onComplete");
+                LogUtils.i("onComplete");
             }
 
             @Override
             public void onNeed2OpenService() {
                 // 当需要用户手动打开 `辅助功能服务` 时回调
                 // 可以在这里提示用户打开辅助功能
-                LogUtils.i( "onNeed2OpenService");
+                LogUtils.i("onNeed2OpenService");
 
             }
         });
