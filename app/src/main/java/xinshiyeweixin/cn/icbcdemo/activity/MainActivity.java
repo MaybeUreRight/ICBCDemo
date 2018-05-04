@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import xinshiyeweixin.cn.icbcdemo.BuildConfig;
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductAdapter;
@@ -38,7 +39,7 @@ import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
 import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
-import xinshiyeweixin.cn.icbcdemo.utils.AppUtils;
+import xinshiyeweixin.cn.icbcdemo.utils.AppUtils2;
 import xinshiyeweixin.cn.icbcdemo.utils.FileUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
@@ -145,11 +146,8 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
             @Override
             public void onReqSuccess(Object result) {
                 LogUtils.i( "result = " + GsonUtils.convertVO2String(result));
-//                autoInstall((File) result);
-//                AppUtils.installAppSilent((File) result);
-//                AppUtils.installApp((File) result);
                 File file = new File(Environment.getExternalStorageDirectory() + File.separator, "ICBC_update.apk");
-//                AppUtils.installApp(file);
+                AppUtils2.installApp(file, BuildConfig.APPLICATION_ID + ".fileprovider");
             }
 
             @Override
@@ -183,8 +181,8 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
                 }
             }
             if (tempBoolean) {
-//                downloadNewVersion();
-                autoInstall();
+                downloadNewVersion();
+//                autoInstall();
             }
         }
     }

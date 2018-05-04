@@ -41,6 +41,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.2'
 //    implementation 'com.github.a-voyager:AutoInstaller:v1.0'
     implementation 'org.greenrobot:greendao:3.2.2'
+
     // add library
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
 //    implementation 'net.zetetic:android-database-sqlcipher:3.5.9@aar'
