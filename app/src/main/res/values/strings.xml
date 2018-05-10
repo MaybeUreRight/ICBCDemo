@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ICBCDemo</string>
+    <string name="app_name">工行展示柜</string>
     <string name="item_product_category">钻石</string>
     <string name="back">返回</string>
     <string name="buy">立即购买</string>

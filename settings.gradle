@@ -1,1 +1,1 @@
-include ':app','okhttp-downloader'
+include ':app', ':testHandler','okhttp-downloader'

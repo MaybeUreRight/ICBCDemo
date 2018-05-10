@@ -1,6 +1,7 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
@@ -42,6 +43,7 @@ import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
 import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.service.HorizonService;
 import xinshiyeweixin.cn.icbcdemo.utils.AppUtils2;
 import xinshiyeweixin.cn.icbcdemo.utils.FileUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
@@ -124,10 +126,12 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         //开启多线程下载视频
 //        downloadVideo("123");
 
-        HttpManager.category("test1234567890");
-        HttpManager.update("test1234567890");
-        HttpManager.tag("test1234567890");
-        HttpManager.goods("test1234567890", 8, 1);
+//        HttpManager.category("test1234567890");
+//        HttpManager.update("test1234567890");
+//        HttpManager.tag("test1234567890");
+//        HttpManager.goods("test1234567890", 8, 1);
+        Intent intent = new Intent(this,HorizonService.class);
+        startService(intent);
     }
 
 

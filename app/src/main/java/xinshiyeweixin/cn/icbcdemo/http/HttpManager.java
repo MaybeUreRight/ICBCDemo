@@ -1,9 +1,13 @@
 package xinshiyeweixin.cn.icbcdemo.http;
 
 import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.model.Response;
+import com.lzy.okgo.request.base.Request;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +63,6 @@ public class HttpManager {
      * 更新机器状态
      *
      * @param sn 机器SN码(test1234567890)
-     *
      * @description: 传入机器的SN码，服务器自动更新机器的最后在线时间（最后在线时间超过10分钟未更新，判定设备离线）
      * <p>
      * {"id":10000,"area_id":33,"sn":"test1234567890","remark":"测试第一台机器","created_at":1495777723,"updated_at":1525936563,"last_online_time":1525936563}
@@ -206,5 +209,33 @@ public class HttpManager {
         }
         LogUtils.i(str);
 
+    }
+
+    /**
+     * 下载新版本安装包
+     *
+     * @author: liubo
+     * @date: 2018年5月10日16:33:15
+     * @description:
+     */
+    public static void downloadNewVersion() {
+        OkGo.<File>get(ConstantValue.DOWNLOAD_APK_URL)
+                .tag("MainActivity")
+                .execute(new FileCallback() {
+                    @Override
+                    public void onStart(Request<File, ? extends Request> request) {
+                        super.onStart(request);
+                    }
+
+                    @Override
+                    public void downloadProgress(Progress progress) {
+                        super.downloadProgress(progress);
+                    }
+
+                    @Override
+                    public void onSuccess(Response<File> response) {
+
+                    }
+                });
     }
 }
