@@ -38,9 +38,13 @@ dependencies {
     implementation 'me.biubiubiu.justifytext:library:1.1'
     implementation 'com.ms-square:expandableTextView:0.1.4'
     implementation 'jp.wasabeef:recyclerview-animators:2.3.0'
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.4'
     implementation 'org.greenrobot:greendao:3.2.2'
     // add library
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation project(':okhttp-downloader')
+
+
+    //必须使用
+    implementation 'com.lzy.net:okgo:3.0.4'
 }

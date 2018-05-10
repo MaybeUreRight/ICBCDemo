@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -33,9 +32,11 @@ import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.ProductInfoAdapter;
+import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
 import xinshiyeweixin.cn.icbcdemo.bean.Product;
 import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
 import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
+import xinshiyeweixin.cn.icbcdemo.http.HttpManager;
 import xinshiyeweixin.cn.icbcdemo.http.ReqProgressCallBack;
 import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
 import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
@@ -59,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
     private RecyclerView product_list;
     private ArrayList<ProductInfo> productInfos;
 
+
+    private List<CategoryBean> categoryBeanList;
+
     private ProductInfoAdapter productCategoryAdapter;
 
     private ProductAdapter productAdapter;
@@ -78,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         initView();
     }
 
+    /**
+     * 初始化View
+     */
     private void initView() {
         easylayoutscroll = findViewById(R.id.titlecontainer).findViewById(R.id.easylayoutscroll);
         initEasyLayoutScroll();
@@ -111,13 +118,18 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
 //        icbcApplication = (ICBCApplication) getApplication();
 //        myPresentation = icbcApplication.getPresentation();
-
-        checkPermissions();
+        //TODO 检查是否有权限，然后下载最新版本apk
+//        checkPermissions();
 
         //开启多线程下载视频
-        downloadVideo("123");
+//        downloadVideo("123");
 
+        HttpManager.category("test1234567890");
+        HttpManager.update("test1234567890");
+        HttpManager.tag("test1234567890");
+        HttpManager.goods("test1234567890", 8, 1);
     }
+
 
     /**
      * 下载视频

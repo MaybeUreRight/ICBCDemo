@@ -91,7 +91,7 @@ public class GsonUtils {
     }
 
     public static ArrayList<String> convertJson2Array(String str) {
-        ArrayList<String> strs = new ArrayList<String>();
+        ArrayList<String> strs = new ArrayList<>();
         try {
             JSONArray arr = new JSONArray(str);
             for (int i = 0; i < arr.length(); i++) {
