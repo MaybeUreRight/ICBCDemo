@@ -33,7 +33,7 @@ public class HttpManager {
     public static void category(String sn) {
         final List<CategoryBean> categoryBeanList = new ArrayList<>();
         OkGo.<String>post(ConstantValue.CATEGORY)
-                .tag("MainActivity")
+                .tag(ConstantValue.TAG_CATEGORY)
                 .params("sn", sn)
                 .execute(new StringCallback() {
                     @Override
@@ -70,7 +70,7 @@ public class HttpManager {
      */
     public static void update(String sn) {
         OkGo.<String>post(ConstantValue.UPDATE)
-                .tag("MainActivity")
+                .tag(ConstantValue.TAG_UPDATE)
                 .params("sn", sn)
                 .execute(new StringCallback() {
                     @Override
@@ -106,7 +106,7 @@ public class HttpManager {
      */
     public static void goods(String sn, Integer cat_id, Integer tag_id) {
         OkGo.<String>post(ConstantValue.GOODS)
-                .tag("MainActivity")
+                .tag(ConstantValue.TAG_GOODS)
                 .params("sn", sn)
                 .params("cat_id", cat_id)
                 .params("tag_id", tag_id)
@@ -147,7 +147,7 @@ public class HttpManager {
      */
     public static void tag(String sn) {
         OkGo.<String>post(ConstantValue.TAG)
-                .tag("MainActivity")
+                .tag(ConstantValue.TAG_TAG)
                 .params("sn", sn)
                 .execute(new StringCallback() {
                     @Override
@@ -220,7 +220,7 @@ public class HttpManager {
      */
     public static void downloadNewVersion() {
         OkGo.<File>get(ConstantValue.DOWNLOAD_APK_URL)
-                .tag("MainActivity")
+                .tag(ConstantValue.TAG_DOWNLOAD_APK)
                 .execute(new FileCallback() {
                     @Override
                     public void onStart(Request<File, ? extends Request> request) {

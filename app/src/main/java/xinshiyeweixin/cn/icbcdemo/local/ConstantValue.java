@@ -16,4 +16,11 @@ public class ConstantValue {
     public static final String UPDATE = BASE_URL + "/equipment/update";
 
     public static final String DOWNLOAD_APK_URL = "http://3d.leygoo.cn/apk/app-release.apk";
+
+
+    public static final String TAG_CATEGORY="TAG_CATEGORY";
+    public static final String TAG_GOODS="TAG_GOODS";
+    public static final String TAG_TAG="TAG_TAG";
+    public static final String TAG_UPDATE="TAG_UPDATE";
+    public static final String TAG_DOWNLOAD_APK="TAG_DOWNLOAD_APK";
 }
