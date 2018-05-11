@@ -6,5 +6,5 @@ public interface ProductItemOnclickListener {
      *
      * @param videoPath
      */
-    void onProductItemOnclick(String videoPath);
+    void onGoodItemOnclick(String videoPath);
 }

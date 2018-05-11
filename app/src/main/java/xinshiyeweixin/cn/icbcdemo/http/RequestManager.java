@@ -27,6 +27,7 @@ import okio.BufferedSink;
 import okio.Okio;
 import okio.Source;
 import xinshiyeweixin.cn.icbcdemo.BuildConfig;
+import xinshiyeweixin.cn.icbcdemo.bean.FailBean;
 
 public class RequestManager {
     private static final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/x-www-form-urlencoded; charset=utf-8");//mdiatype 这个需要和服务端保持一致
@@ -257,7 +258,7 @@ public class RequestManager {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    failedCallBack("访问失败", callBack);
+//                    failedCallBack("访问失败", callBack);
                     Log.e(TAG, e.toString());
                 }
 
@@ -268,7 +269,7 @@ public class RequestManager {
                         Log.e(TAG, "response ----->" + string);
                         successCallBack((T) string, callBack);
                     } else {
-                        failedCallBack("服务器错误", callBack);
+//                        failedCallBack("服务器错误", callBack);
                     }
                 }
             });
@@ -307,7 +308,7 @@ public class RequestManager {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    failedCallBack("访问失败", callBack);
+//                    failedCallBack("访问失败", callBack);
                     Log.e(TAG, e.toString());
                 }
 
@@ -318,7 +319,7 @@ public class RequestManager {
                         Log.e(TAG, "response ----->" + string);
                         successCallBack((T) string, callBack);
                     } else {
-                        failedCallBack("服务器错误", callBack);
+//                        failedCallBack("服务器错误", callBack);
                     }
                 }
             });
@@ -351,7 +352,7 @@ public class RequestManager {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    failedCallBack("访问失败", callBack);
+//                    failedCallBack("访问失败", callBack);
                     Log.e(TAG, e.toString());
                 }
 
@@ -362,7 +363,7 @@ public class RequestManager {
                         Log.e(TAG, "response ----->" + string);
                         successCallBack((T) string, callBack);
                     } else {
-                        failedCallBack("服务器错误", callBack);
+//                        failedCallBack("服务器错误", callBack);
                     }
                 }
             });
@@ -409,16 +410,15 @@ public class RequestManager {
     /**
      * 统一处理失败信息
      *
-     * @param errorMsg
      * @param callBack
      * @param <T>
      */
-    private <T> void failedCallBack(final String errorMsg, final ReqCallBack<T> callBack) {
+    private <T> void failedCallBack(final FailBean failBean, final ReqCallBack<T> callBack) {
         okHttpHandler.post(new Runnable() {
             @Override
             public void run() {
                 if (callBack != null) {
-                    callBack.onReqFailed(errorMsg);
+                    callBack.onReqFailed(failBean);
                 }
             }
         });
@@ -445,7 +445,7 @@ public class RequestManager {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, e.toString());
-                failedCallBack("上传失败", callBack);
+//                failedCallBack("上传失败", callBack);
             }
 
             @Override
@@ -455,7 +455,7 @@ public class RequestManager {
                     Log.e(TAG, "response ----->" + string);
                     successCallBack((T) string, callBack);
                 } else {
-                    failedCallBack("上传失败", callBack);
+//                    failedCallBack("上传失败", callBack);
                 }
             }
         });
@@ -636,7 +636,7 @@ public class RequestManager {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, e.toString());
-                failedCallBack("下载失败", callBack);
+//                failedCallBack("下载失败", callBack);
             }
 
             @Override
@@ -660,7 +660,7 @@ public class RequestManager {
                     successCallBack((T) file, callBack);
                 } catch (IOException e) {
                     Log.e(TAG, e.toString());
-                    failedCallBack("下载失败", callBack);
+//                    failedCallBack("下载失败", callBack);
                 } finally {
                     try {
                         if (is != null) {
@@ -697,7 +697,7 @@ public class RequestManager {
             @Override
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, e.toString());
-                failedCallBack("下载失败", callBack);
+//                failedCallBack("下载失败", callBack);
             }
 
             @Override
@@ -722,7 +722,7 @@ public class RequestManager {
                     successCallBack((T) file, callBack);
                 } catch (IOException e) {
                     Log.e(TAG, e.toString());
-                    failedCallBack("下载失败", callBack);
+//                    failedCallBack("下载失败", callBack);
                 } finally {
                     try {
                         if (is != null) {

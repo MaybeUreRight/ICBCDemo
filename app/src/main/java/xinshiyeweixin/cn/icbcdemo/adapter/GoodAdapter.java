@@ -11,30 +11,32 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 
 import xinshiyeweixin.cn.icbcdemo.R;
-import xinshiyeweixin.cn.icbcdemo.activity.ProductDetailActivity;
-import xinshiyeweixin.cn.icbcdemo.bean.Product;
+import xinshiyeweixin.cn.icbcdemo.activity.GoodDetailActivity;
+import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
 
-public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int RECOMMEND = 5;
     public static final int NORMAL = 6;
 
     private Context mContext;
-    private ArrayList<Product> products;
+    private ArrayList<GoodBean> goodBeanList;
     private ProductItemOnclickListener productItemOnclickListener;
     private RecyclerView.ViewHolder holder;
     private int position;
 
 
-    public ProductAdapter(Context context, ArrayList<Product> brings) {
+    public GoodAdapter(Context context, ArrayList<GoodBean> goodBeanList) {
         mContext = context;
-        products = brings;
+        this.goodBeanList = goodBeanList;
         productItemOnclickListener = (ProductItemOnclickListener) mContext;
-        if (products == null) {
-            products = new ArrayList<>();
+        if (this.goodBeanList == null) {
+            this.goodBeanList = new ArrayList<>();
         }
     }
 
@@ -42,12 +44,13 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
         //相当于listview的adapter中的getview方法
-        final Product product = products.get(position);
+        final GoodBean goodBean = goodBeanList.get(position);
 
         if (holder instanceof RecommendViewHoler) {//推荐商品
             RecommendViewHoler recommendViewHoler = (RecommendViewHoler) holder;
-            recommendViewHoler.product_name.setText(product.getName());
-            recommendViewHoler.product_introduction.setText(product.getIntroduction());
+            recommendViewHoler.product_name.setText(goodBean.name);
+            recommendViewHoler.product_introduction.setText(goodBean.content);
+            Glide.with(mContext).asBitmap().load(goodBean.image_url).into(recommendViewHoler.product_thum);
             recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -60,19 +63,20 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-                    mContext.startActivity(new Intent(mContext, ProductDetailActivity.class));
+                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class));
                 }
             });
             recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    productItemOnclickListener.onProductItemOnclick(product.getVideoPath());
+                    productItemOnclickListener.onGoodItemOnclick(goodBean.video_url);
                 }
             });
         } else if (holder instanceof NormalViewHoler) {//普通商品
             NormalViewHoler normalViewHoler = (NormalViewHoler) holder;
-            normalViewHoler.product_name_normal.setText(product.getName());
-            normalViewHoler.product_introduction_normal.setText(product.getIntroduction());
+            normalViewHoler.product_name_normal.setText(goodBean.name);
+            normalViewHoler.product_introduction_normal.setText(goodBean.content);
+            Glide.with(mContext).asBitmap().load(goodBean.image_url).into(normalViewHoler.product_thum_normal);
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -85,13 +89,13 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-                    mContext.startActivity(new Intent(mContext, ProductDetailActivity.class));
+                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class));
                 }
             });
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    productItemOnclickListener.onProductItemOnclick(product.getVideoPath());
+                    productItemOnclickListener.onGoodItemOnclick(goodBean.video_url);
                 }
             });
         } else {//其他类型ITEM
@@ -103,7 +107,8 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        boolean recommend = products.get(position).getRecommend();
+//        boolean recommend = goodBeanList.get(position).getRecommend();
+        boolean recommend = false;
         if (recommend) {//推荐
             return RECOMMEND;
         } else {//普通
@@ -128,7 +133,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public int getItemCount() {
-        return products.size();
+        return goodBeanList.size();
     }
 
     class RecommendViewHoler extends RecyclerView.ViewHolder {

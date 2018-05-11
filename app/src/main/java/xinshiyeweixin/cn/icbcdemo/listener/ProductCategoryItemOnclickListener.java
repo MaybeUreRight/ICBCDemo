@@ -8,8 +8,8 @@ public interface ProductCategoryItemOnclickListener {
     /**
      * 商品分类Item的点击事件
      *
-     * @param productList
+     * @param cat_id
      * @param position
      */
-    void onProductCategoryItemOnclick(List<Product> productList, int position);
+    void onCategoryItemOnclick(int cat_id, int position);
 }

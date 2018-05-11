@@ -43,8 +43,7 @@ dependencies {
     // add library
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation project(':okhttp-downloader')
-
-
     //必须使用
     implementation 'com.lzy.net:okgo:3.0.4'
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
 }

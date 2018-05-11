@@ -32,6 +32,8 @@ import xinshiyeweixin.cn.icbcdemo.bean.DaoMaster;
 import xinshiyeweixin.cn.icbcdemo.bean.DaoSession;
 import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
+import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
+import xinshiyeweixin.cn.icbcdemo.utils.UUIDUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.Utils;
 
 public class ICBCApplication extends Application {
@@ -62,6 +64,7 @@ public class ICBCApplication extends Application {
 
     public DaoSession productInfoDaoSession;
     public DaoSession productDaoSession;
+    public String uuid;
 
 
     @Override
@@ -70,6 +73,10 @@ public class ICBCApplication extends Application {
         application = this;
         Utils.init(application);
         initOkGo();
+        uuid = "test1234567890";
+        SPUtils.getInstance().put("UUID", uuid);
+//        uuid = UUIDUtils.getMyUUID();
+
         this.mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
         this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
 //        UpdatePresent();

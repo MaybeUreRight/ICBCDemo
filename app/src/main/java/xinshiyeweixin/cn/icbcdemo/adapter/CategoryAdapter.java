@@ -2,29 +2,26 @@ package xinshiyeweixin.cn.icbcdemo.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.R;
-import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
+import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
 
-public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.MyViewHoler> {
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHoler> {
     private Context mContext;
-    private ArrayList<ProductInfo> productInfos;
+    private ArrayList<CategoryBean> categoryList;
     private ProductCategoryItemOnclickListener productCategoryItemOnclickListener;
     private int currentPosition;
 
-    public ProductInfoAdapter(Context mContext, ArrayList<ProductInfo> productInfos) {
+    public CategoryAdapter(Context mContext, ArrayList<CategoryBean> categoryList) {
         this.mContext = mContext;
-        this.productInfos = productInfos;
+        this.categoryList = categoryList;
         this.productCategoryItemOnclickListener = (ProductCategoryItemOnclickListener) mContext;
         currentPosition = 0;
     }
@@ -34,7 +31,7 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
 
         //相当于listview的adapter中的getview方法
 
-        holder.category.setText(productInfos.get(position).getCagetory());
+        holder.category.setText(categoryList.get(position).name);
         if (position == currentPosition) {
             holder.item_category_flag.setVisibility(View.VISIBLE);
         } else {
@@ -44,14 +41,8 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
         holder.category.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                List list = productInfos.get(position).getProductList();
-                if (list != null) {
-                    Log.i("Demo", "list.size = " + list.size());
-                } else {
-                    Log.i("Demo", "list是空");
-                }
                 currentPosition = position;
-                productCategoryItemOnclickListener.onProductCategoryItemOnclick(productInfos.get(position).getProductList(), position);
+                productCategoryItemOnclickListener.onCategoryItemOnclick(categoryList.get(position).cat_id, position);
             }
         });
 
@@ -70,7 +61,7 @@ public class ProductInfoAdapter extends RecyclerView.Adapter<ProductInfoAdapter.
 
     @Override
     public int getItemCount() {
-        return productInfos.size();
+        return categoryList.size();
     }
 
 

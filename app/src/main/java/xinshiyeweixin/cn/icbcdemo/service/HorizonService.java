@@ -10,8 +10,10 @@ import android.util.Log;
 
 import java.util.Date;
 
+import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.http.HttpManager;
 import xinshiyeweixin.cn.icbcdemo.receiver.AlarmReceiver;
+import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
 
 /**
  * 九分钟更新一次
@@ -27,7 +29,7 @@ public class HorizonService extends Service {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                HttpManager.update("test1234567890");
+                HttpManager.update(SPUtils.getInstance().getString("UUID"), null);
             }
         }).start();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);

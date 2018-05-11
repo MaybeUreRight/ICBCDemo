@@ -1,5 +1,7 @@
 package xinshiyeweixin.cn.icbcdemo.http;
 
+import xinshiyeweixin.cn.icbcdemo.bean.FailBean;
+
 public interface ReqCallBack<T> {
     /**
      * 响应成功
@@ -9,5 +11,5 @@ public interface ReqCallBack<T> {
     /**
      * 响应失败
      */
-    void onReqFailed(String errorMsg);
+    void onReqFailed(FailBean failBean);
 }

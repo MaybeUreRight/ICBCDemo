@@ -30,7 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.ProductDetailActivity" />
+        <activity android:name=".activity.GoodDetailActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

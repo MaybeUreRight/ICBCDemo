@@ -3,15 +3,14 @@ package xinshiyeweixin.cn.icbcdemo.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -29,31 +28,35 @@ import com.lzy.okgo.OkGo;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import xinshiyeweixin.cn.icbcdemo.BuildConfig;
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.MyItemDecoration;
-import xinshiyeweixin.cn.icbcdemo.adapter.ProductAdapter;
-import xinshiyeweixin.cn.icbcdemo.adapter.ProductInfoAdapter;
+import xinshiyeweixin.cn.icbcdemo.adapter.GoodAdapter;
+import xinshiyeweixin.cn.icbcdemo.adapter.CategoryAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
+import xinshiyeweixin.cn.icbcdemo.bean.FailBean;
+import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
 import xinshiyeweixin.cn.icbcdemo.bean.Product;
 import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
+import xinshiyeweixin.cn.icbcdemo.bean.TagBean;
+import xinshiyeweixin.cn.icbcdemo.bean.UpdateBean;
 import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
 import xinshiyeweixin.cn.icbcdemo.http.HttpManager;
+import xinshiyeweixin.cn.icbcdemo.http.ReqCallBack;
 import xinshiyeweixin.cn.icbcdemo.http.ReqProgressCallBack;
 import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
 import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
-import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
 import xinshiyeweixin.cn.icbcdemo.service.HorizonService;
 import xinshiyeweixin.cn.icbcdemo.utils.AppUtils2;
 import xinshiyeweixin.cn.icbcdemo.utils.FileUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
+import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
 
 public class MainActivity extends AppCompatActivity implements ProductItemOnclickListener, ProductCategoryItemOnclickListener {
     /**
@@ -61,24 +64,35 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
      * TODO 视频本地地址存入数据库并更新
      * TODO
      */
+    public static final int REQUEST_RUN_PERMISSION = 111;
     private EasyLayoutScroll easylayoutscroll;
 
-    private RecyclerView product_cagetory;
-    private RecyclerView product_list;
-    private ArrayList<ProductInfo> productInfos;
+    private RecyclerView categoryRecyclerView;
+    private RecyclerView goodRecyclerView;
+//    private ArrayList<ProductInfo> productInfos;
 
 
-    private List<CategoryBean> categoryBeanList;
+    private ArrayList<CategoryBean> categoryBeanList;
 
-    private ProductInfoAdapter productCategoryAdapter;
+    private CategoryAdapter categoryAdapter;
 
-    private ProductAdapter productAdapter;
-    private ArrayList<Product> products;
+    private GoodAdapter goodAdapter;
+    private ArrayList<GoodBean> goodList;
+//    private ArrayList<Product> products;
 
     private MyPresentation myPresentation;
-    private ICBCApplication icbcApplication;
+//    private ICBCApplication icbcApplication;
 
-    public static final int REQUEST_RUN_PERMISSION = 111;
+    private ReqCallBack<ArrayList<CategoryBean>> categoryReqCallBack;
+    private ReqCallBack<UpdateBean> updateReqCallBack;
+    private ReqCallBack<List<GoodBean>> goodReqCallBack;
+    private ReqCallBack<List<TagBean>> tagReqCallBack;
+    private ReqCallBack downloadReqCallBack;
+
+    private SparseArray<List<GoodBean>> goodBeanSparseArray;
+//    private ArrayList<CategoryBean> result;
+
+    private int currentPosition;
 
 
     @Override
@@ -93,34 +107,45 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
      * 初始化View
      */
     private void initView() {
+
+        //TODO 这里测试的时候用
+        SPUtils.getInstance().put("UUID", "test1234567890");
+        goodBeanSparseArray = new SparseArray<>();
+//        result = new ArrayList<>();
+        goodList = new ArrayList<>();
+        categoryBeanList = new ArrayList<>();
+
+        currentPosition = 0;
+
         easylayoutscroll = findViewById(R.id.titlecontainer).findViewById(R.id.easylayoutscroll);
         initEasyLayoutScroll();
+//
+//        productInfos = new ArrayList<>();
+//        products = new ArrayList<>();
 
-        productInfos = new ArrayList<>();
-        products = new ArrayList<>();
+//        initData(productInfos);
+        categoryRecyclerView = findViewById(R.id.product_category);
+        goodRecyclerView = findViewById(R.id.product_list);
 
-        initData(productInfos);
-        product_cagetory = findViewById(R.id.product_category);
-        product_list = findViewById(R.id.product_list);
-
-        productCategoryAdapter = new ProductInfoAdapter(this, productInfos);
+//        categoryAdapter = new CategoryAdapter(this, productInfos);
+        categoryAdapter = new CategoryAdapter(this, categoryBeanList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        product_cagetory.setLayoutManager(linearLayoutManager);
-        product_cagetory.setAdapter(productCategoryAdapter);
+        categoryRecyclerView.setLayoutManager(linearLayoutManager);
+        categoryRecyclerView.setAdapter(categoryAdapter);
 
         // 1.水平分页布局管理器
         PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(2, 2, PagerGridLayoutManager.HORIZONTAL);
-        product_list.setLayoutManager(layoutManager);
-        product_list.addItemDecoration(new MyItemDecoration(2, 20, true));
+        goodRecyclerView.setLayoutManager(layoutManager);
+        goodRecyclerView.addItemDecoration(new MyItemDecoration(2, 20, true));
 
-        products.addAll(productInfos.get(0).getProductList());
-        productAdapter = new ProductAdapter(this, products);
-        product_list.setAdapter(productAdapter);
+//        products.addAll(productInfos.get(0).getProductList());
+        goodAdapter = new GoodAdapter(this, goodList);
+        goodRecyclerView.setAdapter(goodAdapter);
 
         // 2.设置滚动辅助工具
         PagerGridSnapHelper pageSnapHelper = new PagerGridSnapHelper();
-        pageSnapHelper.attachToRecyclerView(product_list);
+        pageSnapHelper.attachToRecyclerView(goodRecyclerView);
 
 
 //        icbcApplication = (ICBCApplication) getApplication();
@@ -131,14 +156,140 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         //开启多线程下载视频
 //        downloadVideo("123");
 
-        HttpManager.category("test1234567890");
-//        HttpManager.update("test1234567890");
-//        HttpManager.tag("test1234567890");
-//        HttpManager.goods("test1234567890", 8, 1);
+        initReqCallback();
+
+        HttpManager.category(ICBCApplication.application.uuid, categoryReqCallBack);
+//        HttpManager.update(icbcApplication.uuid, updateReqCallBack);
+//        HttpManager.tag(icbcApplication.uuid, tagReqCallBack);
+//        HttpManager.goods(icbcApplication.uuid, 8, 1, goodReqCallBack);
 
         //开启更新任务，九分钟更新一次
         Intent intent = new Intent(this, HorizonService.class);
         startService(intent);
+
+
+    }
+
+    private void initReqCallback() {
+        categoryReqCallBack = new ReqProgressCallBack<ArrayList<CategoryBean>>() {
+            @Override
+            public void onProgress(long total, long current) {
+
+            }
+
+            @Override
+            public void onReqSuccess(ArrayList<CategoryBean> result) {
+                if (result != null) {
+                    categoryBeanList.clear();
+                    categoryBeanList.addAll(result);
+
+                    //轮询去查询每种商品分类下的产品
+                    for (CategoryBean categoryBean : result) {
+                        int cat_id = categoryBean.cat_id;
+                        HttpManager.goods(SPUtils.getInstance().getString("UUID"), cat_id, null, goodReqCallBack);
+                    }
+                } else {
+                    //TODO 没有数据的时候应该展示什么样的界面
+                }
+            }
+
+            @Override
+            public void onReqFailed(FailBean failBean) {
+                String message = failBean.message;
+                LogUtils.i("message = \r\n" + message);
+            }
+
+        };
+
+        goodReqCallBack = new ReqProgressCallBack<List<GoodBean>>() {
+            @Override
+            public void onReqSuccess(List<GoodBean> result) {
+                int cat_id = result.get(0).cat_id;
+                goodBeanSparseArray.put(cat_id, result);
+                if (goodBeanSparseArray.size() > currentPosition && categoryBeanList.size() > currentPosition) {
+
+                    goodList.clear();
+                    goodList.addAll(goodBeanSparseArray.get(categoryBeanList.get(currentPosition).cat_id));
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            goodAdapter.notifyDataSetChanged();
+                            goodRecyclerView.scrollToPosition(0);
+
+                            categoryAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onReqFailed(FailBean failBean) {
+                String message = failBean.message;
+                LogUtils.i("message = \r\n" + message);
+            }
+
+            @Override
+            public void onProgress(long total, long current) {
+
+            }
+        };
+
+
+        updateReqCallBack = new ReqProgressCallBack<UpdateBean>() {
+
+            @Override
+            public void onReqSuccess(UpdateBean result) {
+
+            }
+
+            @Override
+            public void onReqFailed(FailBean failBean) {
+                String message = failBean.message;
+                LogUtils.i("message = \r\n" + message);
+
+            }
+
+            @Override
+            public void onProgress(long total, long current) {
+
+            }
+        };
+
+
+        tagReqCallBack = new ReqProgressCallBack<List<TagBean>>() {
+            @Override
+            public void onProgress(long total, long current) {
+
+            }
+
+            @Override
+            public void onReqSuccess(List<TagBean> result) {
+
+            }
+
+            @Override
+            public void onReqFailed(FailBean failBean) {
+                String message = failBean.message;
+                LogUtils.i("message = \r\n" + message);
+            }
+        };
+
+//        downloadReqCallBack=new ReqProgressCallBack<List<CategoryBean>>() {
+//            @Override
+//            public void onProgress(long total, long current) {
+//
+//            }
+//
+//            @Override
+//            public void onReqSuccess(List<CategoryBean> result) {
+//
+//            }
+//
+//            @Override
+//            public void onReqFailed(String errorMsg) {
+//
+//            }
+//        };
 
 
     }
@@ -201,8 +352,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
             }
 
             @Override
-            public void onReqFailed(String errorMsg) {
-                LogUtils.i("errorMsg = " + errorMsg);
+            public void onReqFailed(FailBean failBean) {
 
             }
         });
@@ -296,70 +446,28 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         });
     }
 
-    /**
-     * 初始化数据（假数据）
-     *
-     * @param list
-     */
-    private void initData(ArrayList<ProductInfo> list) {
-        List<ProductInfo> productInfos = DAOUtil.queryAllProductInfo();
-        if (productInfos != null && productInfos.size() > 0) {
-            //TODO 本地数据库已经有数据，先加载本地数据库的数据
-            for (ProductInfo info : productInfos) {
-                Long id = info.getId();
-                List<Product> products = DAOUtil.queryProductData(id, 150);
+    @Override
+    public void onGoodItemOnclick(String videoPath) {
+        this.myPresentation.startVideo(videoPath);
+    }
 
-                List<Product> productList = info.getProductList();
-                if (productList == null) {
-                    productList = new ArrayList<>();
-                } else {
-                    productList.clear();
+    @Override
+    public void onCategoryItemOnclick(int cat_id, int position) {
+
+        currentPosition = position;
+        if (goodBeanSparseArray.size() > position) {
+            goodList.clear();
+            goodList.addAll(goodBeanSparseArray.get(cat_id));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    goodAdapter.notifyDataSetChanged();
+                    goodRecyclerView.scrollToPosition(0);
+
+                    categoryAdapter.notifyDataSetChanged();
                 }
-                productList.addAll(products);
-            }
-            list.addAll(productInfos);
-        } else {
-            //TODO 本地数据库没有数据，请求新数据(没有接口，所以这里用假数据)
-            for (int i = 0; i < 10; i++) {
-                ProductInfo info = new ProductInfo();
-                info.setCagetory(getString(R.string.item_product_category) + i);
-                DAOUtil.insertProductInfo(info);
-                for (int j = 0; j < 13; j++) {
-                    Product product = new Product();
-                    product.setId(null);
-                    product.setName(getString(R.string.item_product_name) + " -> " + j);
-                    product.setPicUrl("https://i03piccdn.sogoucdn.com/66766b011ffe1eac");
-                    product.setIntroduction("秋田犬（拉丁学名：Japanese Akita），别名日本秋田犬、日系秋田犬，原产地日本。其祖先被称呼为山地狩猎犬，是大型的熊猎犬。除了协助猎熊外，它还被利用来捕...");
-                    product.setProductInfoId(info.getId());
-                    if (5 - j > 0) {
-                        product.setRecommend(true);
-                    } else {
-                        product.setRecommend(false);
-                    }
-                    DAOUtil.insertProduct(product);
-                }
-                list.add(info);
-            }
+            });
         }
-    }
-
-    @Override
-    public void onProductItemOnclick(String videoPath) {
-        //暂时用假数据
-        String uri = "android.resource://" + getPackageName() + "/" + R.raw.demo;
-        this.myPresentation.startVideo(uri);
-
-//        this.myPresentation.startVideo(videoPath);
-    }
-
-    @Override
-    public void onProductCategoryItemOnclick(List<Product> productList, int position) {
-        products.clear();
-        products.addAll(productList);
-        productAdapter.notifyDataSetChanged();
-        product_list.scrollToPosition(0);
-
-        productCategoryAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -374,38 +482,4 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 //        OkGo.getInstance().cancelTag(ConstantValue.TAG_DOWNLOAD_APK);
     }
 
-    //    public class MyItemDecoration extends RecyclerView.ItemDecoration {
-//
-//        private int spanCount;
-//        private int spacing;
-//        private boolean includeEdge;
-//
-//        public MyItemDecoration(int spanCount, int spacing, boolean includeEdge) {
-//            this.spanCount = spanCount;
-//            this.spacing = spacing;
-//            this.includeEdge = includeEdge;
-//        }
-//
-//        @Override
-//        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-//            int position = parent.getChildAdapterPosition(view); // item position
-//            int column = position % spanCount; // item column
-//
-//            if (includeEdge) {
-//                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
-//                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
-//
-//                if (position < spanCount) { // top edge
-//                    outRect.top = spacing;
-//                }
-//                outRect.bottom = spacing; // item bottom
-//            } else {
-//                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
-//                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
-//                if (position >= spanCount) {
-//                    outRect.top = spacing; // item top
-//                }
-//            }
-//        }
-//    }
 }

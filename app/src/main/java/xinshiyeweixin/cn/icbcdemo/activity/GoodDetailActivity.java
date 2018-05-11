@@ -23,7 +23,7 @@ import xinshiyeweixin.cn.icbcdemo.bean.DetailBean;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
 import xinshiyeweixin.cn.icbcdemo.view.QRCodeDialog;
 
-public class ProductDetailActivity extends AppCompatActivity implements View.OnClickListener {
+public class GoodDetailActivity extends AppCompatActivity implements View.OnClickListener {
     private EasyLayoutScroll easyLayoutScroll;
     private TextView productDetailNameCh;
     private TextView productDetailNameEn;
@@ -130,7 +130,7 @@ public class ProductDetailActivity extends AppCompatActivity implements View.OnC
         easyLayoutScroll.setOnItemClickListener(new EasyLayoutListener.OnItemClickListener() {
             @Override
             public void onItemClick(int pos, View view) {
-                Toast.makeText(ProductDetailActivity.this, "您点击了第" + pos + "条索引", Toast.LENGTH_SHORT).show();
+                Toast.makeText(GoodDetailActivity.this, "您点击了第" + pos + "条索引", Toast.LENGTH_SHORT).show();
             }
         });
     }
