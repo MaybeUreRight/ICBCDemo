@@ -23,6 +23,7 @@ import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.DetailAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.DetailBean;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
+import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
 import xinshiyeweixin.cn.icbcdemo.view.QRCodeDialog;
 
@@ -87,7 +88,7 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void initView() {
-        goodBean = (GoodBean) getIntent().getSerializableExtra("GOOD");
+        goodBean = GsonUtils.convertString2Object(getIntent().getStringExtra("GOOD"),GoodBean.class);
         findViewById(R.id.back_container).setOnClickListener(this);
 
         buy = findViewById(R.id.buy);
@@ -156,7 +157,6 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.buy:
-                //TODO 弹出二维码
                 qrCodeDialog = new QRCodeDialog(this, goodBean.ercode_img_url);
                 qrCodeDialog.show();
                 break;

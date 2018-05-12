@@ -1,8 +1,5 @@
 package xinshiyeweixin.cn.icbcdemo.listener;
 
-import java.util.List;
-
-import xinshiyeweixin.cn.icbcdemo.bean.Product;
 
 public interface ProductCategoryItemOnclickListener {
     /**

@@ -62,8 +62,10 @@ public class ICBCApplication extends Application {
         }
     };
 
-    public DaoSession productInfoDaoSession;
-    public DaoSession productDaoSession;
+    public DaoSession categoryDaoSession;
+    public DaoSession goodDaoSession;
+
+
     public String uuid;
 
 
@@ -81,8 +83,8 @@ public class ICBCApplication extends Application {
         this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
 //        UpdatePresent();
 
-        productDaoSession = createDaoSession(ConstantValue.DATABASE_PRODUCT);
-        productInfoDaoSession = createDaoSession(ConstantValue.DATABASE_PRODUCTINFO);
+        categoryDaoSession = createDaoSession(ConstantValue.DATABASE_CATEGORY);
+        goodDaoSession = createDaoSession(ConstantValue.DATABASE_GOOD);
     }
 
     private void initOkGo() {

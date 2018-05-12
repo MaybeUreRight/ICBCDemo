@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,10 +37,10 @@ import xinshiyeweixin.cn.icbcdemo.adapter.MyItemDecoration;
 import xinshiyeweixin.cn.icbcdemo.adapter.GoodAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.CategoryAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
+import xinshiyeweixin.cn.icbcdemo.bean.CategoryBeanDao;
 import xinshiyeweixin.cn.icbcdemo.bean.FailBean;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
-import xinshiyeweixin.cn.icbcdemo.bean.Product;
-import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
+import xinshiyeweixin.cn.icbcdemo.bean.GoodBeanDao;
 import xinshiyeweixin.cn.icbcdemo.bean.TagBean;
 import xinshiyeweixin.cn.icbcdemo.bean.UpdateBean;
 import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
     private RecyclerView categoryRecyclerView;
     private RecyclerView goodRecyclerView;
-//    private ArrayList<ProductInfo> productInfos;
 
 
     private ArrayList<CategoryBean> categoryBeanList;
@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
     private GoodAdapter goodAdapter;
     private ArrayList<GoodBean> goodList;
-//    private ArrayList<Product> products;
 
     private MyPresentation myPresentation;
 //    private ICBCApplication icbcApplication;
@@ -94,6 +93,11 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
     private int currentPosition;
 
+    private CategoryBeanDao categoryDAO;
+    private GoodBeanDao goodDAO;
+
+    private Handler handler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
      * 初始化View
      */
     private void initView() {
-
+        handler = new Handler();
         //TODO 这里测试的时候用
         SPUtils.getInstance().put("UUID", "test1234567890");
         goodBeanSparseArray = new SparseArray<>();
@@ -115,19 +119,15 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         goodList = new ArrayList<>();
         categoryBeanList = new ArrayList<>();
 
+
         currentPosition = 0;
 
         easylayoutscroll = findViewById(R.id.titlecontainer).findViewById(R.id.easylayoutscroll);
         initEasyLayoutScroll();
-//
-//        productInfos = new ArrayList<>();
-//        products = new ArrayList<>();
 
-//        initData(productInfos);
         categoryRecyclerView = findViewById(R.id.product_category);
         goodRecyclerView = findViewById(R.id.product_list);
 
-//        categoryAdapter = new CategoryAdapter(this, productInfos);
         categoryAdapter = new CategoryAdapter(this, categoryBeanList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -139,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         goodRecyclerView.setLayoutManager(layoutManager);
         goodRecyclerView.addItemDecoration(new MyItemDecoration(2, 20, true));
 
-//        products.addAll(productInfos.get(0).getProductList());
         goodAdapter = new GoodAdapter(this, goodList);
         goodRecyclerView.setAdapter(goodAdapter);
 
@@ -156,12 +155,10 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         //开启多线程下载视频
 //        downloadVideo("123");
 
-        initReqCallback();
 
-        HttpManager.category(ICBCApplication.application.uuid, categoryReqCallBack);
-//        HttpManager.update(icbcApplication.uuid, updateReqCallBack);
-//        HttpManager.tag(icbcApplication.uuid, tagReqCallBack);
-//        HttpManager.goods(icbcApplication.uuid, 8, 1, goodReqCallBack);
+        initReqCallback();
+        loadDataFromDataBase();
+
 
         //开启更新任务，九分钟更新一次
         Intent intent = new Intent(this, HorizonService.class);
@@ -170,6 +167,59 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
     }
 
+    /**
+     * 从本地数据库加载数据
+     */
+    private void loadDataFromDataBase() {
+        categoryDAO = ICBCApplication.application.categoryDaoSession.getCategoryBeanDao();
+        goodDAO = ICBCApplication.application.goodDaoSession.getGoodBeanDao();
+
+        List<CategoryBean> categoryBeans = DAOUtil.queryAllCategory();
+        if (categoryBeans != null && categoryBeans.size() > 0) {
+            LogUtils.i("从本数据库加载数据");
+            //本地数据库有数据，优先展示
+            categoryBeanList.clear();
+            categoryBeanList.addAll(categoryBeans);
+            categoryAdapter.notifyDataSetChanged();
+
+            for (CategoryBean bean : categoryBeans) {
+                int cat_id = bean.getCat_id();
+                List<GoodBean> goodBeanList = DAOUtil.queryGoodData(cat_id);
+                goodBeanSparseArray.append(cat_id, goodBeanList == null ? new ArrayList<GoodBean>() : goodBeanList);
+            }
+            currentPosition = 0;
+            if (goodBeanSparseArray.size() > currentPosition && categoryBeanList.size() > currentPosition) {
+
+                goodList.clear();
+                goodList.addAll(goodBeanSparseArray.get(categoryBeanList.get(currentPosition).cat_id));
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        goodAdapter.notifyDataSetChanged();
+                        goodRecyclerView.scrollToPosition(0);
+
+                        categoryAdapter.notifyDataSetChanged();
+                    }
+                });
+            }
+
+            //延后2s请求网络的新数据
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    HttpManager.category(ICBCApplication.application.uuid, categoryReqCallBack);
+                }
+            }, 2 * 1000);
+        } else {
+            LogUtils.i("本地数据库没有数据，直接请求网络的新数据");
+            //本地数据库没有数据，直接请求网络的新数据
+            HttpManager.category(ICBCApplication.application.uuid, categoryReqCallBack);
+        }
+    }
+
+    /**
+     * 设置回调
+     */
     private void initReqCallback() {
         categoryReqCallBack = new ReqProgressCallBack<ArrayList<CategoryBean>>() {
             @Override
@@ -187,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
                     for (CategoryBean categoryBean : result) {
                         int cat_id = categoryBean.cat_id;
                         HttpManager.goods(SPUtils.getInstance().getString("UUID"), cat_id, null, goodReqCallBack);
+                        categoryDAO.insert(categoryBean);
                     }
                 } else {
                     //TODO 没有数据的时候应该展示什么样的界面
@@ -219,6 +270,11 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
                             categoryAdapter.notifyDataSetChanged();
                         }
                     });
+                }
+                if (result.size() > 0) {
+                    for (GoodBean goodBean : result) {
+                        goodDAO.insert(goodBean);
+                    }
                 }
             }
 

@@ -1,10 +1,11 @@
 package xinshiyeweixin.cn.icbcdemo.bean;
 
+import org.greenrobot.greendao.annotation.Entity;
 import org.greenrobot.greendao.annotation.Id;
 
-import java.io.Serializable;
-
-public class GoodBean implements Serializable {
+import org.greenrobot.greendao.annotation.Generated;
+@Entity
+public class GoodBean {
     //[
     // {"id":9,"name":"蓝宝石戒指","cat_id":8,"cat_name":"分类1","unit":"枚","market_price":6000,"our_price":5000,"content":"自古以来蓝宝石就有“帝王之石”之称。蓝宝石让几乎每一个时代的皇室被其吸引，并将之视为保佑圣物和典藏珍品。传说蓝宝石可让佩戴者免于遭人妒忌，并可蒙受神灵垂爱，于是古代国王就在颈间配戴蓝宝石，作为避免受伤的强力防御物。","image_url":"http://3d.leygoo.cn/statics/data/upload/goods_image/2017-09/goods_59b8a736b3ec3.png","video_url":"http://3d.leygoo.cn/statics/data/upload/goods_video/2017-09/goods_59b8a7599ca58.avi","ercode_img_url":"http://3d.leygoo.cn/statics/data/upload/goods_image/2017-12/goods_5a3100557295c.jpg","sale_url":"http://mall.icbc.com.cn/"}
     // ,{"id":10,"name":"钻石戒指","cat_id":8,"cat_name":"分类1","unit":"枚","market_price":8000,"our_price":7000,"content":"戒指源自古代太阳崇拜。古代戒指以玉石制成环状，象征太阳神日轮，认为它象太阳神一样，给人以温暖，庇护着人类的幸福和平安，同时也象征着美德与永恒，真理与信念。婚礼时，新郎戴金戒指，象征着火红的太阳；新娘戴银戒指，象征着皎洁的月亮。","image_url":"http://3d.leygoo.cn/statics/data/upload/goods_image/2017-09/goods_59b8a7cc50f37.png","video_url":"http://3d.leygoo.cn/statics/data/upload/goods_video/2017-09/goods_59bcd698ec711.mp4","ercode_img_url":"http://3d.leygoo.cn/statics/data/upload/goods_image/2017-12/goods_5a31010f32ffe.jpg","sale_url":"http://mall.icbc.com.cn/"}
@@ -24,5 +25,102 @@ public class GoodBean implements Serializable {
     public String video_url;
     public String ercode_img_url;
     public String sale_url;
+    @Generated(hash = 1817156056)
+    public GoodBean(Long id, int good_id, String name, Integer cat_id, String cat_name, String unit, int market_price, int our_price, String content, String image_url, String video_url, String ercode_img_url, String sale_url) {
+        this.id = id;
+        this.good_id = good_id;
+        this.name = name;
+        this.cat_id = cat_id;
+        this.cat_name = cat_name;
+        this.unit = unit;
+        this.market_price = market_price;
+        this.our_price = our_price;
+        this.content = content;
+        this.image_url = image_url;
+        this.video_url = video_url;
+        this.ercode_img_url = ercode_img_url;
+        this.sale_url = sale_url;
+    }
+    @Generated(hash = 1348485518)
+    public GoodBean() {
+    }
+    public Long getId() {
+        return this.id;
+    }
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public int getGood_id() {
+        return this.good_id;
+    }
+    public void setGood_id(int good_id) {
+        this.good_id = good_id;
+    }
+    public String getName() {
+        return this.name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
+    public Integer getCat_id() {
+        return this.cat_id;
+    }
+    public void setCat_id(Integer cat_id) {
+        this.cat_id = cat_id;
+    }
+    public String getCat_name() {
+        return this.cat_name;
+    }
+    public void setCat_name(String cat_name) {
+        this.cat_name = cat_name;
+    }
+    public String getUnit() {
+        return this.unit;
+    }
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+    public int getMarket_price() {
+        return this.market_price;
+    }
+    public void setMarket_price(int market_price) {
+        this.market_price = market_price;
+    }
+    public int getOur_price() {
+        return this.our_price;
+    }
+    public void setOur_price(int our_price) {
+        this.our_price = our_price;
+    }
+    public String getContent() {
+        return this.content;
+    }
+    public void setContent(String content) {
+        this.content = content;
+    }
+    public String getImage_url() {
+        return this.image_url;
+    }
+    public void setImage_url(String image_url) {
+        this.image_url = image_url;
+    }
+    public String getVideo_url() {
+        return this.video_url;
+    }
+    public void setVideo_url(String video_url) {
+        this.video_url = video_url;
+    }
+    public String getErcode_img_url() {
+        return this.ercode_img_url;
+    }
+    public void setErcode_img_url(String ercode_img_url) {
+        this.ercode_img_url = ercode_img_url;
+    }
+    public String getSale_url() {
+        return this.sale_url;
+    }
+    public void setSale_url(String sale_url) {
+        this.sale_url = sale_url;
+    }
 
 }

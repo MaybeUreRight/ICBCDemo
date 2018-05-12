@@ -1,125 +1,142 @@
 package xinshiyeweixin.cn.icbcdemo.db;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
-import xinshiyeweixin.cn.icbcdemo.bean.Product;
-import xinshiyeweixin.cn.icbcdemo.bean.ProductDao;
-import xinshiyeweixin.cn.icbcdemo.bean.ProductInfo;
-import xinshiyeweixin.cn.icbcdemo.bean.ProductInfoDao;
+import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
+import xinshiyeweixin.cn.icbcdemo.bean.CategoryBeanDao;
+import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
+import xinshiyeweixin.cn.icbcdemo.bean.GoodBeanDao;
 
 public class DAOUtil {
-    private static final ProductDao productDao = ICBCApplication.application.productDaoSession.getProductDao();
-    private static final ProductInfoDao productInfoDao = ICBCApplication.application.productInfoDaoSession.getProductInfoDao();
+    private static final CategoryBeanDao categoryDAO = ICBCApplication.application.categoryDaoSession.getCategoryBeanDao();
+    private static final GoodBeanDao goodDAO = ICBCApplication.application.goodDaoSession.getGoodBeanDao();
+
 
     /**
      * 插入一条数据
      *
-     * @param product
+     * @param categoryBean
      */
-    public static void insertProduct(Product product) {
-        productDao.insert(product);
+    public static void insertCategory(CategoryBean categoryBean) {
+        categoryDAO.insert(categoryBean);
     }
 
     /**
-     * 删除某条数据
+     * 插入一条数据
      *
-     * @param id
+     * @param goodBean
      */
-    public static void deleteProduct(long id) {
-        productDao.deleteByKey(id);
+    public static void insertGood(GoodBean goodBean) {
+        goodDAO.insert(goodBean);
     }
+
 
     /**
      * 更新某条数据
      *
-     * @param id
+     * @param cat_id
      * @param name
      */
-    public static void updateProduct(long id, String name) {
-        Product product = productDao.queryBuilder()
-                .where(ProductInfoDao.Properties.Id.eq(id))
+    public static void updateCategory(int cat_id, String name) {
+        CategoryBean categoryBean = categoryDAO.queryBuilder()
+                .where(CategoryBeanDao.Properties.Cat_id.eq(cat_id))
                 .build()
                 .unique();
-        product.setName(name);
-        productDao.update(product);
+        categoryBean.setName(name);
+        categoryDAO.update(categoryBean);
     }
 
-    public static List<ProductInfo> queryProductInfoData(String category, int limitCount) {
-        return productInfoDao.queryBuilder()
-                .where(ProductInfoDao.Properties.Cagetory.eq(category))
+    /**
+     * 查询
+     *
+     * @param cat_id
+     * @param limitCount
+     * @return
+     */
+    public static List<CategoryBean> queryCategoryData(int cat_id, int limitCount) {
+        return categoryDAO.queryBuilder()
+                .where(CategoryBeanDao.Properties.Cat_id.eq(cat_id))
                 .limit(limitCount)
-                .orderAsc(ProductInfoDao.Properties.Cagetory)
+                .orderAsc(CategoryBeanDao.Properties.Id)
                 .list();
     }
+
 
     /**
      * 查询所有数据
      *
      * @return
      */
-    public static List<Product> queryAllProduct() {
-        return productDao.queryBuilder()
-                .orderAsc(ProductDao.Properties.Id)
+    public static List<CategoryBean> queryAllCategory() {
+        return categoryDAO.queryBuilder()
+                .orderAsc(CategoryBeanDao.Properties.Id)
                 .build()
                 .list();
     }
 
-
-    /**
-     * 插入一条数据
-     *
-     * @param productInfo
-     */
-    public static void insertProductInfo(ProductInfo productInfo) {
-        productInfoDao.insert(productInfo);
-    }
-
-    /**
-     * 删除某条数据
-     *
-     * @param id
-     */
-    public static void deleteProductInfo(long id) {
-        productInfoDao.deleteByKey(id);
-    }
-
-    /**
-     * 更新某条数据
-     *
-     * @param id
-     * @param name
-     */
-    public static void updateProductInfo(long id, String name) {
-        ProductInfo productInfo = productInfoDao.queryBuilder()
-                .where(ProductDao.Properties.Id.eq(id))
-                .build()
-                .unique();
-        productInfo.setCagetory(name);
-        productInfoDao.update(productInfo);
-
-    }
-
-
-    public static List<Product> queryProductData(Long productInfoId, int limitCount) {
-        return productDao.queryBuilder()
-                .where(ProductDao.Properties.ProductInfoId.eq(productInfoId))
-                .limit(limitCount)
-                .orderDesc(ProductDao.Properties.Recommend)
-                .list();
-    }
 
     /**
      * 查询所有数据
      *
      * @return
      */
-    public static List<ProductInfo> queryAllProductInfo() {
-        return productInfoDao.queryBuilder()
-                .orderAsc(ProductInfoDao.Properties.Id)
+    public static List<GoodBean> queryAllGood() {
+        return goodDAO.queryBuilder()
+                .orderAsc(GoodBeanDao.Properties.Id)
                 .build()
                 .list();
     }
+
+
+    /**
+     * 更新某条数据
+     *
+     * @param cat_id
+     * @param name
+     */
+    public static void updateGood(int cat_id, String name) {
+        GoodBean goodBean = goodDAO.queryBuilder()
+                .where(GoodBeanDao.Properties.Cat_id.eq(cat_id))
+                .build()
+                .unique();
+        goodBean.setName(name);
+        goodDAO.update(goodBean);
+    }
+
+    /**
+     * 查询
+     *
+     * @param cat_id //     * @param limitCount
+     * @return
+     */
+    public static List<GoodBean> queryGoodData(int cat_id) {
+        return goodDAO.queryBuilder()
+                .where(GoodBeanDao.Properties.Cat_id.eq(cat_id))
+//                .limit(limitCount)
+                .orderAsc(GoodBeanDao.Properties.Id)
+                .list();
+    }
+
+
+    /**
+     * 删除某条数据
+     *
+     * @param cat_id
+     */
+    public static void deleteCategory(long cat_id) {
+        categoryDAO.deleteByKey(cat_id);
+    }
+
+
+    /**
+     * 删除某条数据
+     *
+     * @param good_id
+     */
+    public static void deleteGoodBean(long good_id) {
+        goodDAO.deleteByKey(good_id);
+    }
+
 }

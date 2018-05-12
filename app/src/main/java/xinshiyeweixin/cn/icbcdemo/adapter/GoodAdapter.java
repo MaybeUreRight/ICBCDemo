@@ -19,6 +19,7 @@ import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.activity.GoodDetailActivity;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 
 public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int RECOMMEND = 5;
@@ -63,7 +64,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD",goodBean));
+                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
                 }
             });
             recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +90,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD",goodBean));
+                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD",GsonUtils.convertVO2String(goodBean)));
                 }
             });
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
