@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.gcssloop.widget.PagerGridLayoutManager;
 import com.gcssloop.widget.PagerGridSnapHelper;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutListener;
@@ -20,15 +22,17 @@ import java.util.List;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.DetailAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.DetailBean;
+import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
 import xinshiyeweixin.cn.icbcdemo.view.QRCodeDialog;
 
 public class GoodDetailActivity extends AppCompatActivity implements View.OnClickListener {
     private EasyLayoutScroll easyLayoutScroll;
+    private ImageView detail_img;
     private TextView productDetailNameCh;
     private TextView productDetailNameEn;
-    private TextView productDetailPriceHigh;
-    private TextView productDetailPriceNormal;
+    private TextView productDetailMarketPrice;
+    private TextView productDetailICBCPrice;
     private TextView productDetailOriginal;
     private TextView productDetailDesc;
 
@@ -44,6 +48,8 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
     private DetailAdapter detailAdapter;
 
     private QRCodeDialog qrCodeDialog;
+
+    private GoodBean goodBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,16 +87,18 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
     }
 
     private void initView() {
+        goodBean = (GoodBean) getIntent().getSerializableExtra("GOOD");
         findViewById(R.id.back_container).setOnClickListener(this);
 
         buy = findViewById(R.id.buy);
         buy.setOnClickListener(this);
         productDetail = (RecyclerView) findViewById(R.id.product_detail);
+        detail_img = (ImageView) findViewById(R.id.detail_img);
         easyLayoutScroll = findViewById(R.id.product_detail_titlecontainer).findViewById(R.id.easylayoutscroll);
         productDetailNameCh = (TextView) findViewById(R.id.product_detail_name_ch);
         productDetailNameEn = (TextView) findViewById(R.id.product_detail_name_en);
-        productDetailPriceHigh = (TextView) findViewById(R.id.product_detail_price_high);
-        productDetailPriceNormal = (TextView) findViewById(R.id.product_detail_price_normal);
+        productDetailMarketPrice = (TextView) findViewById(R.id.product_detail_price_high);
+        productDetailICBCPrice = (TextView) findViewById(R.id.product_detail_price_normal);
         productDetailOriginal = (TextView) findViewById(R.id.product_detail_original);
         productDetailDesc = (TextView) findViewById(R.id.product_detail_desc);
 
@@ -104,6 +112,15 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
         justifyTextViewIntro.setTitleWidth(textViewPrice);
 
         initEasyLayoutScroll();
+
+        Glide.with(this).asBitmap().load(goodBean.image_url).into(detail_img);
+        productDetailNameCh.setText("" + goodBean.name);
+        productDetailNameEn.setText("" + goodBean.name);
+        productDetailMarketPrice.setText("" + goodBean.market_price);
+        productDetailICBCPrice.setText("" + goodBean.our_price);
+        productDetailOriginal.setText("" + goodBean.name);
+        productDetailDesc.setText("" + goodBean.content);
+
 
     }
 
@@ -140,7 +157,7 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
         switch (v.getId()) {
             case R.id.buy:
                 //TODO 弹出二维码
-                qrCodeDialog = new QRCodeDialog(this);
+                qrCodeDialog = new QRCodeDialog(this, goodBean.ercode_img_url);
                 qrCodeDialog.show();
                 break;
             case R.id.back_container:

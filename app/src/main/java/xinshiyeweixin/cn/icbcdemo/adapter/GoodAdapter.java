@@ -63,7 +63,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class));
+                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD",goodBean));
                 }
             });
             recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
@@ -89,7 +89,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class));
+                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD",goodBean));
                 }
             });
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
