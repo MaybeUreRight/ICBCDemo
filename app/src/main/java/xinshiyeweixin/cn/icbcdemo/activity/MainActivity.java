@@ -14,6 +14,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -132,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         categoryRecyclerView.setLayoutManager(linearLayoutManager);
+        categoryRecyclerView.setHasFixedSize(true);
         categoryRecyclerView.setAdapter(categoryAdapter);
 
         // 1.水平分页布局管理器
