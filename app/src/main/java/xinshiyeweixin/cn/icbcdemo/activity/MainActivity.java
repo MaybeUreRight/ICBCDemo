@@ -393,7 +393,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
         @Override
         public void onProgress(Progress progress) {
-//            LogUtils.i("===================== onProgress ============================");
+            LogUtils.i("===================== onProgress ============================");
 //
 //            LogUtils.i("progress = "+ progress.toString());
 
@@ -416,6 +416,9 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
             LogUtils.i("file.getPath() = " + file.getPath());
             LogUtils.i("file.getAbsolutePath() = " + file.getAbsolutePath());
 
+            String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/" + file.getName();
+            //更新数据库的某条数据
+            DAOUtil.updateGood(progress.url, path);
         }
 
         @Override

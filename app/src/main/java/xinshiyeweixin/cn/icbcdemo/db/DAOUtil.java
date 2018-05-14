@@ -105,6 +105,15 @@ public class DAOUtil {
         goodDAO.update(goodBean);
     }
 
+    public static void updateGood(String remoteUrl, String localPath) {
+        GoodBean goodBean = goodDAO.queryBuilder()
+                .where(GoodBeanDao.Properties.Video_url.eq(remoteUrl))
+                .build()
+                .unique();
+        goodBean.setVideo_url_local(localPath);
+        goodDAO.update(goodBean);
+    }
+
     /**
      * 查询
      *
@@ -117,6 +126,17 @@ public class DAOUtil {
 //                .limit(limitCount)
                 .orderAsc(GoodBeanDao.Properties.Id)
                 .list();
+    }
+
+    public static GoodBean queryGoodData(String video_url) {
+        return goodDAO.queryBuilder()
+                .where(GoodBeanDao.Properties.Video_url.eq(video_url))
+                .build()
+                .unique();
+    }
+
+    public static boolean contains(GoodBean goodBean) {
+        return goodDAO.hasKey(goodBean);
     }
 
 

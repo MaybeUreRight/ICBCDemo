@@ -3,7 +3,9 @@ package xinshiyeweixin.cn.icbcdemo.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,10 +16,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.activity.GoodDetailActivity;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
+import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
 import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 
@@ -70,7 +74,18 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    productItemOnclickListener.onGoodItemOnclick(goodBean.video_url);
+                    String path;
+                    if (DAOUtil.contains(goodBean)) {
+                        //数据库中有该条数据
+                        if (!TextUtils.isEmpty(goodBean.video_url_local)) {
+                            path = goodBean.video_url_local;
+                        }else{
+                            path = goodBean.video_url;
+                        }
+                    }else{
+                        path = goodBean.video_url;
+                    }
+                    productItemOnclickListener.onGoodItemOnclick(path);
                 }
             });
         } else if (holder instanceof NormalViewHoler) {//普通商品
@@ -81,7 +96,18 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(mContext, "点击事件", Toast.LENGTH_SHORT).show();
+                    String path;
+                    if (DAOUtil.contains(goodBean)) {
+                        //数据库中有该条数据
+                        if (!TextUtils.isEmpty(goodBean.video_url_local)) {
+                            path = goodBean.video_url_local;
+                        }else{
+                            path = goodBean.video_url;
+                        }
+                    }else{
+                        path = goodBean.video_url;
+                    }
+                    productItemOnclickListener.onGoodItemOnclick(path);
                 }
             });
             normalViewHoler.itemView.setTag(position);//将位置保存在tag中
