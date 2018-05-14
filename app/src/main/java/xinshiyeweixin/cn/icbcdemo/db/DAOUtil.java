@@ -20,7 +20,7 @@ public class DAOUtil {
      * @param categoryBean
      */
     public static void insertCategory(CategoryBean categoryBean) {
-        categoryDAO.insert(categoryBean);
+        categoryDAO.insertOrReplace(categoryBean);
     }
 
     /**
@@ -29,7 +29,7 @@ public class DAOUtil {
      * @param goodBean
      */
     public static void insertGood(GoodBean goodBean) {
-        goodDAO.insert(goodBean);
+        goodDAO.insertOrReplace(goodBean);
     }
 
 

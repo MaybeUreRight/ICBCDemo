@@ -9,6 +9,7 @@ import org.greenrobot.greendao.annotation.Generated;
 public class CategoryBean {
     @Id(autoincrement = true)
     public Long id;
+    @Unique
     public int cat_id;
     public String name;
     @Generated(hash = 1880569117)

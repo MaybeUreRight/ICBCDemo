@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,8 +27,16 @@ import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
 import com.lxj.okhttpdownloader.download.DownloadEngine;
 import com.lxj.okhttpdownloader.download.DownloadInfo;
 import com.lzy.okgo.OkGo;
+import com.lzy.okgo.db.DownloadManager;
+import com.lzy.okgo.model.Progress;
+import com.lzy.okgo.request.GetRequest;
+import com.lzy.okserver.OkDownload;
+import com.lzy.okserver.download.DownloadListener;
+import com.lzy.okserver.download.DownloadTask;
+import com.lzy.okserver.task.XExecutor;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +69,7 @@ import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
 
-public class MainActivity extends AppCompatActivity implements ProductItemOnclickListener, ProductCategoryItemOnclickListener {
+public class MainActivity extends AppCompatActivity implements ProductItemOnclickListener, ProductCategoryItemOnclickListener, XExecutor.OnAllTaskEndListener {
     /**
      * TODO 多线程下载视频
      * TODO 视频本地地址存入数据库并更新
@@ -166,6 +175,15 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         Intent intent = new Intent(this, HorizonService.class);
         startService(intent);
 
+        initDownload();
+    }
+
+    private void initDownload() {
+        OkDownload okDownload = OkDownload.getInstance();
+        String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/";
+        okDownload.setFolder(path);
+        okDownload.getThreadPool().setCorePoolSize(3);
+        okDownload.addOnAllTaskEndListener(this);
 
     }
 
@@ -223,6 +241,8 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
      * 设置回调
      */
     private void initReqCallback() {
+
+
         categoryReqCallBack = new ReqProgressCallBack<ArrayList<CategoryBean>>() {
             @Override
             public void onProgress(long total, long current) {
@@ -239,7 +259,8 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
                     for (CategoryBean categoryBean : result) {
                         int cat_id = categoryBean.cat_id;
                         HttpManager.goods(SPUtils.getInstance().getString("UUID"), cat_id, null, goodReqCallBack);
-                        categoryDAO.insert(categoryBean);
+//                        categoryDAO.insert(categoryBean);
+                        DAOUtil.insertCategory(categoryBean);
                     }
                 } else {
                     //TODO 没有数据的时候应该展示什么样的界面
@@ -275,7 +296,16 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
                 }
                 if (result.size() > 0) {
                     for (GoodBean goodBean : result) {
-                        goodDAO.insert(goodBean);
+//                        goodDAO.insert(goodBean);
+                        DAOUtil.insertGood(goodBean);
+
+                        GetRequest<File> request = OkGo.<File>get(goodBean.video_url);//.headers("", "").params("", "");
+                        DownloadTask downloadTask = OkDownload.request("task", request)
+                                .extra1(goodBean.name)
+                                .extra1(goodBean.good_id)
+                                .save()
+                                .register(listener);
+                        downloadTask.start();
                     }
                 }
             }
@@ -352,6 +382,50 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
     }
 
+    private DownloadListener listener = new DownloadListener("task") {
+        @Override
+        public void onStart(Progress progress) {
+            LogUtils.i("===================== onStart ============================");
+
+            LogUtils.i("progress = " + progress.toString());
+
+        }
+
+        @Override
+        public void onProgress(Progress progress) {
+//            LogUtils.i("===================== onProgress ============================");
+//
+//            LogUtils.i("progress = "+ progress.toString());
+
+        }
+
+        @Override
+        public void onError(Progress progress) {
+            LogUtils.i("===================== onError ============================");
+
+            LogUtils.i("progress = " + progress.toString());
+
+        }
+
+        @Override
+        public void onFinish(File file, Progress progress) {
+            LogUtils.i("===================== onFinish ============================");
+
+            LogUtils.i("progress = " + progress.toString());
+
+            LogUtils.i("file.getPath() = " + file.getPath());
+            LogUtils.i("file.getAbsolutePath() = " + file.getAbsolutePath());
+
+        }
+
+        @Override
+        public void onRemove(Progress progress) {
+            LogUtils.i("===================== onRemove ============================");
+
+            LogUtils.i("progress = " + progress.toString());
+
+        }
+    };
 
     /**
      * 下载视频
@@ -540,4 +614,8 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 //        OkGo.getInstance().cancelTag(ConstantValue.TAG_DOWNLOAD_APK);
     }
 
+    @Override
+    public void onAllTaskEnd() {
+
+    }
 }
