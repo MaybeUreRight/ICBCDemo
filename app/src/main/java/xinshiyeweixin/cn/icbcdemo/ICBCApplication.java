@@ -9,6 +9,7 @@ import android.media.MediaRouter;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
@@ -21,6 +22,8 @@ import com.lzy.okgo.https.HttpsUtils;
 import com.lzy.okgo.interceptor.HttpLoggingInterceptor;
 import com.lzy.okgo.model.HttpHeaders;
 import com.lzy.okgo.model.HttpParams;
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import org.greenrobot.greendao.database.Database;
 
@@ -31,6 +34,7 @@ import okhttp3.OkHttpClient;
 import xinshiyeweixin.cn.icbcdemo.bean.DaoMaster;
 import xinshiyeweixin.cn.icbcdemo.bean.DaoSession;
 import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
+import xinshiyeweixin.cn.icbcdemo.utils.LogcatHelper;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.UUIDUtils;
@@ -73,6 +77,11 @@ public class ICBCApplication extends Application {
     public void onCreate() {
         super.onCreate();
         application = this;
+
+        this.mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
+        this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
+        UpdatePresent();
+
         Utils.init(application);
         initOkGo();
         uuid = "test1234567890";
@@ -81,10 +90,13 @@ public class ICBCApplication extends Application {
 
         this.mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
         this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
-//        UpdatePresent();
+        UpdatePresent();
 
         categoryDaoSession = createDaoSession(ConstantValue.DATABASE_CATEGORY);
         goodDaoSession = createDaoSession(ConstantValue.DATABASE_GOOD);
+
+        CrashReport.initCrashReport(getApplicationContext(), "e2c05b503c", false);
+        LogcatHelper.getInstance(this).start();
     }
 
     private void initOkGo() {
@@ -150,8 +162,7 @@ public class ICBCApplication extends Application {
     }
 
     private void UpdatePresent() {
-        DisplayManager mDisplayManager;// 屏幕管理类
-        mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
+        DisplayManager mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
         Display[] displays = mDisplayManager.getDisplays();
 
         if (myPresentation != null && myPresentation.getDisplay() != displays[displays.length - 1]) {
@@ -177,13 +188,14 @@ public class ICBCApplication extends Application {
 
             // Try to show the presentation, this might fail if the display has
             // gone away in the meantime
-            try {
-                this.myPresentation.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-                myPresentation.show();
-            } catch (WindowManager.InvalidDisplayException ex) {
-                // Couldn't show presentation - display was already removed
-                myPresentation = null;
-            }
+
+//            try {
+//                this.myPresentation.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+//                myPresentation.show();
+//            } catch (Exception ex) {
+//                // Couldn't show presentation - display was already removed
+//                myPresentation = null;
+//            }
         }
     }
 

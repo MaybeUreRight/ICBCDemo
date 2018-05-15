@@ -1,7 +1,7 @@
 package xinshiyeweixin.cn.icbcdemo.listener;
 
 
-public interface ProductCategoryItemOnclickListener {
+public interface CategoryItemOnclickListener {
     /**
      * 商品分类Item的点击事件
      *

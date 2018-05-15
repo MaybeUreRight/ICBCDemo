@@ -11,18 +11,18 @@ import java.util.ArrayList;
 
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
-import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.listener.CategoryItemOnclickListener;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyViewHoler> {
     private Context mContext;
     private ArrayList<CategoryBean> categoryList;
-    private ProductCategoryItemOnclickListener productCategoryItemOnclickListener;
+    private CategoryItemOnclickListener categoryItemOnclickListener;
     private int currentPosition;
 
     public CategoryAdapter(Context mContext, ArrayList<CategoryBean> categoryList) {
         this.mContext = mContext;
         this.categoryList = categoryList;
-        this.productCategoryItemOnclickListener = (ProductCategoryItemOnclickListener) mContext;
+        this.categoryItemOnclickListener = (CategoryItemOnclickListener) mContext;
         currentPosition = 0;
     }
 
@@ -42,7 +42,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
             @Override
             public void onClick(View v) {
                 currentPosition = position;
-                productCategoryItemOnclickListener.onCategoryItemOnclick(categoryList.get(position).cat_id, position);
+                categoryItemOnclickListener.onCategoryItemOnclick(categoryList.get(position).cat_id, position);
             }
         });
 

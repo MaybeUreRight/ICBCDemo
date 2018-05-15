@@ -6,17 +6,24 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Display;
+import android.view.View;
+import android.view.ViewTreeObserver;
+import android.webkit.WebView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import xinshiyeweixin.cn.icbcdemo.R;
+import xinshiyeweixin.cn.icbcdemo.view.CustomVideoView;
 
 public class MyPresentation extends Presentation {
     private VideoView videoView;
     private String videoFile = "";
     private Uri uri = null;
+    private Context context;
 
     public MyPresentation(Context outerContext, Display display) {
         super(outerContext, display);
+        context = outerContext;
     }
 
 
@@ -30,6 +37,7 @@ public class MyPresentation extends Presentation {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.play_videoview);
         videoView = (VideoView) findViewById(R.id.videoView);
+        videoView.setVisibility(View.GONE);
     }
 
     /**
@@ -38,6 +46,7 @@ public class MyPresentation extends Presentation {
      * @param filePath 文件的路径
      */
     public void startVideo(String filePath) {
+        Toast.makeText(context, "filePath = " + filePath, Toast.LENGTH_LONG).show();
         this.videoFile = filePath;
 //        this.uri = Uri.fromFile(new File(this.videoFile));
 //        this.videoView.setVideoURI(this.uri);
@@ -53,5 +62,11 @@ public class MyPresentation extends Presentation {
                 MyPresentation.this.videoView.start();
             }
         });
+//        this.videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+//            @Override
+//            public void onPrepared(MediaPlayer mp) {
+//                mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
+//            }
+//        });
     }
 }

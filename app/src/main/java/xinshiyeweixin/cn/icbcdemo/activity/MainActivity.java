@@ -1,8 +1,13 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.display.DisplayManager;
+import android.media.MediaRouter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -13,9 +18,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,19 +30,15 @@ import com.gcssloop.widget.PagerGridLayoutManager;
 import com.gcssloop.widget.PagerGridSnapHelper;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutListener;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
-import com.lxj.okhttpdownloader.download.DownloadEngine;
-import com.lxj.okhttpdownloader.download.DownloadInfo;
 import com.lzy.okgo.OkGo;
-import com.lzy.okgo.db.DownloadManager;
 import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.request.GetRequest;
 import com.lzy.okserver.OkDownload;
 import com.lzy.okserver.download.DownloadListener;
 import com.lzy.okserver.download.DownloadTask;
-import com.lzy.okserver.task.XExecutor;
 
 import java.io.File;
-import java.io.Serializable;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,8 +61,8 @@ import xinshiyeweixin.cn.icbcdemo.http.ReqCallBack;
 import xinshiyeweixin.cn.icbcdemo.http.ReqProgressCallBack;
 import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
 import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
-import xinshiyeweixin.cn.icbcdemo.listener.ProductCategoryItemOnclickListener;
-import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.listener.CategoryItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.listener.GoodItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.service.HorizonService;
 import xinshiyeweixin.cn.icbcdemo.utils.AppUtils2;
 import xinshiyeweixin.cn.icbcdemo.utils.FileUtils;
@@ -69,12 +71,7 @@ import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
 
-public class MainActivity extends AppCompatActivity implements ProductItemOnclickListener, ProductCategoryItemOnclickListener, XExecutor.OnAllTaskEndListener {
-    /**
-     * TODO 多线程下载视频
-     * TODO 视频本地地址存入数据库并更新
-     * TODO
-     */
+public class MainActivity extends AppCompatActivity implements GoodItemOnclickListener, CategoryItemOnclickListener {
     public static final int REQUEST_RUN_PERMISSION = 111;
     private EasyLayoutScroll easylayoutscroll;
 
@@ -90,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
     private ArrayList<GoodBean> goodList;
 
     private MyPresentation myPresentation;
-//    private ICBCApplication icbcApplication;
 
     private ReqCallBack<ArrayList<CategoryBean>> categoryReqCallBack;
     private ReqCallBack<UpdateBean> updateReqCallBack;
@@ -108,12 +104,46 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
     private Handler handler;
 
+    private DownloadListener listener = new DownloadListener("task") {
+        @Override
+        public void onStart(Progress progress) {
+            LogUtils.i("===================== onStart ============================");
+            LogUtils.i("progress = " + progress.toString());
+        }
+
+        @Override
+        public void onProgress(Progress progress) {
+            LogUtils.i("===================== onProgress ============================");
+        }
+
+        @Override
+        public void onError(Progress progress) {
+            LogUtils.i("===================== onError ============================");
+            LogUtils.i("progress = " + progress.toString());
+        }
+
+        @Override
+        public void onFinish(File file, Progress progress) {
+            LogUtils.i("===================== onFinish ============================");
+            LogUtils.i("progress = " + progress.toString());
+            LogUtils.i("file.getPath() = " + file.getPath());
+            LogUtils.i("file.getAbsolutePath() = " + file.getAbsolutePath());
+            String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/" + file.getName();
+            //根据下载用到的URL去更新数据库的某条数据
+            DAOUtil.updateGood(progress.url, path);
+        }
+
+        @Override
+        public void onRemove(Progress progress) {
+            LogUtils.i("===================== onRemove ============================");
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         initView();
     }
 
@@ -146,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         categoryRecyclerView.setAdapter(categoryAdapter);
 
         // 1.水平分页布局管理器
-        PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(2, 2, PagerGridLayoutManager.HORIZONTAL);
+        PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(2, 5, PagerGridLayoutManager.HORIZONTAL);
         goodRecyclerView.setLayoutManager(layoutManager);
         goodRecyclerView.addItemDecoration(new MyItemDecoration(2, 20, true));
 
@@ -158,13 +188,10 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         pageSnapHelper.attachToRecyclerView(goodRecyclerView);
 
 
-//        icbcApplication = (ICBCApplication) getApplication();
-//        myPresentation = icbcApplication.getPresentation();
+        myPresentation = ICBCApplication.application.getPresentation();
+
         //TODO 检查是否有权限，然后下载最新版本apk
 //        checkPermissions();
-
-        //开启多线程下载视频
-//        downloadVideo("123");
 
 
         initReqCallback();
@@ -175,17 +202,17 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
         Intent intent = new Intent(this, HorizonService.class);
         startService(intent);
 
-        initDownload();
+//        initDownload();
     }
 
-    private void initDownload() {
-        OkDownload okDownload = OkDownload.getInstance();
-        String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/";
-        okDownload.setFolder(path);
-        okDownload.getThreadPool().setCorePoolSize(3);
-        okDownload.addOnAllTaskEndListener(this);
-
-    }
+//    private void initDownload() {
+//        OkDownload okDownload = OkDownload.getInstance();
+//        String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/";
+//        okDownload.setFolder(path);
+//        okDownload.getThreadPool().setCorePoolSize(3);
+//        okDownload.addOnAllTaskEndListener(this);
+//
+//    }
 
     /**
      * 从本地数据库加载数据
@@ -382,71 +409,6 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 
     }
 
-    private DownloadListener listener = new DownloadListener("task") {
-        @Override
-        public void onStart(Progress progress) {
-            LogUtils.i("===================== onStart ============================");
-
-            LogUtils.i("progress = " + progress.toString());
-
-        }
-
-        @Override
-        public void onProgress(Progress progress) {
-            LogUtils.i("===================== onProgress ============================");
-//
-//            LogUtils.i("progress = "+ progress.toString());
-
-        }
-
-        @Override
-        public void onError(Progress progress) {
-            LogUtils.i("===================== onError ============================");
-
-            LogUtils.i("progress = " + progress.toString());
-
-        }
-
-        @Override
-        public void onFinish(File file, Progress progress) {
-            LogUtils.i("===================== onFinish ============================");
-
-            LogUtils.i("progress = " + progress.toString());
-
-            LogUtils.i("file.getPath() = " + file.getPath());
-            LogUtils.i("file.getAbsolutePath() = " + file.getAbsolutePath());
-
-            String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/" + file.getName();
-            //更新数据库的某条数据
-            DAOUtil.updateGood(progress.url, path);
-        }
-
-        @Override
-        public void onRemove(Progress progress) {
-            LogUtils.i("===================== onRemove ============================");
-
-            LogUtils.i("progress = " + progress.toString());
-
-        }
-    };
-
-    /**
-     * 下载视频
-     *
-     * @param taskId
-     */
-    private void downloadVideo(String taskId) {
-        //TODO taskId还没定
-        DownloadEngine engine = DownloadEngine.create(this);
-        engine.setMaxTaskCount(5);
-        engine.addDownloadObserver(new DownloadEngine.DownloadObserver() {
-            @Override
-            public void onDownloadUpdate(DownloadInfo downloadInfo) {
-                LogUtils.i(downloadInfo);
-            }
-        }, taskId);
-        //TODO 下载完毕后，需要将视频本地地址存入数据库，并更新数据库
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -582,8 +544,17 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
     }
 
     @Override
-    public void onGoodItemOnclick(String videoPath) {
-        this.myPresentation.startVideo(videoPath);
+    public void onGoodItemOnclick(final String videoPath) {
+
+        try {
+            myPresentation.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+            myPresentation.show();
+            myPresentation.startVideo(videoPath);
+        } catch (Exception ex) {
+            // Couldn't show presentation - display was already removed
+            myPresentation = null;
+        }
+
     }
 
     @Override
@@ -617,8 +588,4 @@ public class MainActivity extends AppCompatActivity implements ProductItemOnclic
 //        OkGo.getInstance().cancelTag(ConstantValue.TAG_DOWNLOAD_APK);
     }
 
-    @Override
-    public void onAllTaskEnd() {
-
-    }
 }

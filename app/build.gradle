@@ -1,14 +1,15 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao' // apply plugin
 
+
 android {
     compileSdkVersion 27
     defaultConfig {
         applicationId "xinshiyeweixin.cn.icbcdemo"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 100
-        versionName "100.0"
+        versionCode 1
+        versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -23,6 +24,7 @@ android {
 //        daoPackage 'xinshiyeweixin.cn.icbcdemo.db'
 //        targetGenDir 'app/src/main/java'
     }
+
 }
 
 dependencies {
@@ -42,9 +44,11 @@ dependencies {
     implementation 'org.greenrobot:greendao:3.2.2'
     // add library
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
-    implementation project(':okhttp-downloader')
+//    implementation project(':okhttp-downloader')
     //必须使用
     implementation 'com.lzy.net:okgo:3.0.4'
     implementation 'com.lzy.net:okserver:2.0.5'
     implementation 'com.github.bumptech.glide:glide:4.7.1'
+
+    implementation 'com.tencent.bugly:crashreport:2.6.6.1'
 }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,13 +15,12 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.activity.GoodDetailActivity;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
 import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
-import xinshiyeweixin.cn.icbcdemo.listener.ProductItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.listener.GoodItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 
 public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -31,7 +29,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private Context mContext;
     private ArrayList<GoodBean> goodBeanList;
-    private ProductItemOnclickListener productItemOnclickListener;
+    private GoodItemOnclickListener productItemOnclickListener;
     private RecyclerView.ViewHolder holder;
     private int position;
 
@@ -39,7 +37,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public GoodAdapter(Context context, ArrayList<GoodBean> goodBeanList) {
         mContext = context;
         this.goodBeanList = goodBeanList;
-        productItemOnclickListener = (ProductItemOnclickListener) mContext;
+        productItemOnclickListener = (GoodItemOnclickListener) mContext;
         if (this.goodBeanList == null) {
             this.goodBeanList = new ArrayList<>();
         }
