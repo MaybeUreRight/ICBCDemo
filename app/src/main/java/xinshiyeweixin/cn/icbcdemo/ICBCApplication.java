@@ -189,13 +189,14 @@ public class ICBCApplication extends Application {
             // Try to show the presentation, this might fail if the display has
             // gone away in the meantime
 
-//            try {
-//                this.myPresentation.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-//                myPresentation.show();
-//            } catch (Exception ex) {
-//                // Couldn't show presentation - display was already removed
-//                myPresentation = null;
-//            }
+            try {
+                this.myPresentation.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+                myPresentation.show();
+//                myPresentation.dismiss();
+            } catch (Exception ex) {
+                // Couldn't show presentation - display was already removed
+                myPresentation = null;
+            }
         }
     }
 

@@ -12,6 +12,8 @@ import android.webkit.WebView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import java.io.File;
+
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.view.CustomVideoView;
 
@@ -37,12 +39,10 @@ public class MyPresentation extends Presentation {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.play_videoview);
         videoView = (VideoView) findViewById(R.id.videoView);
-        videoView.setVisibility(View.GONE);
     }
 
     /**
      * 添加方法来播放视频
-     *
      * @param filePath 文件的路径
      */
     public void startVideo(String filePath) {

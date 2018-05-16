@@ -114,6 +114,9 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
         @Override
         public void onProgress(Progress progress) {
             LogUtils.i("===================== onProgress ============================");
+            long currentSize = progress.currentSize;
+            long totalSize = progress.totalSize;
+            Toast.makeText(MainActivity.this, "进度 = " + currentSize * 100 / totalSize, Toast.LENGTH_SHORT).show();
         }
 
         @Override
@@ -545,15 +548,16 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 
     @Override
     public void onGoodItemOnclick(final String videoPath) {
+//            myPresentation.startVideo(videoPath);
+        myPresentation.startVideo("android.resource://" + getPackageName() + "/" + R.raw.demo);
 
-        try {
-            myPresentation.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-            myPresentation.show();
-            myPresentation.startVideo(videoPath);
-        } catch (Exception ex) {
-            // Couldn't show presentation - display was already removed
-            myPresentation = null;
-        }
+//        try {
+//            myPresentation.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+//            myPresentation.show();
+//        } catch (Exception ex) {
+//            // Couldn't show presentation - display was already removed
+//            myPresentation = null;
+//        }
 
     }
 
