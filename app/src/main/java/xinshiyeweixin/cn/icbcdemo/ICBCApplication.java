@@ -164,6 +164,16 @@ public class ICBCApplication extends Application {
     private void UpdatePresent() {
         DisplayManager mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
         Display[] displays = mDisplayManager.getDisplays();
+//        Display display = displays[0];
+//        int width = display.getWidth();//1280
+//        int height = display.getHeight();//960
+//
+//
+//        Display display1 = displays[1];
+//        int width1 = display1.getWidth();//1280
+//        int height1 = display1.getHeight();//720
+//
+//        Toast.makeText(application, "主屏幕   ： width = " + width + "       height = " + height + "    副屏幕     width1 = " + width1 + "       height1 = " + height1, Toast.LENGTH_LONG).show();
 
         if (myPresentation != null && myPresentation.getDisplay() != displays[displays.length - 1]) {
             myPresentation.dismiss();

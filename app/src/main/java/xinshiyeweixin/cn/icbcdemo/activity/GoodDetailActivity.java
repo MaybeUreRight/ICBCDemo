@@ -1,5 +1,7 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
+import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -20,9 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.R;
-import xinshiyeweixin.cn.icbcdemo.adapter.DetailAdapter;
-import xinshiyeweixin.cn.icbcdemo.bean.DetailBean;
+import xinshiyeweixin.cn.icbcdemo.adapter.GoodDetailAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
+import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
 import xinshiyeweixin.cn.icbcdemo.view.QRCodeDialog;
@@ -35,6 +37,7 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
     private TextView productDetailMarketPrice;
     private TextView productDetailICBCPrice;
     private TextView productDetailOriginal;
+    //    private TextView productDetailDesc;
     private TextView productDetailDesc;
 
     private TextView buy;
@@ -45,8 +48,8 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
     private JustifyTextView justifyTextViewIntro;
 
     private RecyclerView productDetail;
-    private ArrayList<DetailBean> detailBeans;
-    private DetailAdapter detailAdapter;
+    private ArrayList<GoodBean> detailBeans;
+    private GoodDetailAdapter goodDetailAdapter;
 
     private QRCodeDialog qrCodeDialog;
 
@@ -55,18 +58,16 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_product_info);
+        setContentView(R.layout.activity_good_detail);
 
         initView();
-
         initRecyclerView();
     }
 
     private void initRecyclerView() {
         detailBeans = new ArrayList<>();
-        createSomeData();
-        detailAdapter = new DetailAdapter(this, detailBeans);
-        productDetail.setAdapter(detailAdapter);
+        goodDetailAdapter = new GoodDetailAdapter(this, detailBeans);
+        productDetail.setAdapter(goodDetailAdapter);
 
         // 1.水平分页布局管理器
         PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(1, 4, PagerGridLayoutManager.HORIZONTAL);
@@ -75,20 +76,39 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
         // 2.设置滚动辅助工具
         PagerGridSnapHelper pageSnapHelper = new PagerGridSnapHelper();
         pageSnapHelper.attachToRecyclerView(productDetail);
+
+
+        queryOtherData();
     }
 
-    private void createSomeData() {
-        for (int i = 0; i < 20; i++) {
-            DetailBean detailBean = new DetailBean();
-            detailBean.shortcut = getString(R.string.item_detail_shortcut) + " - > " + i;
-            detailBean.description = getString(R.string.item_detail_desc) + " - > " + i;
-            detailBean.picUrl = "";
-            detailBeans.add(detailBean);
+    private void queryOtherData() {
+        if (detailBeans.size() > 0) {
+            detailBeans.clear();
+        }
+        Integer cat_id = goodBean.getCat_id();
+        int good_id = goodBean.getGood_id();
+        List<GoodBean> goodBeanList = DAOUtil.queryAllGoodByCategory(cat_id);
+        for (GoodBean bean : goodBeanList) {
+            int good_id1 = bean.getGood_id();
+            if (good_id1 != good_id) {
+                detailBeans.add(bean);
+            }
+        }
+        if (detailBeans != null && detailBeans.size() > 0) {
+            goodDetailAdapter.notifyDataSetChanged();
         }
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        goodBean = GsonUtils.convertString2Object(intent.getStringExtra("GOOD"), GoodBean.class);
+        queryOtherData();
+        showContent();
+    }
+
     private void initView() {
-        goodBean = GsonUtils.convertString2Object(getIntent().getStringExtra("GOOD"),GoodBean.class);
+        goodBean = GsonUtils.convertString2Object(getIntent().getStringExtra("GOOD"), GoodBean.class);
         findViewById(R.id.back_container).setOnClickListener(this);
 
         buy = findViewById(R.id.buy);
@@ -99,6 +119,7 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
         productDetailNameCh = (TextView) findViewById(R.id.product_detail_name_ch);
         productDetailNameEn = (TextView) findViewById(R.id.product_detail_name_en);
         productDetailMarketPrice = (TextView) findViewById(R.id.product_detail_price_high);
+
         productDetailICBCPrice = (TextView) findViewById(R.id.product_detail_price_normal);
         productDetailOriginal = (TextView) findViewById(R.id.product_detail_original);
         productDetailDesc = (TextView) findViewById(R.id.product_detail_desc);
@@ -114,6 +135,20 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
 
         initEasyLayoutScroll();
 
+        showContent();
+
+        Typeface microsoftYaHei = Typeface.createFromAsset(getAssets(), "MicrosoftYaHei.ttc");
+        Typeface microsoftYaHeiLight = Typeface.createFromAsset(getAssets(), "MicrosoftYaHeiLight.ttf");
+//        Typeface pingFangRegular = Typeface.createFromAsset(getAssets(), "PingFangRegular.ttf");
+
+        productDetailNameCh.setTypeface(microsoftYaHei);
+        productDetailNameEn.setTypeface(microsoftYaHeiLight);
+        productDetailOriginal.setTypeface(microsoftYaHeiLight);
+        productDetailDesc.setTypeface(microsoftYaHeiLight);
+
+    }
+
+    private void showContent() {
         Glide.with(this).asBitmap().load(goodBean.image_url).into(detail_img);
         productDetailNameCh.setText("" + goodBean.name);
         productDetailNameEn.setText("" + goodBean.name);
@@ -121,9 +156,8 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
         productDetailICBCPrice.setText("" + goodBean.our_price);
         productDetailOriginal.setText("" + goodBean.name);
         productDetailDesc.setText("" + goodBean.content);
-
-
     }
+
 
     private void initEasyLayoutScroll() {
         //

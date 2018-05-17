@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
         categoryRecyclerView.setAdapter(categoryAdapter);
 
         // 1.水平分页布局管理器
-        PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(2, 5, PagerGridLayoutManager.HORIZONTAL);
+        PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(2, 4, PagerGridLayoutManager.HORIZONTAL);
         goodRecyclerView.setLayoutManager(layoutManager);
         goodRecyclerView.addItemDecoration(new MyItemDecoration(2, 20, true));
 
@@ -326,7 +326,6 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
                 }
                 if (result.size() > 0) {
                     for (GoodBean goodBean : result) {
-//                        goodDAO.insert(goodBean);
                         DAOUtil.insertGood(goodBean);
 
                         GetRequest<File> request = OkGo.<File>get(goodBean.video_url);//.headers("", "").params("", "");
@@ -548,17 +547,10 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 
     @Override
     public void onGoodItemOnclick(final String videoPath) {
+        //TODO 公司网络太慢了，所以这里选择播放本地视频
 //            myPresentation.startVideo(videoPath);
-        myPresentation.startVideo("android.resource://" + getPackageName() + "/" + R.raw.demo);
-
-//        try {
-//            myPresentation.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
-//            myPresentation.show();
-//        } catch (Exception ex) {
-//            // Couldn't show presentation - display was already removed
-//            myPresentation = null;
-//        }
-
+            myPresentation.play(videoPath);
+//        myPresentation.startVideo("android.resource://" + getPackageName() + "/" + R.raw.demo);
     }
 
     @Override

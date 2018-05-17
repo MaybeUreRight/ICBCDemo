@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="@dimen/dimen_30"
+    android:layout_marginBottom="@dimen/dimen_0"
     android:layout_marginLeft="@dimen/dimen_0"
     android:layout_marginRight="@dimen/dimen_0"
     android:layout_marginTop="@dimen/dimen_0"
     android:foreground="?attr/selectableItemBackground"
     android:orientation="vertical"
-    app:cardCornerRadius="@dimen/dimen_10"
-    app:cardMaxElevation="@dimen/dimen_10">
+    app:cardCornerRadius="@dimen/dimen_5"
+    app:cardMaxElevation="@dimen/dimen_8"
+    app:cardPreventCornerOverlap="true">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
         android:orientation="vertical">
 
         <TextView
@@ -32,7 +35,11 @@
             android:id="@+id/item_procut_thum"
             android:layout_width="match_parent"
             android:layout_height="124dp"
-            android:scaleType="centerInside"
+            android:layout_above="@id/item_procut_introduction"
+            android:layout_below="@+id/product_name"
+            android:layout_centerInParent="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
             android:src="@drawable/test" />
 
         <TextView
@@ -40,11 +47,14 @@
             style="@style/item_product_introduction"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_gravity="bottom"
             android:background="#A6B5FF"
             android:maxLines="2"
             android:paddingBottom="@dimen/dimen_16"
+            android:paddingLeft="@dimen/dimen_5"
+            android:paddingRight="@dimen/dimen_5"
             android:paddingTop="@dimen/dimen_14"
             android:text="@string/item_product_introduction" />
-    </LinearLayout>
+    </RelativeLayout>
 </android.support.v7.widget.CardView>

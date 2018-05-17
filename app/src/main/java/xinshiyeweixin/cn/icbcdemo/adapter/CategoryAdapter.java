@@ -1,6 +1,7 @@
 package xinshiyeweixin.cn.icbcdemo.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +73,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
             super(itemView);
             category = (TextView) itemView.findViewById(R.id.item_category);
             item_category_flag = itemView.findViewById(R.id.item_category_flag);
+            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "MicrosoftYaHeiLight.ttf");
+            category.setTypeface(tf);
         }
     }
 

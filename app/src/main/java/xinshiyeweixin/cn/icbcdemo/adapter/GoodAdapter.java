@@ -2,6 +2,7 @@ package xinshiyeweixin.cn.icbcdemo.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SizeReadyCallback;
 
 import java.util.ArrayList;
 
@@ -77,10 +79,10 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         //数据库中有该条数据
                         if (!TextUtils.isEmpty(goodBean.video_url_local)) {
                             path = goodBean.video_url_local;
-                        }else{
+                        } else {
                             path = goodBean.video_url;
                         }
-                    }else{
+                    } else {
                         path = goodBean.video_url;
                     }
                     productItemOnclickListener.onGoodItemOnclick(path);
@@ -99,10 +101,10 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         //数据库中有该条数据
                         if (!TextUtils.isEmpty(goodBean.video_url_local)) {
                             path = goodBean.video_url_local;
-                        }else{
+                        } else {
                             path = goodBean.video_url;
                         }
-                    }else{
+                    } else {
                         path = goodBean.video_url;
                     }
                     productItemOnclickListener.onGoodItemOnclick(path);
@@ -114,7 +116,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD",GsonUtils.convertVO2String(goodBean)));
+                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
                 }
             });
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
@@ -133,7 +135,12 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public int getItemViewType(int position) {
 //        boolean recommend = goodBeanList.get(position).getRecommend();
-        boolean recommend = false;
+        boolean recommend;
+        if (position == 0) {
+            recommend = true;
+        } else {
+            recommend = false;
+        }
         if (recommend) {//推荐
             return RECOMMEND;
         } else {//普通
@@ -161,7 +168,11 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return goodBeanList.size();
     }
 
+//    Typeface tf = Typeface.createFromAsset(getContext().getAssets(), "Futura.ttf");
+//    setTypeface(tf);
+
     class RecommendViewHoler extends RecyclerView.ViewHolder {
+        //推荐Item的布局
         private TextView product_name;
         private ImageView product_thum;
         private TextView product_introduction;
@@ -171,13 +182,19 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             product_name = (TextView) itemView.findViewById(R.id.product_name);
             product_introduction = (TextView) itemView.findViewById(R.id.item_procut_introduction);
             product_thum = itemView.findViewById(R.id.item_procut_thum);
-            int height = itemView.getHeight();
-            int div = (height - product_name.getHeight() - product_introduction.getHeight() - product_thum.getHeight()) / 2;
-            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) product_thum.getLayoutParams();
+
+            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "MicrosoftYaHei.ttc");
+            product_name.setTypeface(tf);
+            product_introduction.setTypeface(tf);
+
+//            int height = itemView.getHeight();
+//            int div = (height - product_name.getHeight() - product_introduction.getHeight() - product_thum.getHeight()) / 2;
+//            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) product_thum.getLayoutParams();
         }
     }
 
     class NormalViewHoler extends RecyclerView.ViewHolder {
+        //普通商品的Item
         private TextView product_name_normal;
         private ImageView product_thum_normal;
         private TextView product_introduction_normal;
@@ -187,6 +204,12 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             product_name_normal = (TextView) itemView.findViewById(R.id.product_name_normal);
             product_introduction_normal = (TextView) itemView.findViewById(R.id.item_procut_introduction_normal);
             product_thum_normal = itemView.findViewById(R.id.item_procut_thum_normal);
+
+
+            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "PingFangRegular.ttf");
+            product_name_normal.setTypeface(tf);
+            product_introduction_normal.setTypeface(tf);
+
             int height = itemView.getHeight();
             int div = (height - product_name_normal.getHeight() - product_introduction_normal.getHeight() - product_thum_normal.getHeight()) / 2;
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) product_thum_normal.getLayoutParams();

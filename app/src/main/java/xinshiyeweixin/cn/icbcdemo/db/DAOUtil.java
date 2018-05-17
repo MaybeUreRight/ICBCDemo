@@ -89,6 +89,14 @@ public class DAOUtil {
                 .list();
     }
 
+    public static List<GoodBean> queryAllGoodByCategory(int categoryId) {
+        return goodDAO.queryBuilder()
+                .where(GoodBeanDao.Properties.Cat_id.eq(categoryId))
+                .orderAsc(GoodBeanDao.Properties.Id)
+                .build()
+                .list();
+    }
+
 
     /**
      * 更新某条数据

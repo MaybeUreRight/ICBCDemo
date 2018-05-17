@@ -7,23 +7,31 @@
 
     <ImageView
         android:id="@+id/item_detail_pic"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="200px"
+        android:layout_height="200px"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
         android:src="@drawable/bigger" />
 
     <TextView
         android:id="@+id/item_detail_shortcut"
+        style="@style/item_detail_shorcut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/item_detail_shorcut"
-        android:layout_marginTop="@dimen/dimen_15"
+        android:layout_marginTop="@dimen/dimen_5"
+        android:lines="1"
+        android:maxLines="1"
         android:text="@string/item_detail_shortcut" />
 
     <TextView
         android:id="@+id/item_detail_desc"
+        style="@style/item_detail_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/item_detail_desc"
-        android:layout_marginTop="@dimen/dimen_9"
+        android:layout_marginLeft="@dimen/dimen_10"
+        android:layout_marginRight="@dimen/dimen_10"
+        android:layout_marginTop="@dimen/dimen_5"
+        android:lines="2"
+        android:maxLines="2"
         android:text="@string/item_detail_desc" />
 </LinearLayout>
