@@ -92,6 +92,8 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             NormalViewHoler normalViewHoler = (NormalViewHoler) holder;
             normalViewHoler.product_name_normal.setText(goodBean.name);
             normalViewHoler.product_introduction_normal.setText(goodBean.content);
+
+
             Glide.with(mContext).asBitmap().load(goodBean.image_url).into(normalViewHoler.product_thum_normal);
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -168,9 +170,6 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return goodBeanList.size();
     }
 
-//    Typeface tf = Typeface.createFromAsset(getContext().getAssets(), "Futura.ttf");
-//    setTypeface(tf);
-
     class RecommendViewHoler extends RecyclerView.ViewHolder {
         //推荐Item的布局
         private TextView product_name;
@@ -186,10 +185,6 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "MicrosoftYaHei.ttc");
             product_name.setTypeface(tf);
             product_introduction.setTypeface(tf);
-
-//            int height = itemView.getHeight();
-//            int div = (height - product_name.getHeight() - product_introduction.getHeight() - product_thum.getHeight()) / 2;
-//            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) product_thum.getLayoutParams();
         }
     }
 
@@ -204,15 +199,10 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             product_name_normal = (TextView) itemView.findViewById(R.id.product_name_normal);
             product_introduction_normal = (TextView) itemView.findViewById(R.id.item_procut_introduction_normal);
             product_thum_normal = itemView.findViewById(R.id.item_procut_thum_normal);
-
-
-            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "PingFangRegular.ttf");
+            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "PingFangSCRegular.ttf");
             product_name_normal.setTypeface(tf);
             product_introduction_normal.setTypeface(tf);
 
-            int height = itemView.getHeight();
-            int div = (height - product_name_normal.getHeight() - product_introduction_normal.getHeight() - product_thum_normal.getHeight()) / 2;
-            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) product_thum_normal.getLayoutParams();
         }
     }
 }

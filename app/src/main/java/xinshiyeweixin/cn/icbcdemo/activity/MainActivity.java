@@ -230,7 +230,6 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
             //本地数据库有数据，优先展示
             categoryBeanList.clear();
             categoryBeanList.addAll(categoryBeans);
-            categoryAdapter.notifyDataSetChanged();
 
             for (CategoryBean bean : categoryBeans) {
                 int cat_id = bean.getCat_id();
