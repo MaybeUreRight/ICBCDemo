@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 
 import okhttp3.Headers;
+import okhttp3.ResponseBody;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
 import xinshiyeweixin.cn.icbcdemo.bean.FailBean;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
@@ -96,11 +97,16 @@ public class HttpManager {
                         super.onError(response);
 
                         try {
-                            String body = response.getRawResponse().body().string();
+                            ResponseBody responseBody = response.getRawResponse().body();
+                            if (responseBody == null) {
+                                return;
+                            } else {
+                                String body = responseBody.string();
 //                            LogUtils.i("string = " + body);
-                            FailBean failBean = GsonUtils.convertString2Object(body, FailBean.class);
-                            if (reqCallBack != null) {
-                                reqCallBack.onReqFailed(failBean);
+                                FailBean failBean = GsonUtils.convertString2Object(body, FailBean.class);
+                                if (reqCallBack != null) {
+                                    reqCallBack.onReqFailed(failBean);
+                                }
                             }
                         } catch (IOException e) {
                             e.printStackTrace();

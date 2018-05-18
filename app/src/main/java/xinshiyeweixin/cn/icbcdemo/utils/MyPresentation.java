@@ -22,13 +22,14 @@ import java.nio.file.Path;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.view.CustomVideoView;
 
-public class MyPresentation extends Presentation {
+public class MyPresentation extends Presentation implements SurfaceHolder.Callback {
     private VideoView videoView;
     private String videoFile = "";
     private Uri uri = null;
     private Context context;
     private MediaPlayer mediaPlayer;
     private SurfaceView surfaceView;
+    private SurfaceHolder holder;
     private String path;
 
     public MyPresentation(Context outerContext, Display display) {
@@ -49,22 +50,8 @@ public class MyPresentation extends Presentation {
         setContentView(R.layout.play_videoview);
         videoView = (VideoView) findViewById(R.id.videoView);
         surfaceView = findViewById(R.id.surfaceview);
-        surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-
-            }
-        });
+        holder = surfaceView.getHolder();
+        holder.addCallback(this);
     }
 
     /**
@@ -99,8 +86,18 @@ public class MyPresentation extends Presentation {
     }
 
     public void play(String path) {
-
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+        if (holder != null) {
+            holder.removeCallback(this);
+        }
         try {
+            if (holder == null) {
+                holder = surfaceView.getHolder();
+            }
+            holder.addCallback(this);
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             // 设置播放的视频源
@@ -151,5 +148,20 @@ public class MyPresentation extends Presentation {
         }
 //        play(0);
         play(this.path);
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+
     }
 }

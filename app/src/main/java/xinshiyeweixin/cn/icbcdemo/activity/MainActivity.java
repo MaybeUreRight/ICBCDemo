@@ -16,6 +16,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Display;
@@ -98,6 +99,7 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 //    private ArrayList<CategoryBean> result;
 
     private int currentPosition;
+    private String lastVideoPath;
 
     private CategoryBeanDao categoryDAO;
     private GoodBeanDao goodDAO;
@@ -546,9 +548,14 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 
     @Override
     public void onGoodItemOnclick(final String videoPath) {
-        //TODO 公司网络太慢了，所以这里选择播放本地视频
 //            myPresentation.startVideo(videoPath);
+        if (TextUtils.isEmpty(lastVideoPath) || !videoPath.equals(lastVideoPath)) {
+            //使用SurfaceView播放视频
             myPresentation.play(videoPath);
+            lastVideoPath = videoPath;
+        } else {
+            // 点击的条目是正在播放的条目
+        }
 //        myPresentation.startVideo("android.resource://" + getPackageName() + "/" + R.raw.demo);
     }
 
