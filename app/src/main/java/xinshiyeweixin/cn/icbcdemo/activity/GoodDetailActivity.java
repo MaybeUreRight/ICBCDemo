@@ -42,10 +42,11 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
 
     private TextView buy;
 
-    private TextView textViewPrice;
+    private JustifyTextView textViewPrice;
     private JustifyTextView justifyTextViewName;
     private JustifyTextView justifyTextViewOriginal;
     private JustifyTextView justifyTextViewIntro;
+    private JustifyTextView product_detail_price_normal1;
 
     private RecyclerView productDetail;
     private ArrayList<GoodBean> detailBeans;
@@ -128,10 +129,8 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
         justifyTextViewName = findViewById(R.id.jtv_name);
         justifyTextViewOriginal = findViewById(R.id.jtv_original);
         justifyTextViewIntro = findViewById(R.id.jtv_intro);
+        product_detail_price_normal1 = findViewById(R.id.product_detail_price_normal1);
 
-        justifyTextViewName.setTitleWidth(textViewPrice);
-        justifyTextViewOriginal.setTitleWidth(textViewPrice);
-        justifyTextViewIntro.setTitleWidth(textViewPrice);
 
         initEasyLayoutScroll();
 
@@ -156,6 +155,13 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
         productDetailICBCPrice.setText("" + goodBean.our_price);
         productDetailOriginal.setText("" + goodBean.name);
         productDetailDesc.setText("" + goodBean.content);
+
+
+        textViewPrice.setTitleWidth(textViewPrice);
+        product_detail_price_normal1.setTitleWidth(textViewPrice);
+        justifyTextViewName.setTitleWidth(textViewPrice);
+        justifyTextViewOriginal.setTitleWidth(textViewPrice);
+        justifyTextViewIntro.setTitleWidth(textViewPrice);
     }
 
 

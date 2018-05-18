@@ -76,7 +76,7 @@ public class GoodDetailAdapter extends RecyclerView.Adapter<GoodDetailAdapter.My
             itemDetailShortcut = (TextView) itemView.findViewById(R.id.item_detail_shortcut);
             itemDetailDesc = (TextView) itemView.findViewById(R.id.item_detail_desc);
 
-            Typeface pingFangRegulaer = Typeface.createFromAsset(mContext.getAssets(), "PingFangRegular.ttf");
+            Typeface pingFangRegulaer = Typeface.createFromAsset(mContext.getAssets(), "PingFangSCRegular.ttf");
             itemDetailShortcut.setTypeface(pingFangRegulaer);
             itemDetailDesc.setTypeface(pingFangRegulaer);
         }

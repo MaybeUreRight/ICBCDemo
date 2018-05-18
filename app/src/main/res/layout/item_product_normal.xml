@@ -8,7 +8,7 @@
     <ImageView
         android:id="@+id/item_procut_thum_normal"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="160dp"
         android:layout_marginTop="@dimen/dimen_10"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
@@ -31,6 +31,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginTop="@dimen/dimen_10"
+        android:paddingLeft="@dimen/dimen_5"
+        android:paddingRight="@dimen/dimen_5"
         android:maxLines="2"
         android:text="@string/item_product_introduction" />
 </LinearLayout>

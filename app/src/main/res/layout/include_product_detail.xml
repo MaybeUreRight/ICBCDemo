@@ -70,6 +70,7 @@
         android:orientation="horizontal">
 
         <xinshiyeweixin.cn.icbcdemo.view.JustifyTextView
+            android:id="@+id/product_detail_price_normal1"
             style="@style/product_detail_price_high"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
