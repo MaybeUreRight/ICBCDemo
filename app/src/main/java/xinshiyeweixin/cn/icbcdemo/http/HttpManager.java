@@ -1,8 +1,5 @@
 package xinshiyeweixin.cn.icbcdemo.http;
 
-import android.text.TextUtils;
-import android.view.TextureView;
-
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.callback.StringCallback;
@@ -12,13 +9,11 @@ import com.lzy.okgo.request.PostRequest;
 import com.lzy.okgo.request.base.Request;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import okhttp3.Headers;
 import okhttp3.ResponseBody;
+import xinshiyeweixin.cn.icbcdemo.bean.AppBean;
 import xinshiyeweixin.cn.icbcdemo.bean.BannerBean;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
 import xinshiyeweixin.cn.icbcdemo.bean.FailBean;
@@ -26,7 +21,6 @@ import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
 import xinshiyeweixin.cn.icbcdemo.bean.TagBean;
 import xinshiyeweixin.cn.icbcdemo.bean.UpdateBean;
 import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
-import xinshiyeweixin.cn.icbcdemo.local.StatusCode;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 
@@ -58,7 +52,7 @@ public class HttpManager {
                             if (reqCallBack != null) {
                                 reqCallBack.onReqFailed(failBean);
                             }
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -106,7 +100,7 @@ public class HttpManager {
                             if (reqCallBack != null) {
                                 reqCallBack.onReqFailed(failBean);
                             }
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
@@ -121,6 +115,38 @@ public class HttpManager {
                             bannerBeanList.add(bean);
                         }
                         reqCallBack.onReqSuccess(bannerBeanList);
+                    }
+                });
+
+    }
+
+
+    public static void app(String sn, final ReqCallBack<AppBean> reqCallBack) {
+        OkGo.<String>post(ConstantValue.APP)
+                .tag(ConstantValue.TAG_APP)
+                .params("sn", sn)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+
+                        try {
+                            String body = response.getRawResponse().body().string();
+                            FailBean failBean = GsonUtils.convertString2Object(body, FailBean.class);
+                            if (reqCallBack != null) {
+                                reqCallBack.onReqFailed(failBean);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        String body = response.body();
+                        LogUtils.i("app = \r\n" + body);
+                        AppBean appBean = GsonUtils.convertString2Object(body, AppBean.class);
+                        reqCallBack.onReqSuccess(appBean);
                     }
                 });
 
@@ -157,7 +183,7 @@ public class HttpManager {
                                     reqCallBack.onReqFailed(failBean);
                                 }
                             }
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
@@ -227,7 +253,7 @@ public class HttpManager {
                     if (goodReqCallBack != null) {
                         goodReqCallBack.onReqFailed(failBean);
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -277,7 +303,7 @@ public class HttpManager {
                             if (tagReqCallBack != null) {
                                 tagReqCallBack.onReqFailed(failBean);
                             }
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
