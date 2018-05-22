@@ -1,13 +1,7 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.display.DisplayManager;
-import android.media.MediaRouter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,19 +11,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.gcssloop.widget.PagerGridLayoutManager;
 import com.gcssloop.widget.PagerGridSnapHelper;
-import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutListener;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.model.Progress;
@@ -39,7 +30,6 @@ import com.lzy.okserver.download.DownloadListener;
 import com.lzy.okserver.download.DownloadTask;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +39,7 @@ import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.MyItemDecoration;
 import xinshiyeweixin.cn.icbcdemo.adapter.GoodAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.CategoryAdapter;
+import xinshiyeweixin.cn.icbcdemo.bean.BannerBean;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBeanDao;
 import xinshiyeweixin.cn.icbcdemo.bean.FailBean;
@@ -64,7 +55,6 @@ import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
 import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.listener.CategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.GoodItemOnclickListener;
-import xinshiyeweixin.cn.icbcdemo.service.HorizonService;
 import xinshiyeweixin.cn.icbcdemo.utils.AppUtils2;
 import xinshiyeweixin.cn.icbcdemo.utils.FileUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
@@ -81,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 
 
     private ArrayList<CategoryBean> categoryBeanList;
+    private ArrayList<BannerBean> bannerBeanArrayList;
 
     private CategoryAdapter categoryAdapter;
 
@@ -89,6 +80,7 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 
     private MyPresentation myPresentation;
 
+    private ReqCallBack<ArrayList<BannerBean>> bannerReqCallBack;
     private ReqCallBack<ArrayList<CategoryBean>> categoryReqCallBack;
     private ReqCallBack<UpdateBean> updateReqCallBack;
     private ReqCallBack<List<GoodBean>> goodReqCallBack;
@@ -163,12 +155,13 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 //        result = new ArrayList<>();
         goodList = new ArrayList<>();
         categoryBeanList = new ArrayList<>();
+        bannerBeanArrayList = new ArrayList<>();
 
 
         currentPosition = 0;
 
         easylayoutscroll = findViewById(R.id.titlecontainer).findViewById(R.id.easylayoutscroll);
-        initEasyLayoutScroll();
+
 
         categoryRecyclerView = findViewById(R.id.product_category);
         goodRecyclerView = findViewById(R.id.product_list);
@@ -193,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
         pageSnapHelper.attachToRecyclerView(goodRecyclerView);
 
 
-        myPresentation = ICBCApplication.application.getPresentation();
+//        myPresentation = ICBCApplication.application.getPresentation();
 
         //TODO 检查是否有权限，然后下载最新版本apk
 //        checkPermissions();
@@ -204,10 +197,17 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 
 
         //开启更新任务，九分钟更新一次
-        Intent intent = new Intent(this, HorizonService.class);
-        startService(intent);
+//        Intent intent = new Intent(this, HorizonService.class);
+//        startService(intent);
 
 //        initDownload();
+
+        List<BannerBean> bannerBeans = DAOUtil.queryAllBanner();
+        if (bannerBeans != null && bannerBeans.size() > 0) {
+            showEasyLayoutScroll(bannerBeans, true);
+        } else {
+            HttpManager.banner(ICBCApplication.application.uuid, bannerReqCallBack);
+        }
     }
 
 //    private void initDownload() {
@@ -273,6 +273,40 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
      */
     private void initReqCallback() {
 
+
+        bannerReqCallBack = new ReqProgressCallBack<ArrayList<BannerBean>>() {
+            @Override
+            public void onProgress(long total, long current) {
+
+            }
+
+            @Override
+            public void onReqSuccess(ArrayList<BannerBean> result) {
+                if (result != null) {
+                    bannerBeanArrayList.clear();
+                    bannerBeanArrayList.addAll(result);
+
+                    for (BannerBean bannerBean : result) {
+                        DAOUtil.insertBanner(bannerBean);
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showEasyLayoutScroll(bannerBeanArrayList, false);
+                        }
+                    });
+                } else {
+                }
+            }
+
+            @Override
+            public void onReqFailed(FailBean failBean) {
+                String message = failBean.message;
+                LogUtils.i("message = \r\n" + message);
+            }
+
+        };
 
         categoryReqCallBack = new ReqProgressCallBack<ArrayList<CategoryBean>>() {
             @Override
@@ -518,19 +552,14 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 //        installer.install2(file);
     }
 
-    private void initEasyLayoutScroll() {
-        //
-        ArrayList<String> data = new ArrayList<>();
-        data.add("测试条目1");
-        data.add("测试条目2");
-        data.add("测试条目3");
-        data.add("测试条目4");
-
+    private void showEasyLayoutScroll(List<BannerBean> bannerBeanArrayList, boolean fromDatabase) {
         List<View> views = new ArrayList<>();
-        for (int i = 0; i < data.size(); i++) {
+        for (BannerBean bannerBean : bannerBeanArrayList) {
             LinearLayout moreView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_view_single, null);
-            TextView tv_title = moreView.findViewById(R.id.tv_title);
-            tv_title.setText(data.get(i));
+            ImageView tv_img = moreView.findViewById(R.id.tv_img);
+//            TextView tv_title = moreView.findViewById(R.id.tv_title);
+//            tv_title.setText(data.get(i));
+            Glide.with(this).asBitmap().load(bannerBean.image_url).into(tv_img);
             views.add(moreView);
         }
         //设置数据集
@@ -538,12 +567,19 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
         //开始滚动
         easylayoutscroll.startScroll();
 
-        easylayoutscroll.setOnItemClickListener(new EasyLayoutListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(int pos, View view) {
-                Toast.makeText(MainActivity.this, "您点击了第" + pos + "条索引", Toast.LENGTH_SHORT).show();
-            }
-        });
+//        easylayoutscroll.setOnItemClickListener(new EasyLayoutListener.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(int pos, View view) {
+//            }
+//        });
+        if (fromDatabase) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    HttpManager.banner(ICBCApplication.application.uuid, bannerReqCallBack);
+                }
+            }, 2 * 1000);
+        }
     }
 
     @Override

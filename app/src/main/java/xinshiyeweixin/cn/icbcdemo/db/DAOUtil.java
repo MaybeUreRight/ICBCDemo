@@ -4,6 +4,8 @@ package xinshiyeweixin.cn.icbcdemo.db;
 import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
+import xinshiyeweixin.cn.icbcdemo.bean.BannerBean;
+import xinshiyeweixin.cn.icbcdemo.bean.BannerBeanDao;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBeanDao;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
@@ -12,6 +14,7 @@ import xinshiyeweixin.cn.icbcdemo.bean.GoodBeanDao;
 public class DAOUtil {
     private static final CategoryBeanDao categoryDAO = ICBCApplication.application.categoryDaoSession.getCategoryBeanDao();
     private static final GoodBeanDao goodDAO = ICBCApplication.application.goodDaoSession.getGoodBeanDao();
+    private static final BannerBeanDao bannerDAO = ICBCApplication.application.bannerDaoSession.getBannerBeanDao();
 
 
     /**
@@ -30,6 +33,10 @@ public class DAOUtil {
      */
     public static void insertGood(GoodBean goodBean) {
         goodDAO.insertOrReplace(goodBean);
+    }
+
+    public static void insertBanner(BannerBean bannerBean) {
+        bannerDAO.insertOrReplace(bannerBean);
     }
 
 
@@ -72,6 +79,13 @@ public class DAOUtil {
     public static List<CategoryBean> queryAllCategory() {
         return categoryDAO.queryBuilder()
                 .orderAsc(CategoryBeanDao.Properties.Id)
+                .build()
+                .list();
+    }
+
+    public static List<BannerBean> queryAllBanner() {
+        return bannerDAO.queryBuilder()
+                .orderAsc(BannerBeanDao.Properties.Banner_id)
                 .build()
                 .list();
     }

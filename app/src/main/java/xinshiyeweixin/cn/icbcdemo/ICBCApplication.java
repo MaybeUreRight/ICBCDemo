@@ -68,6 +68,7 @@ public class ICBCApplication extends Application {
 
     public DaoSession categoryDaoSession;
     public DaoSession goodDaoSession;
+    public DaoSession bannerDaoSession;
 
 
     public String uuid;
@@ -90,10 +91,12 @@ public class ICBCApplication extends Application {
 
         this.mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
         this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
-        UpdatePresent();
+
+//        UpdatePresent();
 
         categoryDaoSession = createDaoSession(ConstantValue.DATABASE_CATEGORY);
         goodDaoSession = createDaoSession(ConstantValue.DATABASE_GOOD);
+        bannerDaoSession = createDaoSession(ConstantValue.DATABASE_BANNER);
 
         CrashReport.initCrashReport(getApplicationContext(), "e2c05b503c", false);
         LogcatHelper.getInstance(this).start();

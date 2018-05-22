@@ -19,6 +19,7 @@ import java.util.List;
 
 import okhttp3.Headers;
 import okhttp3.ResponseBody;
+import xinshiyeweixin.cn.icbcdemo.bean.BannerBean;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
 import xinshiyeweixin.cn.icbcdemo.bean.FailBean;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
@@ -72,6 +73,54 @@ public class HttpManager {
                         }
 //                        LogUtils.i("categoryBeanList.size() = " + categoryBeanList.size());
                         reqCallBack.onReqSuccess(categoryBeanList);
+                    }
+                });
+
+    }
+
+    /**
+     * 获取广告图
+     *
+     * @param sn          机器码
+     * @param reqCallBack 回调
+     *                    <p>
+     *                    <p>
+     *                    [
+     *                    {"id":1,"title":"第一个公告","image_url":"http://3d.leygoo.cn/statics/data/upload/goods_image/2018-05/goods_5b03938c02b92.jpg"}
+     *                    ,{"id":2,"title":"第二个公告","image_url":"http://3d.leygoo.cn/statics/data/upload/goods_image/2018-05/goods_5b03939a1a386.jpg"}
+     *                    ]
+     */
+    public static void banner(String sn, final ReqCallBack<ArrayList<BannerBean>> reqCallBack) {
+        final ArrayList<BannerBean> bannerBeanList = new ArrayList<>();
+        OkGo.<String>post(ConstantValue.BANNER)
+                .tag(ConstantValue.TAG_BANNER)
+                .params("sn", sn)
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Response<String> response) {
+                        super.onError(response);
+
+                        try {
+                            String body = response.getRawResponse().body().string();
+                            FailBean failBean = GsonUtils.convertString2Object(body, FailBean.class);
+                            if (reqCallBack != null) {
+                                reqCallBack.onReqFailed(failBean);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onSuccess(Response<String> response) {
+                        String body = response.body().replace("\"id\"", "\"banner_id\"");
+                        LogUtils.i("banner = \r\n" + body);
+                        List<String> strList = GsonUtils.convertJson2Array(body);
+                        for (String str : strList) {
+                            BannerBean bean = GsonUtils.convertString2Object(str, BannerBean.class);
+                            bannerBeanList.add(bean);
+                        }
+                        reqCallBack.onReqSuccess(bannerBeanList);
                     }
                 });
 
