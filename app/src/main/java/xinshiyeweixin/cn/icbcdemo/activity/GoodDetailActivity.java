@@ -150,10 +150,10 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
     private void showContent() {
         Glide.with(this).asBitmap().load(goodBean.image_url).into(detail_img);
         productDetailNameCh.setText("" + goodBean.name);
-        productDetailNameEn.setText("" + goodBean.name);
+        productDetailNameEn.setText("" + goodBean.name_en);
         productDetailMarketPrice.setText("" + goodBean.market_price);
         productDetailICBCPrice.setText("" + goodBean.our_price);
-        productDetailOriginal.setText("" + goodBean.name);
+        productDetailOriginal.setText("" + goodBean.origin);
         productDetailDesc.setText("" + goodBean.content);
 
 

@@ -1,6 +1,7 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -55,6 +56,7 @@ import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
 import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.listener.CategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.GoodItemOnclickListener;
+import xinshiyeweixin.cn.icbcdemo.service.HorizonService;
 import xinshiyeweixin.cn.icbcdemo.utils.AppUtils2;
 import xinshiyeweixin.cn.icbcdemo.utils.FileUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
@@ -93,8 +95,8 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
     private int currentPosition;
     private String lastVideoPath;
 
-    private CategoryBeanDao categoryDAO;
-    private GoodBeanDao goodDAO;
+//    private CategoryBeanDao categoryDAO;
+//    private GoodBeanDao goodDAO;
 
     private Handler handler;
 
@@ -197,8 +199,8 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 
 
         //开启更新任务，九分钟更新一次
-//        Intent intent = new Intent(this, HorizonService.class);
-//        startService(intent);
+        Intent intent = new Intent(this, HorizonService.class);
+        startService(intent);
 
 //        initDownload();
 
@@ -223,8 +225,8 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
      * 从本地数据库加载数据
      */
     private void loadDataFromDataBase() {
-        categoryDAO = ICBCApplication.application.categoryDaoSession.getCategoryBeanDao();
-        goodDAO = ICBCApplication.application.goodDaoSession.getGoodBeanDao();
+//        categoryDAO = ICBCApplication.application.categoryDaoSession.getCategoryBeanDao();
+//        goodDAO = ICBCApplication.application.goodDaoSession.getGoodBeanDao();
 
         List<CategoryBean> categoryBeans = DAOUtil.queryAllCategory();
         if (categoryBeans != null && categoryBeans.size() > 0) {
@@ -324,7 +326,6 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
                     for (CategoryBean categoryBean : result) {
                         int cat_id = categoryBean.cat_id;
                         HttpManager.goods(SPUtils.getInstance().getString("UUID"), cat_id, null, goodReqCallBack);
-//                        categoryDAO.insert(categoryBean);
                         DAOUtil.insertCategory(categoryBean);
                     }
                 } else {
