@@ -92,7 +92,7 @@ public class ICBCApplication extends Application {
         this.mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
         this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
 
-//        UpdatePresent();
+        UpdatePresent();
 
         categoryDaoSession = createDaoSession(ConstantValue.DATABASE_CATEGORY);
         goodDaoSession = createDaoSession(ConstantValue.DATABASE_GOOD);

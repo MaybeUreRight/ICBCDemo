@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.activity.GoodDetailActivity;
+import xinshiyeweixin.cn.icbcdemo.activity.MainActivity;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
 import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
 import xinshiyeweixin.cn.icbcdemo.listener.GoodItemOnclickListener;
@@ -56,12 +58,11 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             recommendViewHoler.product_name.setText(goodBean.name);
             recommendViewHoler.product_introduction.setText(goodBean.content);
             Glide.with(mContext).asBitmap().load(goodBean.image_url).into(recommendViewHoler.product_thum);
-            recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(mContext, "点击事件", Toast.LENGTH_SHORT).show();
-                }
-            });
+//            recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                }
+//            });
             recommendViewHoler.itemView.setTag(position);//将位置保存在tag中
 
             recommendViewHoler.itemView.setOnClickListener(new View.OnClickListener() {
@@ -85,7 +86,16 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     } else {
                         path = goodBean.video_url;
                     }
-                    productItemOnclickListener.onGoodItemOnclick(path);
+                    if (TextUtils.isEmpty(path)) {
+                        ((MainActivity) mContext).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(mContext, "未获取到视频地址", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    } else {
+                        productItemOnclickListener.onGoodItemOnclick(path);
+                    }
                 }
             });
         } else if (holder instanceof NormalViewHoler) {//普通商品

@@ -5,8 +5,11 @@ import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,15 +24,17 @@ import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
 import java.util.ArrayList;
 import java.util.List;
 
+import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.GoodDetailAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
 import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
+import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
 import xinshiyeweixin.cn.icbcdemo.view.QRCodeDialog;
 
-public class GoodDetailActivity extends AppCompatActivity implements View.OnClickListener {
+public class GoodDetailActivity extends BaseActivity implements View.OnClickListener {
     private EasyLayoutScroll easyLayoutScroll;
     private ImageView detail_img;
     private TextView productDetailNameCh;
@@ -59,8 +64,8 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideBottomUIMenu();
         setContentView(R.layout.activity_good_detail);
-
         initView();
         initRecyclerView();
     }
@@ -80,6 +85,15 @@ public class GoodDetailActivity extends AppCompatActivity implements View.OnClic
 
 
         queryOtherData();
+
+        String path = goodBean.video_url;
+        GoodBean bean = DAOUtil.queryGoodData(path);
+        if (bean != null && !TextUtils.isEmpty(bean.video_url_local)) {
+            //使用SurfaceView播放视频
+            myPresentation.play(bean.video_url_local);
+        } else {
+            myPresentation.play(goodBean.video_url);
+        }
     }
 
     private void queryOtherData() {

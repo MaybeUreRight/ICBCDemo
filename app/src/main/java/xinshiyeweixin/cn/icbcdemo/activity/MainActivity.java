@@ -16,6 +16,8 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -30,6 +32,7 @@ import com.lzy.okgo.request.GetRequest;
 import com.lzy.okserver.OkDownload;
 import com.lzy.okserver.download.DownloadListener;
 import com.lzy.okserver.download.DownloadTask;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -66,7 +69,7 @@ import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
 
-public class MainActivity extends AppCompatActivity implements GoodItemOnclickListener, CategoryItemOnclickListener {
+public class MainActivity extends BaseActivity implements GoodItemOnclickListener, CategoryItemOnclickListener {
     public static final int REQUEST_RUN_PERMISSION = 111;
     private EasyLayoutScroll easylayoutscroll;
 
@@ -82,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
     private GoodAdapter goodAdapter;
     private ArrayList<GoodBean> goodList;
 
-    private MyPresentation myPresentation;
 
     private ReqCallBack<AppBean> appReqCallBack;
     private ReqCallBack<ArrayList<BannerBean>> bannerReqCallBack;
@@ -100,9 +102,6 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 
     private OkDownload okDownload;
 
-//    private CategoryBeanDao categoryDAO;
-//    private GoodBeanDao goodDAO;
-
     private Handler handler;
 
     private DownloadListener listener = new DownloadListener("task") {
@@ -116,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
         public void onProgress(Progress progress) {
             long currentSize = progress.currentSize;
             long totalSize = progress.totalSize;
-            Toast.makeText(MainActivity.this, "进度 = " + currentSize * 100 / totalSize, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "进度 = " + currentSize * 100 / totalSize, Toast.LENGTH_SHORT).show();
             Log.i("Demo", "进度 = " + currentSize * 100 / totalSize);
         }
 
@@ -152,7 +151,7 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
         public void onProgress(Progress progress) {
             long currentSize = progress.currentSize;
             long totalSize = progress.totalSize;
-            Toast.makeText(MainActivity.this, "进度 = " + currentSize * 100 / totalSize, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "进度 = " + currentSize * 100 / totalSize, Toast.LENGTH_SHORT).show();
             Log.i("Demo", "进度 = " + currentSize * 100 / totalSize);
         }
 
@@ -191,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideBottomUIMenu();
         setContentView(R.layout.activity_main);
         initView();
     }
@@ -208,11 +208,9 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
         categoryBeanList = new ArrayList<>();
         bannerBeanArrayList = new ArrayList<>();
 
-
         currentPosition = 0;
 
         easylayoutscroll = findViewById(R.id.titlecontainer).findViewById(R.id.easylayoutscroll);
-
 
         categoryRecyclerView = findViewById(R.id.product_category);
         goodRecyclerView = findViewById(R.id.product_list);
@@ -237,10 +235,6 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
         pageSnapHelper.attachToRecyclerView(goodRecyclerView);
 
 
-//        myPresentation = ICBCApplication.application.getPresentation();
-
-        //TODO 检查是否有权限，然后下载最新版本apk
-//        checkPermissions();
 
 
         initReqCallback();
@@ -248,8 +242,8 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
 
 
         //开启更新任务，九分钟更新一次
-//        Intent intent = new Intent(this, HorizonService.class);
-//        startService(intent);
+        Intent intent = new Intent(this, HorizonService.class);
+        startService(intent);
 
         initDownload();
 
@@ -426,19 +420,22 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
             public void onReqSuccess(List<GoodBean> result) {
                 int cat_id = result.get(0).cat_id;
                 goodBeanSparseArray.put(cat_id, result);
-                if (goodBeanSparseArray.size() > currentPosition && categoryBeanList.size() > currentPosition) {
+                if (goodBeanSparseArray != null && goodBeanSparseArray.size() > currentPosition && categoryBeanList.size() > currentPosition) {
+                    try {
+                        goodList.clear();
+                        goodList.addAll(goodBeanSparseArray.get(categoryBeanList.get(currentPosition).cat_id));
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                goodAdapter.notifyDataSetChanged();
+                                goodRecyclerView.scrollToPosition(0);
 
-                    goodList.clear();
-                    goodList.addAll(goodBeanSparseArray.get(categoryBeanList.get(currentPosition).cat_id));
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            goodAdapter.notifyDataSetChanged();
-                            goodRecyclerView.scrollToPosition(0);
-
-                            categoryAdapter.notifyDataSetChanged();
-                        }
-                    });
+                                categoryAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    } catch (Exception e) {
+                        CrashReport.postCatchedException(e);
+                    }
                 }
                 if (result.size() > 0) {
                     for (GoodBean goodBean : result) {
@@ -543,7 +540,7 @@ public class MainActivity extends AppCompatActivity implements GoodItemOnclickLi
         if (flag) {
             downloadNewVersion();
         } else {
-            LogUtils.i("falg = false");
+            LogUtils.i("flag = false");
         }
     }
 

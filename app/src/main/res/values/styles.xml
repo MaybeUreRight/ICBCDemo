@@ -8,6 +8,10 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MyTheme" parent="@style/Theme.AppCompat.Light.NoActionBar"> <!-- This disables the black preview screen -->
+        <item name="android:windowDisablePreview">true</item>
+    </style>
+
     <style name="item_product_name">
         <item name="android:textSize">11sp</item>
         <item name="android:gravity">center</item>
