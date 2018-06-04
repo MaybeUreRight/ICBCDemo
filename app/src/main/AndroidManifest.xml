@@ -36,7 +36,7 @@
         <activity
             android:name=".activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:launchMode="standard"
+            android:launchMode="singleInstance"
             android:theme="@style/MyTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,7 +46,7 @@
         </activity>
         <activity
             android:name=".activity.GoodDetailActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleInstance" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -72,6 +72,7 @@
             android:enabled="true"
             android:exported="true" />
         <service android:name="xinshiyeweixin.cn.icbcdemo.service.HorizonService" />
+
     </application>
 
 </manifest>

@@ -1,11 +1,18 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.hardware.display.DisplayManager;
+import android.media.MediaRouter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -20,6 +27,7 @@ import com.gcssloop.widget.PagerGridLayoutManager;
 import com.gcssloop.widget.PagerGridSnapHelper;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutListener;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
+import com.lzy.okserver.OkDownload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +37,14 @@ import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.GoodDetailAdapter;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
 import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
+import xinshiyeweixin.cn.icbcdemo.listener.CompleteListener;
+import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
 import xinshiyeweixin.cn.icbcdemo.view.QRCodeDialog;
 
-public class GoodDetailActivity extends BaseActivity implements View.OnClickListener {
+public class GoodDetailActivity extends BaseActivity implements View.OnClickListener, CompleteListener {
     private EasyLayoutScroll easyLayoutScroll;
     private ImageView detail_img;
     private TextView productDetailNameCh;
@@ -57,9 +67,13 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
     private ArrayList<GoodBean> detailBeans;
     private GoodDetailAdapter goodDetailAdapter;
 
-    private QRCodeDialog qrCodeDialog;
+    private String currentPath;
 
     private GoodBean goodBean;
+
+    private ICBCApplication application;
+    protected MyPresentation myPresentation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,18 +97,9 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
         PagerGridSnapHelper pageSnapHelper = new PagerGridSnapHelper();
         pageSnapHelper.attachToRecyclerView(productDetail);
 
-
         queryOtherData();
-
-        String path = goodBean.video_url;
-        GoodBean bean = DAOUtil.queryGoodData(path);
-        if (bean != null && !TextUtils.isEmpty(bean.video_url_local)) {
-            //使用SurfaceView播放视频
-            myPresentation.play(bean.video_url_local);
-        } else {
-            myPresentation.play(goodBean.video_url);
-        }
     }
+
 
     private void queryOtherData() {
         if (detailBeans.size() > 0) {
@@ -120,9 +125,32 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
         goodBean = GsonUtils.convertString2Object(intent.getStringExtra("GOOD"), GoodBean.class);
         queryOtherData();
         showContent();
+        currentPath = playVideo(goodBean);
+    }
+
+    protected String playVideo(GoodBean goodBean) {
+        String currentPath;
+        String path = goodBean.video_url;
+        GoodBean bean = DAOUtil.queryGoodData(path);
+        if (bean != null && !TextUtils.isEmpty(bean.video_url_local)) {
+            //使用SurfaceView播放视频
+            myPresentation.play(bean.video_url_local);
+            currentPath = bean.video_url_local;
+        } else {
+            //myPresentation为null
+            if (myPresentation == null) {
+                application.UpdatePresent();
+            }
+            myPresentation.play(path);
+            currentPath = path;
+        }
+        return currentPath;
     }
 
     private void initView() {
+        application = ICBCApplication.application;
+        myPresentation = application.getPresentation();
+
         goodBean = GsonUtils.convertString2Object(getIntent().getStringExtra("GOOD"), GoodBean.class);
         findViewById(R.id.back_container).setOnClickListener(this);
 
@@ -159,6 +187,7 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
         productDetailOriginal.setTypeface(microsoftYaHeiLight);
         productDetailDesc.setTypeface(microsoftYaHeiLight);
 
+        currentPath = playVideo(goodBean);
     }
 
     private void showContent() {
@@ -177,7 +206,6 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
         justifyTextViewOriginal.setTitleWidth(textViewPrice);
         justifyTextViewIntro.setTitleWidth(textViewPrice);
     }
-
 
     private void initEasyLayoutScroll() {
         //
@@ -211,7 +239,7 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.buy:
-                qrCodeDialog = new QRCodeDialog(this, goodBean.ercode_img_url);
+                QRCodeDialog qrCodeDialog = new QRCodeDialog(this, goodBean.ercode_img_url);
                 qrCodeDialog.show();
                 break;
             case R.id.back_container:
@@ -220,5 +248,10 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
             default:
                 break;
         }
+    }
+
+    @Override
+    public String onComplete(String videoPath) {
+        return currentPath;
     }
 }

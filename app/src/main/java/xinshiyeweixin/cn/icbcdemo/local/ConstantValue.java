@@ -16,11 +16,17 @@ public class ConstantValue {
 
     public static final String DOWNLOAD_APK_URL = "http://3d.leygoo.cn/apk/app-release.apk";
 
-    public static final String TAG_APP= "TAG_APP";
-    public static final String TAG_BANNER= "TAG_BANNER";
+    public static final String TAG_APP = "TAG_APP";
+    public static final String TAG_BANNER = "TAG_BANNER";
     public static final String TAG_CATEGORY = "TAG_CATEGORY";
     public static final String TAG_GOODS = "TAG_GOODS";
     public static final String TAG_TAG = "TAG_TAG";
     public static final String TAG_UPDATE = "TAG_UPDATE";
     public static final String TAG_DOWNLOAD_APK = "TAG_DOWNLOAD_APK";
+
+    public static final int TURN2GOODDETAIL = 105;
+    public static final String CURRENT_VIDEO_PATH = "CURRENT_VIDEO_PATH";
+
+    public static final int DOWNLOAD_DELAY = 60 * 1000;
+    public static final int DOWNLOAD_NEW_APK = 60 * 1000;
 }

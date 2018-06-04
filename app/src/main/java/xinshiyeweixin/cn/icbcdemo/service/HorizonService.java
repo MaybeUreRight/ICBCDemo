@@ -33,8 +33,8 @@ public class HorizonService extends Service {
             }
         }).start();
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int five = 9 * 60 * 1000; // 这是5s
-        long triggerAtTime = SystemClock.elapsedRealtime() + five;
+        int terminal = 9 * 60 * 1000;
+        long triggerAtTime = SystemClock.elapsedRealtime() + terminal;
         Intent i = new Intent(this, AlarmReceiver.class);
         PendingIntent pi = PendingIntent.getBroadcast(this, 0, i, 0);
         manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtTime, pi);

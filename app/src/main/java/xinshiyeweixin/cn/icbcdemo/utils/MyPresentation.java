@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
@@ -18,8 +19,10 @@ import android.widget.VideoView;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 import xinshiyeweixin.cn.icbcdemo.R;
+import xinshiyeweixin.cn.icbcdemo.listener.CompleteListener;
 import xinshiyeweixin.cn.icbcdemo.view.CustomVideoView;
 
 public class MyPresentation extends Presentation implements SurfaceHolder.Callback {
@@ -31,12 +34,16 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
     private SurfaceView surfaceView;
     private SurfaceHolder holder;
     private String path;
+    private CompleteListener completeListener;
 
     public MyPresentation(Context outerContext, Display display) {
         super(outerContext, display);
         context = outerContext;
     }
 
+    public void setCompleteListener(CompleteListener completeListener) {
+        this.completeListener = completeListener;
+    }
 
     /**
      * 添加布局
@@ -85,7 +92,16 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
 //        });
     }
 
-    public void play(String path) {
+    public boolean isPlaying() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void play(final String path) {
+        this.path = path;
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.release();
             mediaPlayer = null;
@@ -121,8 +137,22 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
 
                 @Override
                 public void onCompletion(MediaPlayer mp) {
+                    Toast.makeText(context, "播放完毕", Toast.LENGTH_SHORT).show();
                     // 在播放完毕被回调
-                    mp.start();
+//                    mp.start();
+                    if (completeListener != null) {
+                        String nextPath = completeListener.onComplete(path);
+                        if (!TextUtils.isEmpty(nextPath)) {
+                            Toast.makeText(context, "播放下一个", Toast.LENGTH_SHORT).show();
+//                            MyPresentation.this.play(nextPath);
+                        } else {
+                            Toast.makeText(context, "获取视频播放地址失败", Toast.LENGTH_SHORT).show();
+                            //继续播放上一个
+                            mp.start();
+                        }
+                    } else {
+                        mp.start();
+                    }
                 }
             });
 
@@ -141,7 +171,7 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
     /**
      * 重新开始播放
      */
-    protected void replay() {
+    public void replay() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.seekTo(0);
             return;

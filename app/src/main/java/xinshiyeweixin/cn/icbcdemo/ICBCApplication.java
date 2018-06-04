@@ -43,7 +43,6 @@ import xinshiyeweixin.cn.icbcdemo.utils.Utils;
 public class ICBCApplication extends Application {
     public static ICBCApplication application;
 
-    private MediaRouter mediaRouter = null;
     private MyPresentation myPresentation = null;
 
     private MediaRouter.SimpleCallback simpleCallback = new MediaRouter.SimpleCallback() {
@@ -70,29 +69,24 @@ public class ICBCApplication extends Application {
     public DaoSession goodDaoSession;
     public DaoSession bannerDaoSession;
 
-
     public String uuid;
-
 
     @Override
     public void onCreate() {
         super.onCreate();
         application = this;
 
-        this.mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
-        this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
+        MediaRouter mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
+        mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
+
         UpdatePresent();
+
 
         Utils.init(application);
         initOkGo();
         uuid = "test1234567890";
         SPUtils.getInstance().put("UUID", uuid);
 //        uuid = UUIDUtils.getMyUUID();
-
-        this.mediaRouter = (MediaRouter) getSystemService(Context.MEDIA_ROUTER_SERVICE);
-        this.mediaRouter.addCallback(MediaRouter.ROUTE_TYPE_LIVE_VIDEO, simpleCallback);
-
-        UpdatePresent();
 
         categoryDaoSession = createDaoSession(ConstantValue.DATABASE_CATEGORY);
         goodDaoSession = createDaoSession(ConstantValue.DATABASE_GOOD);
@@ -164,19 +158,9 @@ public class ICBCApplication extends Application {
 //                .addCommonParams(params);                       //全局公共参数
     }
 
-    private void UpdatePresent() {
+    public void UpdatePresent() {
         DisplayManager mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
         Display[] displays = mDisplayManager.getDisplays();
-//        Display display = displays[0];
-//        int width = display.getWidth();//1280
-//        int height = display.getHeight();//960
-//
-//
-//        Display display1 = displays[1];
-//        int width1 = display1.getWidth();//1280
-//        int height1 = display1.getHeight();//720
-//
-//        Toast.makeText(application, "主屏幕   ： width = " + width + "       height = " + height + "    副屏幕     width1 = " + width1 + "       height1 = " + height1, Toast.LENGTH_LONG).show();
 
         if (myPresentation != null && myPresentation.getDisplay() != displays[displays.length - 1]) {
             myPresentation.dismiss();
@@ -205,7 +189,6 @@ public class ICBCApplication extends Application {
             try {
                 this.myPresentation.getWindow().getAttributes().type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
                 myPresentation.show();
-//                myPresentation.dismiss();
             } catch (Exception ex) {
                 // Couldn't show presentation - display was already removed
                 myPresentation = null;

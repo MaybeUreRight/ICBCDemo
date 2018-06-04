@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao' // apply plugin
+apply plugin: 'bugly'
 
+bugly {
+    appId = 'e2c05b503c' // 注册时分配的App ID
+    appKey = 'e3e040f4-57f1-4957-a5a2-b42a5266b791' // 注册时分配的App Key
+}
 
 android {
     compileSdkVersion 27
@@ -8,7 +13,7 @@ android {
         applicationId "xinshiyeweixin.cn.icbcdemo"
         minSdkVersion 17
         targetSdkVersion 27
-        versionCode 1
+        versionCode 101
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

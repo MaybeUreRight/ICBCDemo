@@ -25,6 +25,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="xinshiyeweixin.cn.testhandler.BaseActivity" />
         </activity>
+        <activity android:name=".SimpleActivity" android:launchMode="singleTop"/>
     </application>
 
 </manifest>

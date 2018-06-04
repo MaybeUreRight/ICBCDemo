@@ -6,16 +6,13 @@ import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.target.SizeReadyCallback;
 
 import java.util.ArrayList;
 
@@ -69,7 +66,8 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
+//                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
+                    productItemOnclickListener.onGoodItemClick(goodBean);
                 }
             });
             recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
@@ -94,7 +92,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             }
                         });
                     } else {
-                        productItemOnclickListener.onGoodItemOnclick(path);
+                        productItemOnclickListener.playItemVideo(path);
                     }
                 }
             });
@@ -119,7 +117,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     } else {
                         path = goodBean.video_url;
                     }
-                    productItemOnclickListener.onGoodItemOnclick(path);
+                    productItemOnclickListener.playItemVideo(path);
                 }
             });
             normalViewHoler.itemView.setTag(position);//将位置保存在tag中
@@ -128,13 +126,14 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
+//                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
+                    productItemOnclickListener.onGoodItemClick(goodBean);
                 }
             });
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    productItemOnclickListener.onGoodItemOnclick(goodBean.video_url);
+                    productItemOnclickListener.playItemVideo(goodBean.video_url);
                 }
             });
         } else {//其他类型ITEM
