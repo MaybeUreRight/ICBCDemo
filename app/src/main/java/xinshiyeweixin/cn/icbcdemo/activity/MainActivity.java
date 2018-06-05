@@ -88,8 +88,7 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
 
     private GoodAdapter goodAdapter;
     private ArrayList<GoodBean> goodList;
-    private ArrayList<GoodBean> goodDownloadList;
-    private boolean startDownload;
+//    private ArrayList<GoodBean> goodDownloadList;
 
     private ICBCApplication application;
     protected MyPresentation myPresentation;
@@ -110,87 +109,16 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
     private OkDownload okDownload;
 
     private static final int UPDATE_DELAY = 15 * 1000;
-    private static final int DOWNLOAD_VIDEO = 116;
 
-    @SuppressLint("HandlerLeak")
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            switch (msg.what) {
-                case DOWNLOAD_VIDEO:
-                    LogUtils.i("goodDownloadList.size() = " + goodDownloadList.size());
-                    if (goodDownloadList != null && goodDownloadList.size() > 0) {
-                        downloadGoodItem(goodDownloadList.get(0), 0);
-                    }
-                    break;
-                default:
-                    break;
-            }
+    private Handler handler;
 
-        }
-    };
     private Runnable updateRunnable = new Runnable() {
         @Override
         public void run() {
             HttpManager.app(ICBCApplication.application.uuid, appReqCallBack);
         }
     };
-    private DownloadListener downloadVideoListener = new DownloadListener("task") {
-        @Override
-        public void onStart(Progress progress) {
-            Log.i("Demo", "开始下载视频 progress = \r\n" + progress.toString());
-        }
 
-        @Override
-        public void onProgress(Progress progress) {
-            final long currentSize = progress.currentSize;
-            final long totalSize = progress.totalSize;
-//            if (currentSize != totalSize) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Toast.makeText(MainActivity.this, "进度 = " + currentSize * 100 / totalSize, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            }
-            Log.i("Demo", "进度 = " + currentSize * 100 / totalSize);
-        }
-
-        @Override
-        public void onError(Progress progress) {
-//            LogUtils.i("===================== onError ============================");
-            Log.i("Demo", "onError \r\n progress = \r\n" + progress.toString());
-        }
-
-        @Override
-        public void onFinish(File file, Progress progress) {
-
-            Log.i("Demo", "视频下载结束 progress = \r\n" + progress.toString());
-//            LogUtils.i("progress = " + progress.toString());
-//            LogUtils.i("file.getPath() = " + file.getPath());
-//            LogUtils.i("file.getAbsolutePath() = " + file.getAbsolutePath());
-            String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/" + file.getName();
-            String video_url = progress.url;
-            //根据下载用到的URL去更新数据库的某条数据
-            DAOUtil.updateGood(video_url, path);
-
-            for (GoodBean goodBean : goodList) {
-                if (video_url.equals(goodBean.video_url)) {
-                    goodBean.setVideo_url_local(path);
-                    goodDownloadList.remove(goodBean);
-                }
-            }
-            if (goodDownloadList.size() > 0) {
-                handler.sendEmptyMessage(DOWNLOAD_VIDEO);
-            }
-        }
-
-        @Override
-        public void onRemove(Progress progress) {
-            LogUtils.i("===================== onRemove ============================");
-        }
-    };
     private DownloadListener downloadAPKListener = new DownloadListener("download") {
         @Override
         public void onStart(Progress progress) {
@@ -201,13 +129,11 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
         public void onProgress(Progress progress) {
             long currentSize = progress.currentSize;
             long totalSize = progress.totalSize;
-//            Toast.makeText(MainActivity.this, "进度 = " + currentSize * 100 / totalSize, Toast.LENGTH_SHORT).show();
             Log.i("Demo", "进度 = " + currentSize * 100 / totalSize);
         }
 
         @Override
         public void onError(Progress progress) {
-//            LogUtils.i("===================== 下载新版本APK失败 ============================");
             LogUtils.i("progress = " + progress.toString());
             DownloadTask download = okDownload.getTask("download");
             download.restart();
@@ -215,37 +141,17 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
 
         @Override
         public void onFinish(File file, Progress progress) {
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Toast.makeText(MainActivity.this, "===================== 下载APK == onFinish ============================", Toast.LENGTH_SHORT).show();
-//                }
-//            });
-            Log.i("Demo", "新版本APK下载完毕");
-//            LogUtils.i("===================== 下载新版本APK完成 ============================");
-//            LogUtils.i("progress = " + progress.toString());
-//            LogUtils.i("file.getPath() = " + file.getPath());
-//            LogUtils.i("file.getAbsolutePath() = " + file.getAbsolutePath());
             String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/" + file.getName();
-
             AppUtils2.installApp(path, BuildConfig.APPLICATION_ID + ".fileprovider");
-
-            Log.i("Demo", "待下载视频列表 \r\ngoodDownloadList = \r\n" + GsonUtils.convertVO2String(goodDownloadList));
-            if (goodDownloadList != null && goodDownloadList.size() > 0) {
-                downloadGoodItem(goodDownloadList.get(0), 0);
-            }
-//            LogUtils.i("=================================================");
-
-//            if (okDownload.hasTask("task")) {
-//                DownloadTask task = okDownload.getTask("task");
-//                task.start();
+//
+//            Log.i("Demo", "待下载视频列表 \r\ngoodDownloadList = \r\n" + GsonUtils.convertVO2String(goodDownloadList));
+//            if (goodDownloadList != null && goodDownloadList.size() > 0) {
+//                downloadGoodItem(goodDownloadList.get(0), 0);
 //            }
-
         }
 
         @Override
         public void onRemove(Progress progress) {
-//            LogUtils.i("===================== onRemove ============================");
         }
     };
 
@@ -258,19 +164,88 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
         initView();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (myPresentation == null) {
+            application.UpdatePresent();
+        }
+        if (!TextUtils.isEmpty(lastVideoPath)) {
+            myPresentation.play(lastVideoPath);
+        } else {
+            if (goodList != null && goodList.size() > 0) {
+                GoodBean bean = goodList.get(0);
+                String path = bean.video_url_local;
+                if (TextUtils.isEmpty(path)) {
+                    path = bean.video_url;
+                }
+                myPresentation.play(path);
+                lastVideoPath = path;
+            }
+        }
+
+        //不是初次打开，开始下载任务
+        DownloadTask task = okDownload.getTask("task");
+        if (task != null) {
+            task.start();
+        }
+
+        DownloadTask download = okDownload.getTask("download");
+        if (download != null) {
+            download.start();
+        }
+
+        //如果是初次打开，从本地数据库恢复下载任务
+        List<Progress> downloading = DownloadManager.getInstance().getDownloading();
+        if (downloading != null && downloading.size() > 0) {
+            OkDownload.restore(downloading);
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //暂停下载任务
+        DownloadTask task = okDownload.getTask("task");
+        if (task != null) {
+            task.pause();
+        }
+
+        DownloadTask download = okDownload.getTask("download");
+        if (download != null) {
+            download.pause();
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //TODO 暂定取消所有的网络请求
+        OkGo.getInstance().cancelAll();
+//        OkGo.getInstance().cancelTag(ConstantValue.TAG_TAG);
+//        OkGo.getInstance().cancelTag(ConstantValue.TAG_GOODS);
+//        OkGo.getInstance().cancelTag(ConstantValue.TAG_UPDATE);
+//        OkGo.getInstance().cancelTag(ConstantValue.TAG_CATEGORY);
+//        OkGo.getInstance().cancelTag(ConstantValue.TAG_DOWNLOAD_APK);
+    }
+
     /**
      * 初始化View
      */
     private void initView() {
+        handler = new Handler();
+
         application = ICBCApplication.application;
         myPresentation = application.getPresentation();
 
         //TODO 这里测试的时候用
         SPUtils.getInstance().put("UUID", "test1234567890");
         goodBeanSparseArray = new SparseArray<>();
-//        result = new ArrayList<>();
         goodList = new ArrayList<>();
-        goodDownloadList = new ArrayList<>();
+//        goodDownloadList = new ArrayList<>();
         categoryBeanList = new ArrayList<>();
         bannerBeanArrayList = new ArrayList<>();
         videoPathList = new ArrayList<>();
@@ -328,62 +303,6 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (myPresentation == null) {
-            application.UpdatePresent();
-        }
-        if (!TextUtils.isEmpty(lastVideoPath)) {
-            myPresentation.play(lastVideoPath);
-        } else {
-            if (goodList != null && goodList.size() > 0) {
-                GoodBean bean = goodList.get(0);
-                String path = bean.video_url_local;
-                if (TextUtils.isEmpty(path)) {
-                    path = bean.video_url;
-                }
-                myPresentation.play(path);
-                lastVideoPath = path;
-            }
-        }
-
-        //不是初次打开，开始下载任务
-        DownloadTask task = okDownload.getTask("task");
-        if (task != null) {
-            task.start();
-        }
-
-        DownloadTask download = okDownload.getTask("download");
-        if (download != null) {
-            download.start();
-        }
-
-        //如果是初次打开，从本地数据库恢复下载任务
-        List<Progress> downloading = DownloadManager.getInstance().getDownloading();
-        if (downloading != null && downloading.size() > 0) {
-            OkDownload.restore(downloading);
-        }
-
-    }
-
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        //暂停下载任务
-        DownloadTask task = okDownload.getTask("task");
-        if (task != null) {
-            task.pause();
-        }
-
-        DownloadTask download = okDownload.getTask("download");
-        if (download != null) {
-            download.pause();
-        }
-
-    }
 
     private void initDownload() {
         okDownload = OkDownload.getInstance();
@@ -413,8 +332,8 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
                 goodList.clear();
                 goodList.addAll(goodBeanSparseArray.get(categoryBeanList.get(currentPosition).cat_id));
 
-                goodDownloadList.clear();
-                goodDownloadList.addAll(goodList);
+//                goodDownloadList.clear();
+//                goodDownloadList.addAll(goodList);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -469,13 +388,14 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
                             downloadTask.start();
                         }
                     }, ConstantValue.DOWNLOAD_NEW_APK);
-                } else {
-                    //没有新版本APK，直接开始下载item中的视频
-                    Log.i("Demo", "待下载视频列表 \r\ngoodDownloadList = \r\n" + GsonUtils.convertVO2String(goodDownloadList));
-                    if (goodDownloadList != null && goodDownloadList.size() > 0) {
-                        downloadGoodItem(goodDownloadList.get(0), 0);
-                    }
                 }
+//                else {
+//                    //没有新版本APK，直接开始下载item中的视频
+//                    Log.i("Demo", "待下载视频列表 \r\ngoodDownloadList = \r\n" + GsonUtils.convertVO2String(goodDownloadList));
+//                    if (goodDownloadList != null && goodDownloadList.size() > 0) {
+//                        downloadGoodItem(goodDownloadList.get(0), 0);
+//                    }
+//                }
             }
 
             @Override
@@ -543,7 +463,6 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
                         int cat_id = categoryBean.cat_id;
                         HttpManager.goods(SPUtils.getInstance().getString("UUID"), cat_id, null, goodReqCallBack);
                         DAOUtil.insertCategory(categoryBean);
-
                     }
                 } else {
                     //TODO 没有数据的时候应该展示什么样的界面
@@ -562,13 +481,37 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
             @Override
             public void onReqSuccess(List<GoodBean> result) {
                 int cat_id = result.get(0).cat_id;
+                List<GoodBean> beanList = DAOUtil.queryGoodData(cat_id);
+                for (GoodBean bean : result) {
+                    String video_url = bean.video_url;
+                    for (GoodBean goodBean : beanList) {
+                        String video_url1 = goodBean.video_url;
+                        if (video_url.equals(video_url1) && !TextUtils.isEmpty(goodBean.video_url_local)) {
+                            File file = new File(goodBean.video_url_local);
+                            if (file.exists()) {
+                                bean.setVideo_url_local(goodBean.video_url_local);
+                            } else {
+                                bean.setVideo_url_local(null);
+                            }
+                        }
+                    }
+                    if (TextUtils.isEmpty(bean.video_url_local)) {
+                        Log.i("Demo", cat_id + "_" + bean.good_id + " >>> 需要下载");
+                        downloadGoodItem(bean, ConstantValue.DOWNLOAD_DELAY);
+                    } else {
+                        Log.i("Demo", cat_id + "_" + bean.good_id + " >>> 不需要下载");
+                    }
+                    DAOUtil.insertGood(bean);
+                }
                 goodBeanSparseArray.put(cat_id, result);
                 if (goodBeanSparseArray != null && goodBeanSparseArray.size() > currentPosition && categoryBeanList.size() > currentPosition) {
                     try {
+                        List<GoodBean> localList = DAOUtil.queryGoodData(cat_id);
+
                         goodList.clear();
                         goodList.addAll(goodBeanSparseArray.get(categoryBeanList.get(currentPosition).cat_id));
 
-                        goodDownloadList.addAll(goodList);
+//                        goodDownloadList.addAll(goodList);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -579,21 +522,17 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
                             }
                         });
                     } catch (Exception e) {
+                        e.printStackTrace();
                         CrashReport.postCatchedException(e);
                     }
                 }
-                if (result.size() > 0) {
-                    for (GoodBean goodBean : result) {
+                if (goodList.size() > 0) {
+                    for (GoodBean goodBean : goodList) {
                         if (!TextUtils.isEmpty(goodBean.video_url_local)) {
                             videoPathList.add(goodBean.video_url_local);
                         } else {
                             videoPathList.add(goodBean.video_url);
                         }
-                        DAOUtil.insertGood(goodBean);
-                    }
-                    if (!startDownload) {
-                        downloadGoodItem(result.get(0), ConstantValue.DOWNLOAD_DELAY);
-                        startDownload = true;
                     }
                 }
             }
@@ -601,7 +540,6 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
             @Override
             public void onReqFailed(FailBean failBean) {
                 String message = failBean.message;
-//                LogUtils.i("message = \r\n" + message);
             }
 
             @Override
@@ -609,7 +547,6 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
 
             }
         };
-
 
         updateReqCallBack = new ReqProgressCallBack<UpdateBean>() {
 
@@ -621,7 +558,6 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
             @Override
             public void onReqFailed(FailBean failBean) {
                 String message = failBean.message;
-//                LogUtils.i("message = \r\n" + message);
 
             }
 
@@ -630,7 +566,6 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
 
             }
         };
-
 
         tagReqCallBack = new ReqProgressCallBack<List<TagBean>>() {
             @Override
@@ -646,48 +581,71 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
             @Override
             public void onReqFailed(FailBean failBean) {
                 String message = failBean.message;
-//                LogUtils.i("message = \r\n" + message);
             }
         };
-
-//        downloadReqCallBack=new ReqProgressCallBack<List<CategoryBean>>() {
-//            @Override
-//            public void onProgress(long total, long current) {
-//
-//            }
-//
-//            @Override
-//            public void onReqSuccess(List<CategoryBean> result) {
-//
-//            }
-//
-//            @Override
-//            public void onReqFailed(String errorMsg) {
-//
-//            }
-//        };
-
-
     }
 
     private void downloadGoodItem(final GoodBean goodBean, int delayTime) {
+        final String tag = goodBean.cat_id + "_" + goodBean.good_id;
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 GetRequest<File> request = OkGo.get(goodBean.video_url);//.headers("", "").params("", "");
-                DownloadTask downloadTask = okDownload.request("task", request)
+                DownloadTask downloadTask = okDownload.request(tag, request)
                         .extra1(goodBean.name)
                         .extra1(goodBean.good_id)
                         .save()
-                        .register(downloadVideoListener);
+                        .register(new DownloadListener(tag) {
+                            @Override
+                            public void onStart(Progress progress) {
+                                Log.i("Demo", "开始下载视频 = " + tag + "\r\n progress = " + progress.fileName);
+                            }
+
+                            @Override
+                            public void onProgress(Progress progress) {
+                                final long currentSize = progress.currentSize;
+                                final long totalSize = progress.totalSize;
+                                Log.i("Demo", tag + " >>> 进度 = " + currentSize * 100 / totalSize);
+                            }
+
+                            @Override
+                            public void onError(Progress progress) {
+                                Log.i("Demo", "onError \r\n progress = \r\n" + progress.fileName);
+                            }
+
+                            @Override
+                            public void onFinish(File file, Progress progress) {
+
+                                Log.i("Demo", "视频下载结束");
+                                String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/" + file.getName();
+                                String video_url = progress.url;
+
+                                Log.i("Demo", "============================================================");
+                                Log.i("Demo", "video_url = \r\n" + video_url);
+
+                                //根据下载用到的URL去更新数据库的某条数据
+                                DAOUtil.updateGood(video_url, path);
+
+                                for (GoodBean goodBean : goodList) {
+                                    if (video_url.equals(goodBean.video_url)) {
+                                        goodBean.setVideo_url_local(path);
+//                                        goodDownloadList.remove(goodBean);
+                                    }
+                                }
+                                Log.i("Demo", "============================================================");
+                            }
+
+                            @Override
+                            public void onRemove(Progress progress) {
+                            }
+                        });
                 downloadTask.start();
             }
         }, delayTime);
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 //        LogUtils.i("onRequestPermissionsResult");
 
@@ -705,9 +663,6 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
     }
 
     private void downloadNewVersion() {
-//        LogUtils.i("downloadNewVersion");
-//        Environment.getExternalStorageDirectory() + File.separator, "ICBC_update.apk"
-
         RequestManager requestManager = RequestManager.getInstance(this);
         String destFileDir = Environment.getExternalStorageDirectory() + File.separator;
         requestManager.downLoadFile("http://3d.leygoo.cn/apk/app-release.apk", destFileDir, new ReqProgressCallBack<Object>() {
@@ -790,8 +745,7 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
 //        installer.install2(file);
     }
 
-    private void showEasyLayoutScroll(List<BannerBean> bannerBeanArrayList,
-                                      boolean fromDatabase) {
+    private void showEasyLayoutScroll(List<BannerBean> bannerBeanArrayList, boolean fromDatabase) {
         List<View> views = new ArrayList<>();
         for (BannerBean bannerBean : bannerBeanArrayList) {
             LinearLayout moreView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_view_single, null);
@@ -868,18 +822,6 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
         }
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //TODO 暂定取消所有的网络请求
-        OkGo.getInstance().cancelAll();
-//        OkGo.getInstance().cancelTag(ConstantValue.TAG_TAG);
-//        OkGo.getInstance().cancelTag(ConstantValue.TAG_GOODS);
-//        OkGo.getInstance().cancelTag(ConstantValue.TAG_UPDATE);
-//        OkGo.getInstance().cancelTag(ConstantValue.TAG_CATEGORY);
-//        OkGo.getInstance().cancelTag(ConstantValue.TAG_DOWNLOAD_APK);
-    }
 
     @Override
     public String onComplete(String videoPath) {
