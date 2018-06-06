@@ -1,30 +1,19 @@
 package xinshiyeweixin.cn.icbcdemo.db;
 
-
 import java.util.List;
 
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
-import xinshiyeweixin.cn.icbcdemo.bean.BannerBean;
-import xinshiyeweixin.cn.icbcdemo.bean.BannerBeanDao;
-import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
-import xinshiyeweixin.cn.icbcdemo.bean.CategoryBeanDao;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBeanDao;
 
-public class DAOUtil {
-    private static final CategoryBeanDao categoryDAO = ICBCApplication.application.categoryDaoSession.getCategoryBeanDao();
+/**
+ * @author: liubo
+ * @date: 2018/6/6/006
+ * @description: $description$
+ */
+public class GoodDAOUtil {
     private static final GoodBeanDao goodDAO = ICBCApplication.application.goodDaoSession.getGoodBeanDao();
-    private static final BannerBeanDao bannerDAO = ICBCApplication.application.bannerDaoSession.getBannerBeanDao();
 
-
-    /**
-     * 插入一条数据
-     *
-     * @param categoryBean
-     */
-    public static void insertCategory(CategoryBean categoryBean) {
-        categoryDAO.insertOrReplace(categoryBean);
-    }
 
     /**
      * 插入一条数据
@@ -33,61 +22,6 @@ public class DAOUtil {
      */
     public static void insertGood(GoodBean goodBean) {
         goodDAO.insertOrReplace(goodBean);
-    }
-
-    public static void insertBanner(BannerBean bannerBean) {
-        bannerDAO.insertOrReplace(bannerBean);
-    }
-
-
-    /**
-     * 更新某条数据
-     *
-     * @param cat_id
-     * @param name
-     */
-    public static void updateCategory(int cat_id, String name) {
-        CategoryBean categoryBean = categoryDAO.queryBuilder()
-                .where(CategoryBeanDao.Properties.Cat_id.eq(cat_id))
-                .build()
-                .unique();
-        categoryBean.setName(name);
-        categoryDAO.update(categoryBean);
-    }
-
-    /**
-     * 查询
-     *
-     * @param cat_id
-     * @param limitCount
-     * @return
-     */
-    public static List<CategoryBean> queryCategoryData(int cat_id, int limitCount) {
-        return categoryDAO.queryBuilder()
-                .where(CategoryBeanDao.Properties.Cat_id.eq(cat_id))
-                .limit(limitCount)
-                .orderAsc(CategoryBeanDao.Properties.Id)
-                .list();
-    }
-
-
-    /**
-     * 查询所有数据
-     *
-     * @return
-     */
-    public static List<CategoryBean> queryAllCategory() {
-        return categoryDAO.queryBuilder()
-                .orderAsc(CategoryBeanDao.Properties.Id)
-                .build()
-                .list();
-    }
-
-    public static List<BannerBean> queryAllBanner() {
-        return bannerDAO.queryBuilder()
-                .orderAsc(BannerBeanDao.Properties.Banner_id)
-                .build()
-                .list();
     }
 
 
@@ -103,7 +37,7 @@ public class DAOUtil {
                 .list();
     }
 
-    public static List<GoodBean> queryAllGoodByCategory(int categoryId) {
+    public static List<GoodBean> queryAllGoodByCategoryId(int categoryId) {
         return goodDAO.queryBuilder()
                 .where(GoodBeanDao.Properties.Cat_id.eq(categoryId))
                 .orderAsc(GoodBeanDao.Properties.Id)
@@ -136,6 +70,15 @@ public class DAOUtil {
         goodDAO.update(goodBean);
     }
 
+    public static void updateGoodImageLocalUrl(String remoteUrl, String localPath) {
+        GoodBean goodBean = goodDAO.queryBuilder()
+                .where(GoodBeanDao.Properties.Image_url.eq(remoteUrl))
+                .build()
+                .unique();
+        goodBean.setImage_url_local(localPath);
+        goodDAO.update(goodBean);
+    }
+
     /**
      * 查询
      *
@@ -160,17 +103,6 @@ public class DAOUtil {
     public static boolean contains(GoodBean goodBean) {
         return goodDAO.hasKey(goodBean);
     }
-
-
-    /**
-     * 删除某条数据
-     *
-     * @param cat_id
-     */
-    public static void deleteCategory(long cat_id) {
-        categoryDAO.deleteByKey(cat_id);
-    }
-
 
     /**
      * 删除某条数据

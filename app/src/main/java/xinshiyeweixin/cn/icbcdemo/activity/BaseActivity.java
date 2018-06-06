@@ -1,24 +1,12 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.hardware.display.DisplayManager;
-import android.media.MediaRouter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.util.Log;
-import android.view.Display;
 import android.view.View;
-import android.view.WindowManager;
-
-import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
-import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
-import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
-import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 
 /**
  * @author: liubo

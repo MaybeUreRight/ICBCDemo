@@ -1,22 +1,13 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.hardware.display.DisplayManager;
-import android.media.MediaRouter;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,7 +18,6 @@ import com.gcssloop.widget.PagerGridLayoutManager;
 import com.gcssloop.widget.PagerGridSnapHelper;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutListener;
 import com.layoutscroll.layoutscrollcontrols.view.EasyLayoutScroll;
-import com.lzy.okserver.OkDownload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +25,11 @@ import java.util.List;
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.GoodDetailAdapter;
+import xinshiyeweixin.cn.icbcdemo.bean.BannerBean;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
-import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
+import xinshiyeweixin.cn.icbcdemo.db.BannerDAOUtil;
+import xinshiyeweixin.cn.icbcdemo.db.GoodDAOUtil;
 import xinshiyeweixin.cn.icbcdemo.listener.CompleteListener;
-import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
 import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
@@ -74,6 +65,8 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
     private ICBCApplication application;
     protected MyPresentation myPresentation;
 
+    private Handler handler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +90,12 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
         PagerGridSnapHelper pageSnapHelper = new PagerGridSnapHelper();
         pageSnapHelper.attachToRecyclerView(productDetail);
 
-        queryOtherData();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                queryOtherData();
+            }
+        }, 1000);
     }
 
 
@@ -107,7 +105,7 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
         }
         Integer cat_id = goodBean.getCat_id();
         int good_id = goodBean.getGood_id();
-        List<GoodBean> goodBeanList = DAOUtil.queryAllGoodByCategory(cat_id);
+        List<GoodBean> goodBeanList = GoodDAOUtil.queryAllGoodByCategoryId(cat_id);
         for (GoodBean bean : goodBeanList) {
             int good_id1 = bean.getGood_id();
             if (good_id1 != good_id) {
@@ -131,7 +129,7 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
     protected String playVideo(GoodBean goodBean) {
         String currentPath;
         String path = goodBean.video_url;
-        GoodBean bean = DAOUtil.queryGoodData(path);
+        GoodBean bean = GoodDAOUtil.queryGoodData(path);
         if (bean != null && !TextUtils.isEmpty(bean.video_url_local)) {
             //使用SurfaceView播放视频
             myPresentation.play(bean.video_url_local);
@@ -150,6 +148,8 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
     private void initView() {
         application = ICBCApplication.application;
         myPresentation = application.getPresentation();
+        myPresentation.setCompleteListener(this);
+        handler = new Handler();
 
         goodBean = GsonUtils.convertString2Object(getIntent().getStringExtra("GOOD"), GoodBean.class);
         findViewById(R.id.back_container).setOnClickListener(this);
@@ -208,31 +208,19 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     private void initEasyLayoutScroll() {
-        //
-        ArrayList<String> data = new ArrayList<>();
-        data.add("测试条目1");
-        data.add("测试条目2");
-        data.add("测试条目3");
-        data.add("测试条目4");
 
+        List<BannerBean> bannerBeans = BannerDAOUtil.queryAllBanner();
         List<View> views = new ArrayList<>();
-        for (int i = 0; i < data.size(); i++) {
+        for (BannerBean bannerBean : bannerBeans) {
             LinearLayout moreView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_view_single, null);
-            TextView tv_title = moreView.findViewById(R.id.tv_title);
-            tv_title.setText(data.get(i));
+            ImageView tv_img = moreView.findViewById(R.id.tv_img);
+            Glide.with(this).asBitmap().load(bannerBean.image_url).into(tv_img);
             views.add(moreView);
         }
         //设置数据集
         easyLayoutScroll.setEasyViews(views);
         //开始滚动
         easyLayoutScroll.startScroll();
-
-        easyLayoutScroll.setOnItemClickListener(new EasyLayoutListener.OnItemClickListener() {
-            @Override
-            public void onItemClick(int pos, View view) {
-                Toast.makeText(GoodDetailActivity.this, "您点击了第" + pos + "条索引", Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     @Override

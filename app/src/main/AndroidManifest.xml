@@ -37,7 +37,8 @@
             android:name=".activity.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:launchMode="singleInstance"
-            android:theme="@style/MyTheme">
+            android:theme="@style/MyTheme"
+            android:windowSoftInputMode="stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,6 +47,8 @@
         </activity>
         <activity
             android:name=".activity.GoodDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:launchMode="singleInstance" />
 
         <provider

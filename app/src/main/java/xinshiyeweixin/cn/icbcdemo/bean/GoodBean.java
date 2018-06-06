@@ -25,13 +25,14 @@ public class GoodBean {
     public int our_price;
     public String content;
     public String image_url;
+    public String image_url_local;
     public String video_url;
     public String video_url_local;
     public String ercode_img_url;
     public String sale_url;
 
-    @Generated(hash = 1221973767)
-    public GoodBean(Long id, int good_id, String name, String name_en, String origin, Integer cat_id, String cat_name, String unit, int market_price, int our_price, String content, String image_url, String video_url, String video_url_local, String ercode_img_url, String sale_url) {
+    @Generated(hash = 1940294357)
+    public GoodBean(Long id, int good_id, String name, String name_en, String origin, Integer cat_id, String cat_name, String unit, int market_price, int our_price, String content, String image_url, String image_url_local, String video_url, String video_url_local, String ercode_img_url, String sale_url) {
         this.id = id;
         this.good_id = good_id;
         this.name = name;
@@ -44,6 +45,7 @@ public class GoodBean {
         this.our_price = our_price;
         this.content = content;
         this.image_url = image_url;
+        this.image_url_local = image_url_local;
         this.video_url = video_url;
         this.video_url_local = video_url_local;
         this.ercode_img_url = ercode_img_url;
@@ -180,6 +182,14 @@ public class GoodBean {
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public String getImage_url_local() {
+        return this.image_url_local;
+    }
+
+    public void setImage_url_local(String image_url_local) {
+        this.image_url_local = image_url_local;
     }
 
 }

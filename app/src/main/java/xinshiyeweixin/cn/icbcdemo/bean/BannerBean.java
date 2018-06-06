@@ -16,12 +16,15 @@ public class BannerBean {
     public int banner_id;
     public String title;
     public String image_url;
-    @Generated(hash = 1826862525)
-    public BannerBean(Long id, int banner_id, String title, String image_url) {
+    public String image_url_local;
+    @Generated(hash = 1840734079)
+    public BannerBean(Long id, int banner_id, String title, String image_url,
+            String image_url_local) {
         this.id = id;
         this.banner_id = banner_id;
         this.title = title;
         this.image_url = image_url;
+        this.image_url_local = image_url_local;
     }
     @Generated(hash = 2832759)
     public BannerBean() {
@@ -49,5 +52,11 @@ public class BannerBean {
     }
     public void setImage_url(String image_url) {
         this.image_url = image_url;
+    }
+    public String getImage_url_local() {
+        return this.image_url_local;
+    }
+    public void setImage_url_local(String image_url_local) {
+        this.image_url_local = image_url_local;
     }
 }

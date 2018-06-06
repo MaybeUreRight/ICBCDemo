@@ -1,11 +1,12 @@
 package xinshiyeweixin.cn.icbcdemo.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,18 +18,17 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 import xinshiyeweixin.cn.icbcdemo.R;
-import xinshiyeweixin.cn.icbcdemo.activity.GoodDetailActivity;
 import xinshiyeweixin.cn.icbcdemo.activity.MainActivity;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
-import xinshiyeweixin.cn.icbcdemo.db.DAOUtil;
+import xinshiyeweixin.cn.icbcdemo.db.GoodDAOUtil;
 import xinshiyeweixin.cn.icbcdemo.listener.GoodItemOnclickListener;
-import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 
 public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public static final int RECOMMEND = 5;
     public static final int NORMAL = 6;
 
-    private Context mContext;
+    //    private Context context;
+    private Context context;
     private ArrayList<GoodBean> goodBeanList;
     private GoodItemOnclickListener productItemOnclickListener;
     private RecyclerView.ViewHolder holder;
@@ -36,9 +36,9 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
 
     public GoodAdapter(Context context, ArrayList<GoodBean> goodBeanList) {
-        mContext = context;
+        this.context = context;
         this.goodBeanList = goodBeanList;
-        productItemOnclickListener = (GoodItemOnclickListener) mContext;
+        productItemOnclickListener = (GoodItemOnclickListener) this.context;
         if (this.goodBeanList == null) {
             this.goodBeanList = new ArrayList<>();
         }
@@ -54,7 +54,13 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             RecommendViewHoler recommendViewHoler = (RecommendViewHoler) holder;
             recommendViewHoler.product_name.setText(goodBean.name);
             recommendViewHoler.product_introduction.setText(goodBean.content);
-            Glide.with(mContext).asBitmap().load(goodBean.image_url).into(recommendViewHoler.product_thum);
+            String imagePath;
+            if (TextUtils.isEmpty(goodBean.image_url_local)) {
+                imagePath = goodBean.image_url;
+            } else {
+                imagePath = goodBean.image_url_local;
+            }
+            Glide.with(context).asBitmap().load(imagePath).into(recommendViewHoler.product_thum);
 //            recommendViewHoler.product_thum.setOnClickListener(new View.OnClickListener() {
 //                @Override
 //                public void onClick(View v) {
@@ -66,7 +72,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-//                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
+//                    context.startActivity(new Intent(context, GoodDetailActivity.class).putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
                     productItemOnclickListener.onGoodItemClick(goodBean);
                 }
             });
@@ -74,7 +80,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     String path;
-                    if (DAOUtil.contains(goodBean)) {
+                    if (GoodDAOUtil.contains(goodBean)) {
                         //数据库中有该条数据
                         if (!TextUtils.isEmpty(goodBean.video_url_local)) {
                             path = goodBean.video_url_local;
@@ -85,10 +91,10 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         path = goodBean.video_url;
                     }
                     if (TextUtils.isEmpty(path)) {
-                        ((MainActivity) mContext).runOnUiThread(new Runnable() {
+                        ((MainActivity) context).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Toast.makeText(mContext, "未获取到视频地址", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, "未获取到视频地址", Toast.LENGTH_SHORT).show();
                             }
                         });
                     } else {
@@ -102,12 +108,18 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             normalViewHoler.product_introduction_normal.setText(goodBean.content);
 
 
-            Glide.with(mContext).asBitmap().load(goodBean.image_url).into(normalViewHoler.product_thum_normal);
+            String imagePath;
+            if (TextUtils.isEmpty(goodBean.image_url_local)) {
+                imagePath = goodBean.image_url;
+            } else {
+                imagePath = goodBean.image_url_local;
+            }
+            Glide.with(context).asBitmap().load(imagePath).into(normalViewHoler.product_thum_normal);
             normalViewHoler.product_thum_normal.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String path;
-                    if (DAOUtil.contains(goodBean)) {
+                    if (GoodDAOUtil.contains(goodBean)) {
                         //数据库中有该条数据
                         if (!TextUtils.isEmpty(goodBean.video_url_local)) {
                             path = goodBean.video_url_local;
@@ -126,7 +138,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 @Override
                 public void onClick(View v) {
                     //跳转到详情界面
-//                    mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
+//                    context.startActivity(new Intent(context, GoodDetailActivity.class).putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
                     productItemOnclickListener.onGoodItemClick(goodBean);
                 }
             });
@@ -162,7 +174,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //负责创建视图
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+        LayoutInflater inflater = LayoutInflater.from(context);
         View view = null;
         //TODO 不同ITEM的布局
         if (viewType == RECOMMEND) {//推荐
@@ -191,7 +203,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             product_introduction = (TextView) itemView.findViewById(R.id.item_procut_introduction);
             product_thum = itemView.findViewById(R.id.item_procut_thum);
 
-            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "MicrosoftYaHei.ttc");
+            Typeface tf = Typeface.createFromAsset(context.getAssets(), "MicrosoftYaHei.ttc");
             product_name.setTypeface(tf);
             product_introduction.setTypeface(tf);
         }
@@ -208,7 +220,7 @@ public class GoodAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             product_name_normal = (TextView) itemView.findViewById(R.id.product_name_normal);
             product_introduction_normal = (TextView) itemView.findViewById(R.id.item_procut_introduction_normal);
             product_thum_normal = itemView.findViewById(R.id.item_procut_thum_normal);
-            Typeface tf = Typeface.createFromAsset(mContext.getAssets(), "PingFangSCRegular.ttf");
+            Typeface tf = Typeface.createFromAsset(context.getAssets(), "PingFangSCRegular.ttf");
             product_name_normal.setTypeface(tf);
             product_introduction_normal.setTypeface(tf);
 
