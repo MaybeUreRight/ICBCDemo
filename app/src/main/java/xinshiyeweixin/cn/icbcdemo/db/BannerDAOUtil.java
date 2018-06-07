@@ -20,4 +20,13 @@ public class BannerDAOUtil {
                 .build()
                 .list();
     }
+
+    public static void updateBannerImageLocalUrl(String image_url, String path) {
+        BannerBean bannerBean = bannerDAO.queryBuilder()
+                .where(BannerBeanDao.Properties.Image_url.eq(image_url))
+                .build()
+                .unique();
+        bannerBean.setImage_url_local(path);
+        bannerDAO.update(bannerBean);
+    }
 }

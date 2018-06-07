@@ -77,6 +77,56 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
         initRecyclerView();
     }
 
+    private void initView() {
+        application = ICBCApplication.application;
+        myPresentation = application.getPresentation();
+        myPresentation.setCompleteListener(this);
+        handler = new Handler();
+
+        goodBean = GsonUtils.convertString2Object(getIntent().getStringExtra("GOOD"), GoodBean.class);
+        findViewById(R.id.back_container).setOnClickListener(this);
+
+        buy = findViewById(R.id.buy);
+        buy.setOnClickListener(this);
+        productDetail = (RecyclerView) findViewById(R.id.product_detail);
+        detail_img = (ImageView) findViewById(R.id.detail_img);
+        easyLayoutScroll = findViewById(R.id.product_detail_titlecontainer).findViewById(R.id.easylayoutscroll);
+        productDetailNameCh = (TextView) findViewById(R.id.product_detail_name_ch);
+        productDetailNameEn = (TextView) findViewById(R.id.product_detail_name_en);
+        productDetailMarketPrice = (TextView) findViewById(R.id.product_detail_price_high);
+
+        productDetailICBCPrice = (TextView) findViewById(R.id.product_detail_price_normal);
+        productDetailOriginal = (TextView) findViewById(R.id.product_detail_original);
+        productDetailDesc = (TextView) findViewById(R.id.product_detail_desc);
+
+        textViewPrice = findViewById(R.id.tv_price);
+        justifyTextViewName = findViewById(R.id.jtv_name);
+        justifyTextViewOriginal = findViewById(R.id.jtv_original);
+        justifyTextViewIntro = findViewById(R.id.jtv_intro);
+        product_detail_price_normal1 = findViewById(R.id.product_detail_price_normal1);
+
+
+        initEasyLayoutScroll();
+
+        showContent();
+
+        Typeface microsoftYaHei = Typeface.createFromAsset(getAssets(), "MicrosoftYaHei.ttc");
+        Typeface microsoftYaHeiLight = Typeface.createFromAsset(getAssets(), "MicrosoftYaHeiLight.ttf");
+//        Typeface pingFangRegular = Typeface.createFromAsset(getAssets(), "PingFangRegular.ttf");
+
+        productDetailNameCh.setTypeface(microsoftYaHei);
+        productDetailNameEn.setTypeface(microsoftYaHeiLight);
+        productDetailOriginal.setTypeface(microsoftYaHeiLight);
+        productDetailDesc.setTypeface(microsoftYaHeiLight);
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                currentPath = playVideo(goodBean);
+            }
+        }, 2000);
+    }
+
     private void initRecyclerView() {
         detailBeans = new ArrayList<>();
         goodDetailAdapter = new GoodDetailAdapter(this, detailBeans);
@@ -145,50 +195,6 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
         return currentPath;
     }
 
-    private void initView() {
-        application = ICBCApplication.application;
-        myPresentation = application.getPresentation();
-        myPresentation.setCompleteListener(this);
-        handler = new Handler();
-
-        goodBean = GsonUtils.convertString2Object(getIntent().getStringExtra("GOOD"), GoodBean.class);
-        findViewById(R.id.back_container).setOnClickListener(this);
-
-        buy = findViewById(R.id.buy);
-        buy.setOnClickListener(this);
-        productDetail = (RecyclerView) findViewById(R.id.product_detail);
-        detail_img = (ImageView) findViewById(R.id.detail_img);
-        easyLayoutScroll = findViewById(R.id.product_detail_titlecontainer).findViewById(R.id.easylayoutscroll);
-        productDetailNameCh = (TextView) findViewById(R.id.product_detail_name_ch);
-        productDetailNameEn = (TextView) findViewById(R.id.product_detail_name_en);
-        productDetailMarketPrice = (TextView) findViewById(R.id.product_detail_price_high);
-
-        productDetailICBCPrice = (TextView) findViewById(R.id.product_detail_price_normal);
-        productDetailOriginal = (TextView) findViewById(R.id.product_detail_original);
-        productDetailDesc = (TextView) findViewById(R.id.product_detail_desc);
-
-        textViewPrice = findViewById(R.id.tv_price);
-        justifyTextViewName = findViewById(R.id.jtv_name);
-        justifyTextViewOriginal = findViewById(R.id.jtv_original);
-        justifyTextViewIntro = findViewById(R.id.jtv_intro);
-        product_detail_price_normal1 = findViewById(R.id.product_detail_price_normal1);
-
-
-        initEasyLayoutScroll();
-
-        showContent();
-
-        Typeface microsoftYaHei = Typeface.createFromAsset(getAssets(), "MicrosoftYaHei.ttc");
-        Typeface microsoftYaHeiLight = Typeface.createFromAsset(getAssets(), "MicrosoftYaHeiLight.ttf");
-//        Typeface pingFangRegular = Typeface.createFromAsset(getAssets(), "PingFangRegular.ttf");
-
-        productDetailNameCh.setTypeface(microsoftYaHei);
-        productDetailNameEn.setTypeface(microsoftYaHeiLight);
-        productDetailOriginal.setTypeface(microsoftYaHeiLight);
-        productDetailDesc.setTypeface(microsoftYaHeiLight);
-
-        currentPath = playVideo(goodBean);
-    }
 
     private void showContent() {
         Glide.with(this).asBitmap().load(goodBean.image_url).into(detail_img);

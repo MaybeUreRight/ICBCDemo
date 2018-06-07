@@ -48,8 +48,8 @@
         <activity
             android:name=".activity.GoodDetailActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

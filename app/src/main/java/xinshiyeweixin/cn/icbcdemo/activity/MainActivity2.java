@@ -39,9 +39,9 @@ import java.util.List;
 import xinshiyeweixin.cn.icbcdemo.BuildConfig;
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
-import xinshiyeweixin.cn.icbcdemo.adapter.MyItemDecoration;
-import xinshiyeweixin.cn.icbcdemo.adapter.GoodAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.CategoryAdapter;
+import xinshiyeweixin.cn.icbcdemo.adapter.GoodAdapter;
+import xinshiyeweixin.cn.icbcdemo.adapter.MyItemDecoration;
 import xinshiyeweixin.cn.icbcdemo.bean.AppBean;
 import xinshiyeweixin.cn.icbcdemo.bean.BannerBean;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
@@ -69,7 +69,7 @@ import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
 
-public class MainActivity extends BaseActivity implements GoodItemOnclickListener, CategoryItemOnclickListener, CompleteListener {
+public class MainActivity2 extends BaseActivity implements GoodItemOnclickListener, CategoryItemOnclickListener, CompleteListener {
     private ArrayList<String> tagList;
     private EasyLayoutScroll easylayoutscroll;
     private RecyclerView goodRecyclerView;
@@ -301,7 +301,7 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(MainActivity.this, HorizonService.class);
+                Intent intent = new Intent(MainActivity2.this, HorizonService.class);
                 startService(intent);
             }
         }, 9 * 60 * 1000);
@@ -928,7 +928,7 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
     @Override
     public void onGoodItemClick(GoodBean goodBean) {
         startActivity(
-                new Intent(MainActivity.this, GoodDetailActivity.class)
+                new Intent(MainActivity2.this, GoodDetailActivity.class)
                         .putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
     }
 

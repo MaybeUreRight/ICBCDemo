@@ -35,7 +35,8 @@ public class ConstantValue {
     //    public static final int TURN2GOODDETAIL = 105;
     public static final int REQUEST_RUN_PERMISSION = 111;
 
-    public static final int DOWNLOAD_DELAY = 60 * 1000;
+    public static final int DOWNLOAD_VIDEO_DELAY = 60 * 1000;
+    public static final int DOWNLOAD_BANNER_IMAGE_DELAY = 30 * 1000;
     public static final int DOWNLOAD_NEW_APK = 60 * 1000;
     public static final int UPDATE_DELAY = 15 * 1000;
 }
