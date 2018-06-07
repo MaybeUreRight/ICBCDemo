@@ -3,6 +3,7 @@ package xinshiyeweixin.cn.icbcdemo.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -35,12 +37,14 @@ import com.tencent.bugly.crashreport.CrashReport;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
 
 import xinshiyeweixin.cn.icbcdemo.BuildConfig;
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.adapter.CategoryAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.GoodAdapter;
+import xinshiyeweixin.cn.icbcdemo.adapter.GoodDetailAdapter;
 import xinshiyeweixin.cn.icbcdemo.adapter.MyItemDecoration;
 import xinshiyeweixin.cn.icbcdemo.bean.AppBean;
 import xinshiyeweixin.cn.icbcdemo.bean.BannerBean;
@@ -59,6 +63,7 @@ import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
 import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.listener.CategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.CompleteListener;
+import xinshiyeweixin.cn.icbcdemo.listener.DetailItemClickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.GoodItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
 import xinshiyeweixin.cn.icbcdemo.service.HorizonService;
@@ -68,8 +73,15 @@ import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
+import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
+import xinshiyeweixin.cn.icbcdemo.view.QRCodeDialog;
 
-public class MainActivity2 extends BaseActivity implements GoodItemOnclickListener, CategoryItemOnclickListener, CompleteListener {
+public class MainActivity2 extends BaseActivity implements GoodItemOnclickListener, CategoryItemOnclickListener, CompleteListener, View.OnClickListener,DetailItemClickListener {
+    private LinearLayout container;
+    private LinearLayout itemViewContainer;
+    private LinearLayout detailViewContainer;
+
+
     private ArrayList<String> tagList;
     private EasyLayoutScroll easylayoutscroll;
     private RecyclerView goodRecyclerView;
@@ -150,106 +162,62 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
     };
 
 
+    //***************************************************************************************************
+
+    private ImageView detail_img;
+    private TextView productDetailNameCh;
+    private TextView productDetailNameEn;
+    private TextView productDetailMarketPrice;
+    private TextView productDetailICBCPrice;
+    private TextView productDetailOriginal;
+    //    private TextView productDetailDesc;
+    private TextView productDetailDesc;
+
+    private TextView buy;
+
+    private JustifyTextView textViewPrice;
+    private JustifyTextView justifyTextViewName;
+    private JustifyTextView justifyTextViewOriginal;
+    private JustifyTextView justifyTextViewIntro;
+    private JustifyTextView product_detail_price_normal1;
+
+    private RecyclerView productDetail;
+    private ArrayList<GoodBean> detailBeans;
+    private GoodDetailAdapter goodDetailAdapter;
+
+    private String currentPath;
+    private GoodBean goodBean;
+    //***************************************************************************************************
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hideBottomUIMenu();
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main2);
         initView();
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (myPresentation == null) {
-            application.UpdatePresent();
-        }
-        myPresentation.setCompleteListener(this);
-        if (!TextUtils.isEmpty(lastVideoPath)) {
-            myPresentation.play(lastVideoPath);
-        } else {
-            if (goodList != null && goodList.size() > 0) {
-                GoodBean bean = goodList.get(0);
-                String path = bean.video_url_local;
-                if (TextUtils.isEmpty(path)) {
-                    path = bean.video_url;
-                }
-                myPresentation.play(path);
-                lastVideoPath = path;
-            }
-        }
-        //不是初次打开，开始下载任务
-        if (tagList != null && tagList.size() > 0) {
-            for (String tag : tagList) {
-                DownloadTask task = okDownload.getTask(tag);
-                if (task != null) {
-                    task.start();
-                }
-            }
-        }
-//        DownloadTask task = okDownload.getTask("task");
-//        if (task != null) {
-//            task.start();
-//        }
-//
-//        DownloadTask download = okDownload.getTask("download");
-//        if (download != null) {
-//            download.start();
-//        }
-
-        //如果是初次打开，从本地数据库恢复下载任务
-        List<Progress> downloading = DownloadManager.getInstance().getDownloading();
-        if (downloading != null && downloading.size() > 0) {
-            OkDownload.restore(downloading);
-        }
-
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        //暂停下载任务
-        okDownload.pauseAll();
-//        DownloadTask task = okDownload.getTask("task");
-//        if (task != null) {
-//            task.pause();
-//        }
-//
-//        DownloadTask download = okDownload.getTask("download");
-//        if (download != null) {
-//            download.pause();
-//        }
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //TODO 暂定取消所有的网络请求
-        OkGo.getInstance().cancelAll();
-//        OkGo.getInstance().cancelTag(ConstantValue.TAG_TAG);
-//        OkGo.getInstance().cancelTag(ConstantValue.TAG_GOODS);
-//        OkGo.getInstance().cancelTag(ConstantValue.TAG_UPDATE);
-//        OkGo.getInstance().cancelTag(ConstantValue.TAG_CATEGORY);
-//        OkGo.getInstance().cancelTag(ConstantValue.TAG_DOWNLOAD_APK);
-    }
 
     /**
      * 初始化View
      */
     private void initView() {
+        container = findViewById(R.id.container);
+        itemViewContainer = (LinearLayout) View.inflate(this, R.layout.content_item, null);
+        detailViewContainer = (LinearLayout) View.inflate(this, R.layout.content_detail, null);
+        container.removeAllViews();
+        container.addView(itemViewContainer);
+
         lastCategoryItemOnclickTime = lastClickTime = 0;
         handler = new Handler();
 
         application = ICBCApplication.application;
         myPresentation = application.getPresentation();
 
-        //TODO 这里测试的时候用
         SPUtils.getInstance().put("UUID", "test1234567890");
         goodBeanSparseArray = new SparseArray<>();
         goodList = new ArrayList<>();
-//        goodDownloadList = new ArrayList<>();
         categoryBeanList = new ArrayList<>();
         bannerBeanArrayList = new ArrayList<>();
         videoPathList = new ArrayList<>();
@@ -259,8 +227,8 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
         easylayoutscroll = findViewById(R.id.titlecontainer).findViewById(R.id.easylayoutscroll);
 
-        RecyclerView categoryRecyclerView = findViewById(R.id.product_category);
-        goodRecyclerView = findViewById(R.id.product_list);
+        RecyclerView categoryRecyclerView = itemViewContainer.findViewById(R.id.product_category);
+        goodRecyclerView = itemViewContainer.findViewById(R.id.product_list);
 
         categoryAdapter = new CategoryAdapter(this, categoryBeanList);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
@@ -280,7 +248,6 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
         // 2.设置滚动辅助工具
         PagerGridSnapHelper pageSnapHelper = new PagerGridSnapHelper();
         pageSnapHelper.attachToRecyclerView(goodRecyclerView);
-
 
         initReqCallback();
         loadDataFromDataBase();
@@ -306,6 +273,118 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
             }
         }, 9 * 60 * 1000);
 
+        initView2(detailViewContainer);
+    }
+
+
+    private void initView2(View container) {
+        container.findViewById(R.id.back_container).setOnClickListener(this);
+
+        buy = container.findViewById(R.id.buy);
+        buy.setOnClickListener(this);
+        productDetail = (RecyclerView) container.findViewById(R.id.product_detail);
+        detail_img = (ImageView) container.findViewById(R.id.detail_img);
+        productDetailNameCh = (TextView) container.findViewById(R.id.product_detail_name_ch);
+        productDetailNameEn = (TextView) container.findViewById(R.id.product_detail_name_en);
+        productDetailMarketPrice = (TextView) container.findViewById(R.id.product_detail_price_high);
+
+        productDetailICBCPrice = (TextView) container.findViewById(R.id.product_detail_price_normal);
+        productDetailOriginal = (TextView) container.findViewById(R.id.product_detail_original);
+        productDetailDesc = (TextView) container.findViewById(R.id.product_detail_desc);
+
+        textViewPrice = container.findViewById(R.id.tv_price);
+        justifyTextViewName = container.findViewById(R.id.jtv_name);
+        justifyTextViewOriginal = container.findViewById(R.id.jtv_original);
+        justifyTextViewIntro = container.findViewById(R.id.jtv_intro);
+        product_detail_price_normal1 = container.findViewById(R.id.product_detail_price_normal1);
+
+        Typeface microsoftYaHei = Typeface.createFromAsset(getAssets(), "MicrosoftYaHei.ttc");
+        Typeface microsoftYaHeiLight = Typeface.createFromAsset(getAssets(), "MicrosoftYaHeiLight.ttf");
+//        Typeface pingFangRegular = Typeface.createFromAsset(getAssets(), "PingFangRegular.ttf");
+
+        productDetailNameCh.setTypeface(microsoftYaHei);
+        productDetailNameEn.setTypeface(microsoftYaHeiLight);
+        productDetailOriginal.setTypeface(microsoftYaHeiLight);
+        productDetailDesc.setTypeface(microsoftYaHeiLight);
+
+
+        textViewPrice.setTitleWidth(textViewPrice);
+        product_detail_price_normal1.setTitleWidth(textViewPrice);
+        justifyTextViewName.setTitleWidth(textViewPrice);
+        justifyTextViewOriginal.setTitleWidth(textViewPrice);
+        justifyTextViewIntro.setTitleWidth(textViewPrice);
+
+        initRecyclerView();
+    }
+
+    private void initRecyclerView() {
+        detailBeans = new ArrayList<>();
+        goodDetailAdapter = new GoodDetailAdapter(this, detailBeans);
+        productDetail.setAdapter(goodDetailAdapter);
+
+        // 1.水平分页布局管理器
+        PagerGridLayoutManager layoutManager = new PagerGridLayoutManager(1, 4, PagerGridLayoutManager.HORIZONTAL);
+        productDetail.setLayoutManager(layoutManager);
+
+        // 2.设置滚动辅助工具
+        PagerGridSnapHelper pageSnapHelper = new PagerGridSnapHelper();
+        pageSnapHelper.attachToRecyclerView(productDetail);
+
+
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                queryOtherData();
+//            }
+//        }, 1000);
+    }
+
+
+    private void queryOtherData() {
+        if (detailBeans.size() > 0) {
+            detailBeans.clear();
+        }
+        Integer cat_id = goodBean.getCat_id();
+        int good_id = goodBean.getGood_id();
+        List<GoodBean> goodBeanList = GoodDAOUtil.queryAllGoodByCategoryId(cat_id);
+        for (GoodBean bean : goodBeanList) {
+            int good_id1 = bean.getGood_id();
+            if (good_id1 != good_id) {
+                detailBeans.add(bean);
+            }
+        }
+        if (detailBeans != null && detailBeans.size() > 0) {
+            goodDetailAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private void showContent(GoodBean goodBean) {
+        Glide.with(this).asBitmap().load(goodBean.image_url).into(detail_img);
+        productDetailNameCh.setText("" + goodBean.name);
+        productDetailNameEn.setText("" + goodBean.name_en);
+        productDetailMarketPrice.setText("" + goodBean.market_price);
+        productDetailICBCPrice.setText("" + goodBean.our_price);
+        productDetailOriginal.setText("" + goodBean.origin);
+        productDetailDesc.setText("" + goodBean.content);
+    }
+
+    protected String playVideo(GoodBean goodBean) {
+        String currentPath;
+        String path = goodBean.video_url;
+        GoodBean bean = GoodDAOUtil.queryGoodData(path);
+        if (bean != null && !TextUtils.isEmpty(bean.video_url_local)) {
+            //使用SurfaceView播放视频
+            myPresentation.play(bean.video_url_local);
+            currentPath = bean.video_url_local;
+        } else {
+            //myPresentation为null
+            if (myPresentation == null) {
+                application.UpdatePresent();
+            }
+            myPresentation.play(path);
+            currentPath = path;
+        }
+        return currentPath;
     }
 
 
@@ -815,6 +894,240 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
         });
     }
 
+    private void showEasyLayoutScroll(List<BannerBean> bannerBeanArrayList, boolean fromDatabase) {
+        List<View> views = new ArrayList<>();
+        for (BannerBean bannerBean : bannerBeanArrayList) {
+            LinearLayout moreView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_view_single, null);
+            ImageView tv_img = moreView.findViewById(R.id.tv_img);
+            Glide.with(this).asBitmap().load(bannerBean.image_url).into(tv_img);
+            views.add(moreView);
+        }
+        //设置数据集
+        easylayoutscroll.setEasyViews(views);
+        //开始滚动
+        easylayoutscroll.startScroll();
+
+        if (fromDatabase) {
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    HttpManager.banner(ICBCApplication.application.uuid, bannerReqCallBack);
+                }
+            }, 2 * 1000);
+        }
+    }
+
+
+    @Override
+    public void playItemVideo(String videoPath) {
+        long currentTimeMillis = System.currentTimeMillis();
+        if (currentTimeMillis - lastClickTime < 1000) {
+            LogUtils.i("频繁点击");
+        } else {
+            lastClickTime = currentTimeMillis;
+            if (myPresentation == null) {
+                Toast.makeText(this, "playItemVideo  --> myPresentation == null", Toast.LENGTH_SHORT).show();
+                application.UpdatePresent();
+            }
+            if (!TextUtils.isEmpty(videoPath)) {
+                myPresentation.play(videoPath);
+                lastVideoPath = videoPath;
+            } else {
+                // 点击的条目是正在播放的条目
+                Toast.makeText(this, "获取视频播放地址失败", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onGoodItemClick(GoodBean goodBean) {
+        this.goodBean = goodBean;
+        queryOtherData();
+        showContent(goodBean);
+        currentPath = playVideo(goodBean);
+
+        container.removeAllViews();
+        container.addView(detailViewContainer);
+    }
+
+
+    @Override
+    public void onCategoryItemOnclick(int cat_id, int position) {
+        long currentTimeMillis = System.currentTimeMillis();
+        if (currentTimeMillis - lastCategoryItemOnclickTime < 500) {
+            return;
+        }
+        lastCategoryItemOnclickTime = currentTimeMillis;
+        currentPosition = position;
+        if (goodBeanSparseArray.size() > position) {
+            goodList.clear();
+            goodList.addAll(goodBeanSparseArray.get(cat_id));
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    goodAdapter.notifyDataSetChanged();
+                    goodRecyclerView.scrollToPosition(0);
+
+                    categoryAdapter.notifyDataSetChanged();
+                }
+            });
+
+            if (myPresentation != null) {
+                GoodBean goodBean = goodList.get(0);
+                String path;
+                if (!TextUtils.isEmpty(goodBean.video_url_local)) {
+                    path = goodBean.video_url_local;
+                } else {
+                    path = goodBean.video_url;
+                }
+                myPresentation.play(path);
+            }
+        }
+    }
+
+    @Override
+    public void onDetailItemClick(GoodBean goodBean) {
+        this.goodBean = goodBean;
+        queryOtherData();
+        showContent(goodBean);
+        currentPath = playVideo(goodBean);
+    }
+
+    @Override
+    public String onComplete(String videoPath) {
+        View child = container.getChildAt(0);
+        if (child == itemViewContainer) {
+            for (int i = 0; i < goodList.size(); i++) {
+                GoodBean bean = goodList.get(i);
+                if (videoPath.startsWith("http")) {
+                    //网络地址
+                    if (bean.video_url.equals(videoPath)) {
+                        if (i == goodList.size() - 1) {
+                            return getVideoPath(0);
+                        } else {
+                            return getVideoPath(i + 1);
+                        }
+                    }
+                } else {
+                    //本地地址
+                    if (bean.video_url_local.equals(videoPath)) {
+                        if (i == goodList.size() - 1) {
+                            return getVideoPath(0);
+                        } else {
+                            return getVideoPath(i + 1);
+                        }
+                    }
+                }
+            }
+        } else if (child == detailViewContainer) {
+            return currentPath;
+        }
+        return videoPath;
+    }
+
+    private String getVideoPath(int position) {
+        GoodBean goodBean = goodList.get(position);
+        if (!TextUtils.isEmpty(goodBean.video_url_local)) {
+            return goodBean.video_url_local;
+        } else {
+            return goodBean.video_url;
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (myPresentation == null) {
+            application.UpdatePresent();
+        }
+        myPresentation.setCompleteListener(this);
+        if (!TextUtils.isEmpty(lastVideoPath)) {
+            myPresentation.play(lastVideoPath);
+        } else {
+            if (goodList != null && goodList.size() > 0) {
+                GoodBean bean = goodList.get(0);
+                String path = bean.video_url_local;
+                if (TextUtils.isEmpty(path)) {
+                    path = bean.video_url;
+                }
+                myPresentation.play(path);
+                lastVideoPath = path;
+            }
+        }
+        //不是初次打开，开始下载任务
+        if (tagList != null && tagList.size() > 0) {
+            for (String tag : tagList) {
+                DownloadTask task = okDownload.getTask(tag);
+                if (task != null) {
+                    task.start();
+                }
+            }
+        }
+//        DownloadTask task = okDownload.getTask("task");
+//        if (task != null) {
+//            task.start();
+//        }
+//
+//        DownloadTask download = okDownload.getTask("download");
+//        if (download != null) {
+//            download.start();
+//        }
+
+        //如果是初次打开，从本地数据库恢复下载任务
+        List<Progress> downloading = DownloadManager.getInstance().getDownloading();
+        if (downloading != null && downloading.size() > 0) {
+            OkDownload.restore(downloading);
+        }
+
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //暂停下载任务
+        okDownload.pauseAll();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        OkGo.getInstance().cancelAll();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.buy:
+                QRCodeDialog qrCodeDialog = new QRCodeDialog(this, goodBean.ercode_img_url);
+                qrCodeDialog.show();
+                break;
+            case R.id.back_container:
+                container.removeAllViews();
+                container.addView(itemViewContainer);
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        View childView = container.getChildAt(0);
+        if (childView == itemViewContainer) {
+            //按照普通的返回操作处理
+            super.onBackPressed();
+        } else if (childView == detailViewContainer) {
+            //返回最初的界面
+            container.removeAllViews();
+            container.addView(itemViewContainer);
+        } else {
+            //应该没有第三种可能 了吧
+        }
+    }
+
+/**================================================Unused Method===================================================================================================*/
+
     /**
      * 检查是否具有运行时权限（读.写）
      */
@@ -875,133 +1188,4 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 //        installer.install2(file);
     }
 
-    private void showEasyLayoutScroll(List<BannerBean> bannerBeanArrayList, boolean fromDatabase) {
-        List<View> views = new ArrayList<>();
-        for (BannerBean bannerBean : bannerBeanArrayList) {
-            LinearLayout moreView = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.item_view_single, null);
-            ImageView tv_img = moreView.findViewById(R.id.tv_img);
-            Glide.with(this).asBitmap().load(bannerBean.image_url).into(tv_img);
-            views.add(moreView);
-        }
-        //设置数据集
-        easylayoutscroll.setEasyViews(views);
-        //开始滚动
-        easylayoutscroll.startScroll();
-
-//        easylayoutscroll.setOnItemClickListener(new EasyLayoutListener.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(int pos, View view) {
-//            }
-//        });
-        if (fromDatabase) {
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    HttpManager.banner(ICBCApplication.application.uuid, bannerReqCallBack);
-                }
-            }, 2 * 1000);
-        }
-    }
-
-
-    @Override
-    public void playItemVideo(String videoPath) {
-        long currentTimeMillis = System.currentTimeMillis();
-        if (currentTimeMillis - lastClickTime < 1000) {
-            LogUtils.i("频繁点击");
-        } else {
-            lastClickTime = currentTimeMillis;
-            if (myPresentation == null) {
-                Toast.makeText(this, "playItemVideo  --> myPresentation == null", Toast.LENGTH_SHORT).show();
-                application.UpdatePresent();
-            }
-            if (!TextUtils.isEmpty(videoPath)) {
-                myPresentation.play(videoPath);
-                lastVideoPath = videoPath;
-            } else {
-                // 点击的条目是正在播放的条目
-                Toast.makeText(this, "获取视频播放地址失败", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    @Override
-    public void onGoodItemClick(GoodBean goodBean) {
-        startActivity(
-                new Intent(MainActivity2.this, GoodDetailActivity.class)
-                        .putExtra("GOOD", GsonUtils.convertVO2String(goodBean)));
-    }
-
-
-    @Override
-    public void onCategoryItemOnclick(int cat_id, int position) {
-        long currentTimeMillis = System.currentTimeMillis();
-        if (currentTimeMillis - lastCategoryItemOnclickTime < 500) {
-            return;
-        }
-        lastCategoryItemOnclickTime = currentTimeMillis;
-        currentPosition = position;
-        if (goodBeanSparseArray.size() > position) {
-            goodList.clear();
-            goodList.addAll(goodBeanSparseArray.get(cat_id));
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    goodAdapter.notifyDataSetChanged();
-                    goodRecyclerView.scrollToPosition(0);
-
-                    categoryAdapter.notifyDataSetChanged();
-                }
-            });
-
-            if (myPresentation != null) {
-                GoodBean goodBean = goodList.get(0);
-                String path;
-                if (!TextUtils.isEmpty(goodBean.video_url_local)) {
-                    path = goodBean.video_url_local;
-                } else {
-                    path = goodBean.video_url;
-                }
-                myPresentation.play(path);
-            }
-        }
-    }
-
-
-    @Override
-    public String onComplete(String videoPath) {
-        for (int i = 0; i < goodList.size(); i++) {
-            GoodBean bean = goodList.get(i);
-            if (videoPath.startsWith("http")) {
-                //网络地址
-                if (bean.video_url.equals(videoPath)) {
-                    if (i == goodList.size() - 1) {
-                        return getVideoPath(0);
-                    } else {
-                        return getVideoPath(i + 1);
-                    }
-                }
-            } else {
-                //本地地址
-                if (bean.video_url_local.equals(videoPath)) {
-                    if (i == goodList.size() - 1) {
-                        return getVideoPath(0);
-                    } else {
-                        return getVideoPath(i + 1);
-                    }
-                }
-            }
-        }
-
-        return videoPath;
-    }
-
-    private String getVideoPath(int position) {
-        GoodBean goodBean = goodList.get(position);
-        if (!TextUtils.isEmpty(goodBean.video_url_local)) {
-            return goodBean.video_url_local;
-        } else {
-            return goodBean.video_url;
-        }
-    }
 }

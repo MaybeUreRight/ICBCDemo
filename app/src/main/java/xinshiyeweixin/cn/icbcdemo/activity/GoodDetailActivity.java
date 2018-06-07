@@ -197,13 +197,19 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
 
 
     private void showContent() {
-        Glide.with(this).asBitmap().load(goodBean.image_url).into(detail_img);
-        productDetailNameCh.setText("" + goodBean.name);
-        productDetailNameEn.setText("" + goodBean.name_en);
-        productDetailMarketPrice.setText("" + goodBean.market_price);
-        productDetailICBCPrice.setText("" + goodBean.our_price);
-        productDetailOriginal.setText("" + goodBean.origin);
-        productDetailDesc.setText("" + goodBean.content);
+        String path;
+        if (TextUtils.isEmpty(goodBean.image_url_local)) {
+            path = goodBean.image_url;
+        } else {
+            path = goodBean.image_url_local;
+        }
+        Glide.with(this).asBitmap().load(path).into(detail_img);
+        productDetailNameCh.setText(goodBean.name);
+        productDetailNameEn.setText(goodBean.name_en);
+        productDetailMarketPrice.setText(goodBean.market_price);
+        productDetailICBCPrice.setText(goodBean.our_price);
+        productDetailOriginal.setText(goodBean.origin);
+        productDetailDesc.setText(goodBean.content);
 
 
         textViewPrice.setTitleWidth(textViewPrice);

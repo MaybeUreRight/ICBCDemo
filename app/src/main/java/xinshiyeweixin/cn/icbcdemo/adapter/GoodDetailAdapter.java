@@ -1,7 +1,6 @@
 package xinshiyeweixin.cn.icbcdemo.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,20 +14,25 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 
 import xinshiyeweixin.cn.icbcdemo.R;
-import xinshiyeweixin.cn.icbcdemo.activity.GoodDetailActivity;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
-import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
+import xinshiyeweixin.cn.icbcdemo.listener.DetailItemClickListener;
 
 public class GoodDetailAdapter extends RecyclerView.Adapter<GoodDetailAdapter.MyViewHoler> {
     private Context mContext;
     private ArrayList<GoodBean> detailBeans;
+    private DetailItemClickListener detailItemClickListener;
 
     public GoodDetailAdapter(Context mContext, ArrayList<GoodBean> detailBeans) {
         this.mContext = mContext;
         this.detailBeans = detailBeans;
         if (detailBeans == null) {
-            detailBeans = new ArrayList<>();
+            this.detailBeans = new ArrayList<>();
         }
+
+        if (mContext instanceof DetailItemClickListener) {
+            detailItemClickListener = (DetailItemClickListener) mContext;
+        }
+
     }
 
     @Override
@@ -45,7 +49,8 @@ public class GoodDetailAdapter extends RecyclerView.Adapter<GoodDetailAdapter.My
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD",GsonUtils.convertVO2String(goodBean)));
+//                mContext.startActivity(new Intent(mContext, GoodDetailActivity.class).putExtra("GOOD",GsonUtils.convertVO2String(goodBean)));
+                detailItemClickListener.onDetailItemClick(goodBean);
             }
         });
     }
