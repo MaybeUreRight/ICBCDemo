@@ -118,19 +118,19 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
     private DownloadListener downloadAPKListener = new DownloadListener("download") {
         @Override
         public void onStart(Progress progress) {
-            Log.i("Demo", "开始下载新版本APK");
+//            Log.i("Demo", "开始下载新版本APK");
         }
 
         @Override
         public void onProgress(Progress progress) {
             long currentSize = progress.currentSize;
             long totalSize = progress.totalSize;
-            Log.i("Demo", "进度 = " + currentSize * 100 / totalSize);
+//            Log.i("Demo", "进度 = " + currentSize * 100 / totalSize);
         }
 
         @Override
         public void onError(Progress progress) {
-            LogUtils.i("progress = " + progress.toString());
+//            LogUtils.i("progress = " + progress.toString());
             DownloadTask download = okDownload.getTask("download");
             download.restart();
         }
@@ -445,7 +445,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                 int lastVersionCode = result.version_code;
                 int currentVersionCode = BuildConfig.VERSION_CODE;
                 if (lastVersionCode > currentVersionCode) {
-                    Log.i("Demo", "有新版本,开始下载");
+//                    Log.i("Demo", "有新版本,开始下载");
                     //有新版本,开始下载
 //                    checkPermissions();
 
@@ -476,8 +476,8 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
             @Override
             public void onReqFailed(FailBean failBean) {
-                String message = failBean.message;
-                LogUtils.i("message = \r\n" + message);
+//                String message = failBean.message;
+//                LogUtils.i("message = \r\n" + message);
             }
 
             @Override
@@ -517,8 +517,8 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
             @Override
             public void onReqFailed(FailBean failBean) {
-                String message = failBean.message;
-                LogUtils.i("message = \r\n" + message);
+//                String message = failBean.message;
+//                LogUtils.i("message = \r\n" + message);
             }
 
         };
@@ -550,8 +550,8 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
             @Override
             public void onReqFailed(FailBean failBean) {
-                String message = failBean.message;
-                LogUtils.i("message = \r\n" + message);
+//                String message = failBean.message;
+//                LogUtils.i("message = \r\n" + message);
             }
 
         };
@@ -575,10 +575,10 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                         }
                     }
                     if (TextUtils.isEmpty(bean.video_url_local)) {
-                        Log.i("Demo", cat_id + "_" + bean.good_id + " >>> 需要下载");
+//                        Log.i("Demo", cat_id + "_" + bean.good_id + " >>> 需要下载");
                         downloadGoodItemVideo(bean, ConstantValue.DOWNLOAD_VIDEO_DELAY);
                     } else {
-                        Log.i("Demo", cat_id + "_" + bean.good_id + " >>> 不需要下载");
+//                        Log.i("Demo", cat_id + "_" + bean.good_id + " >>> 不需要下载");
                     }
 
                     if (TextUtils.isEmpty(bean.image_url_local)) {
@@ -630,8 +630,8 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
             @Override
             public void onReqFailed(FailBean failBean) {
-                String message = failBean.message;
-                LogUtils.i("message = " + message);
+//                String message = failBean.message;
+//                LogUtils.i("message = " + message);
             }
 
             @Override
@@ -694,31 +694,31 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                         .register(new DownloadListener(tag) {
                             @Override
                             public void onStart(Progress progress) {
-                                Log.i("Demo", "开始下载视频 = " + tag + "\r\n progress = " + progress.fileName);
+//                                Log.i("Demo", "开始下载视频 = " + tag + "\r\n progress = " + progress.fileName);
                             }
 
                             @Override
                             public void onProgress(Progress progress) {
                                 final long currentSize = progress.currentSize;
                                 final long totalSize = progress.totalSize;
-                                Log.i("Demo", tag + " >>> 进度 = " + currentSize * 100 / totalSize);
+//                                Log.i("Demo", tag + " >>> 进度 = " + currentSize * 100 / totalSize);
                             }
 
                             @Override
                             public void onError(Progress progress) {
-                                Log.i("Demo", "onError \r\n progress = \r\n" + progress.fileName);
+//                                Log.i("Demo", "onError \r\n progress = \r\n" + progress.fileName);
                             }
 
                             @Override
                             public void onFinish(File file, Progress progress) {
 
-                                Log.i("Demo", "视频下载结束");
+//                                Log.i("Demo", "视频下载结束");
 //                                String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/" + file.getName();
                                 String path = ConstantValue.GOOD_VIDEO_PATH + file.getName();
                                 String video_url = progress.url;
 
-                                Log.i("Demo", "============================================================");
-                                Log.i("Demo", "video_url = \r\n" + video_url);
+//                                Log.i("Demo", "============================================================");
+//                                Log.i("Demo", "video_url = \r\n" + video_url);
 
                                 //根据下载用到的URL去更新数据库的某条数据
                                 GoodDAOUtil.updateGood(video_url, path);
@@ -729,7 +729,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 //                                        goodDownloadList.remove(goodBean);
                                     }
                                 }
-                                Log.i("Demo", "============================================================");
+//                                Log.i("Demo", "============================================================");
                             }
 
                             @Override
@@ -765,18 +765,18 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
                             @Override
                             public void onError(Progress progress) {
-                                Log.i("Demo", "onError \r\n progress = \r\n" + progress.fileName);
+//                                Log.i("Demo", "onError \r\n progress = \r\n" + progress.fileName);
                             }
 
                             @Override
                             public void onFinish(File file, Progress progress) {
-                                Log.i("Demo", "图片下载结束");
+//                                Log.i("Demo", "图片下载结束");
 
                                 String path = ConstantValue.GOOD_IMAGE_PATH + file.getName();
                                 String image_url = progress.url;
 
-                                Log.i("Demo", "============================================================");
-                                Log.i("Demo", "image_url = \r\n" + image_url);
+//                                Log.i("Demo", "============================================================");
+//                                Log.i("Demo", "image_url = \r\n" + image_url);
 
                                 //根据下载用到的URL去更新数据库的某条数据
                                 GoodDAOUtil.updateGoodImageLocalUrl(image_url, path);
@@ -787,7 +787,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 //                                        goodDownloadList.remove(goodBean);
                                     }
                                 }
-                                Log.i("Demo", "============================================================");
+//                                Log.i("Demo", "============================================================");
                             }
 
                             @Override
@@ -823,7 +823,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
                             @Override
                             public void onError(Progress progress) {
-                                Log.i("Demo", "onError \r\n progress = \r\n" + progress.fileName);
+//                                Log.i("Demo", "onError \r\n progress = \r\n" + progress.fileName);
                             }
 
                             @Override
@@ -831,7 +831,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                                 String path = ConstantValue.GOOD_IMAGE_PATH + file.getName();
                                 String image_url = progress.url;
 
-                                Log.i("Demo", "下载banner图片完毕 >>> " + image_url);
+//                                Log.i("Demo", "下载banner图片完毕 >>> " + image_url);
 
                                 //根据下载用到的URL去更新数据库的某条数据
 //                                try {
@@ -927,7 +927,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
     public void playItemVideo(String videoPath) {
         long currentTimeMillis = System.currentTimeMillis();
         if (currentTimeMillis - lastClickTime < 1000) {
-            LogUtils.i("频繁点击");
+//            LogUtils.i("频繁点击");
         } else {
             lastClickTime = currentTimeMillis;
             if (myPresentation == null) {
@@ -1001,7 +1001,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
     @Override
     public void onComplete(final String videoPath) {
         final String nextVideoPath = getNextVideoPath(videoPath);
-        Log.i("Demo", "onComplete \r\n nextVideoPath = " + nextVideoPath);
+//        Log.i("Demo", "onComplete \r\n nextVideoPath = " + nextVideoPath);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -1017,7 +1017,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
     private String getNextVideoPath(String videoPath) {
         View child = container.getChildAt(0);
         if (child == itemViewContainer) {
-            LogUtils.i("商品列表展示页");
+//            LogUtils.i("商品列表展示页");
             for (int i = 0; i < goodList.size(); i++) {
                 GoodBean bean = goodList.get(i);
                 if (videoPath.startsWith("http")) {
@@ -1041,7 +1041,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                 }
             }
         } else if (child == detailViewContainer) {
-            LogUtils.i("商品详情展示页");
+//            LogUtils.i("商品详情展示页");
             return currentPath;
         }
         return videoPath;

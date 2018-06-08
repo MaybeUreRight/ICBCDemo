@@ -82,7 +82,7 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
             mediaPlayer.setDataSource(context, Uri.parse(path));
             // 设置显示视频的SurfaceHolder
             mediaPlayer.setDisplay(surfaceView.getHolder());
-            LogUtils.i("开始装载");
+//            LogUtils.i("开始装载");
             mediaPlayer.prepareAsync();
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
 
@@ -96,9 +96,9 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
             mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
                 @Override
                 public boolean onInfo(MediaPlayer mp, int what, int extra) {
-                    int duration = mp.getDuration();
-                    Log.i("Demo", "duration = " + duration);
-                    Log.i("Demo", "(duration / 1000) = " + duration / 1000);
+//                    int duration = mp.getDuration();
+//                    Log.i("Demo", "duration = " + duration);
+//                    Log.i("Demo", "(duration / 1000) = " + duration / 1000);
                     return false;
                 }
             });
@@ -106,7 +106,7 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
 
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    Log.i("Demo", "MyPresentation >> 播放完毕");
+//                    Log.i("Demo", "MyPresentation >> 播放完毕");
                     mp.start();
                     completeListener.onComplete(path);
                 }
