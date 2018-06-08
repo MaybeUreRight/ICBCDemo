@@ -6,5 +6,5 @@ package xinshiyeweixin.cn.icbcdemo.listener;
  * @description: $description$
  */
 public interface CompleteListener {
-    String onComplete(String videoPath);
+    void onComplete(String videoPath);
 }

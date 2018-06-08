@@ -251,7 +251,7 @@ public class GoodDetailActivity extends BaseActivity implements View.OnClickList
     }
 
     @Override
-    public String onComplete(String videoPath) {
-        return currentPath;
+    public void onComplete(String videoPath) {
+//        return currentPath;
     }
 }

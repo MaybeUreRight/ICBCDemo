@@ -43,9 +43,10 @@ public class QRCodeDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View view = View.inflate(mContext, R.layout.dialog_qrcode, null);
-        ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-        layoutParams.height = (int) (DisplayUtil.getScreenHeight(mContext) * 2.0 / 3);
-        layoutParams.width = (int) (DisplayUtil.getScreenWidth(mContext) * 2.0 / 3);
+        int height = (int) (DisplayUtil.getScreenHeight(mContext) * 2.0 / 3);
+        int width = (int) (DisplayUtil.getScreenWidth(mContext) * 2.0 / 3);
+//        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(width, height);
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(height, width);
         view.setLayoutParams(layoutParams);
         setContentView(view);
 

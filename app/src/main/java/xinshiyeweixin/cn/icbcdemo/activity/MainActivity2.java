@@ -1,10 +1,8 @@
 package xinshiyeweixin.cn.icbcdemo.activity;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -37,7 +35,6 @@ import com.tencent.bugly.crashreport.CrashReport;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.Inflater;
 
 import xinshiyeweixin.cn.icbcdemo.BuildConfig;
 import xinshiyeweixin.cn.icbcdemo.ICBCApplication;
@@ -51,8 +48,6 @@ import xinshiyeweixin.cn.icbcdemo.bean.BannerBean;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
 import xinshiyeweixin.cn.icbcdemo.bean.FailBean;
 import xinshiyeweixin.cn.icbcdemo.bean.GoodBean;
-import xinshiyeweixin.cn.icbcdemo.bean.TagBean;
-import xinshiyeweixin.cn.icbcdemo.bean.UpdateBean;
 import xinshiyeweixin.cn.icbcdemo.db.BannerDAOUtil;
 import xinshiyeweixin.cn.icbcdemo.db.CategoryDAOUtil;
 import xinshiyeweixin.cn.icbcdemo.db.GoodDAOUtil;
@@ -60,7 +55,6 @@ import xinshiyeweixin.cn.icbcdemo.http.HttpManager;
 import xinshiyeweixin.cn.icbcdemo.http.ReqCallBack;
 import xinshiyeweixin.cn.icbcdemo.http.ReqProgressCallBack;
 import xinshiyeweixin.cn.icbcdemo.http.RequestManager;
-import xinshiyeweixin.cn.icbcdemo.install.AutoInstaller;
 import xinshiyeweixin.cn.icbcdemo.listener.CategoryItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.listener.CompleteListener;
 import xinshiyeweixin.cn.icbcdemo.listener.DetailItemClickListener;
@@ -68,15 +62,13 @@ import xinshiyeweixin.cn.icbcdemo.listener.GoodItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
 import xinshiyeweixin.cn.icbcdemo.service.HorizonService;
 import xinshiyeweixin.cn.icbcdemo.utils.AppUtils2;
-import xinshiyeweixin.cn.icbcdemo.utils.FileUtils;
-import xinshiyeweixin.cn.icbcdemo.utils.GsonUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
 import xinshiyeweixin.cn.icbcdemo.view.QRCodeDialog;
 
-public class MainActivity2 extends BaseActivity implements GoodItemOnclickListener, CategoryItemOnclickListener, CompleteListener, View.OnClickListener,DetailItemClickListener {
+public class MainActivity2 extends BaseActivity implements GoodItemOnclickListener, CategoryItemOnclickListener, CompleteListener, View.OnClickListener, DetailItemClickListener {
     private LinearLayout container;
     private LinearLayout itemViewContainer;
     private LinearLayout detailViewContainer;
@@ -102,8 +94,6 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
     private ReqCallBack<ArrayList<BannerBean>> bannerReqCallBack;
     private ReqCallBack<ArrayList<CategoryBean>> categoryReqCallBack;
     private ReqCallBack<List<GoodBean>> goodReqCallBack;
-    private ReqCallBack<UpdateBean> updateReqCallBack;
-    private ReqCallBack<List<TagBean>> tagReqCallBack;
 
     private SparseArray<List<GoodBean>> goodBeanSparseArray;
 
@@ -173,14 +163,6 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
     //    private TextView productDetailDesc;
     private TextView productDetailDesc;
 
-    private TextView buy;
-
-    private JustifyTextView textViewPrice;
-    private JustifyTextView justifyTextViewName;
-    private JustifyTextView justifyTextViewOriginal;
-    private JustifyTextView justifyTextViewIntro;
-    private JustifyTextView product_detail_price_normal1;
-
     private RecyclerView productDetail;
     private ArrayList<GoodBean> detailBeans;
     private GoodDetailAdapter goodDetailAdapter;
@@ -214,6 +196,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
         application = ICBCApplication.application;
         myPresentation = application.getPresentation();
+        myPresentation.setCompleteListener(this);
 
         SPUtils.getInstance().put("UUID", "test1234567890");
         goodBeanSparseArray = new SparseArray<>();
@@ -280,23 +263,23 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
     private void initView2(View container) {
         container.findViewById(R.id.back_container).setOnClickListener(this);
 
-        buy = container.findViewById(R.id.buy);
+        TextView buy = container.findViewById(R.id.buy);
         buy.setOnClickListener(this);
-        productDetail = (RecyclerView) container.findViewById(R.id.product_detail);
-        detail_img = (ImageView) container.findViewById(R.id.detail_img);
-        productDetailNameCh = (TextView) container.findViewById(R.id.product_detail_name_ch);
-        productDetailNameEn = (TextView) container.findViewById(R.id.product_detail_name_en);
-        productDetailMarketPrice = (TextView) container.findViewById(R.id.product_detail_price_high);
+        productDetail = container.findViewById(R.id.product_detail);
+        detail_img = container.findViewById(R.id.detail_img);
+        productDetailNameCh = container.findViewById(R.id.product_detail_name_ch);
+        productDetailNameEn = container.findViewById(R.id.product_detail_name_en);
+        productDetailMarketPrice = container.findViewById(R.id.product_detail_price_high);
 
-        productDetailICBCPrice = (TextView) container.findViewById(R.id.product_detail_price_normal);
-        productDetailOriginal = (TextView) container.findViewById(R.id.product_detail_original);
-        productDetailDesc = (TextView) container.findViewById(R.id.product_detail_desc);
+        productDetailICBCPrice = container.findViewById(R.id.product_detail_price_normal);
+        productDetailOriginal = container.findViewById(R.id.product_detail_original);
+        productDetailDesc = container.findViewById(R.id.product_detail_desc);
 
-        textViewPrice = container.findViewById(R.id.tv_price);
-        justifyTextViewName = container.findViewById(R.id.jtv_name);
-        justifyTextViewOriginal = container.findViewById(R.id.jtv_original);
-        justifyTextViewIntro = container.findViewById(R.id.jtv_intro);
-        product_detail_price_normal1 = container.findViewById(R.id.product_detail_price_normal1);
+        JustifyTextView textViewPrice = container.findViewById(R.id.tv_price);
+        JustifyTextView justifyTextViewName = container.findViewById(R.id.jtv_name);
+        JustifyTextView justifyTextViewOriginal = container.findViewById(R.id.jtv_original);
+        JustifyTextView justifyTextViewIntro = container.findViewById(R.id.jtv_intro);
+        JustifyTextView product_detail_price_normal1 = container.findViewById(R.id.product_detail_price_normal1);
 
         Typeface microsoftYaHei = Typeface.createFromAsset(getAssets(), "MicrosoftYaHei.ttc");
         Typeface microsoftYaHeiLight = Typeface.createFromAsset(getAssets(), "MicrosoftYaHeiLight.ttf");
@@ -358,6 +341,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private void showContent(GoodBean goodBean) {
         Glide.with(this).asBitmap().load(goodBean.image_url).into(detail_img);
         productDetailNameCh.setText("" + goodBean.name);
@@ -415,8 +399,16 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                 goodList.clear();
                 goodList.addAll(goodBeanSparseArray.get(categoryBeanList.get(currentPosition).cat_id));
 
-//                goodDownloadList.clear();
-//                goodDownloadList.addAll(goodList);
+                //开始播放视频
+                GoodBean goodBean = goodList.get(0);
+                String path;
+                if (TextUtils.isEmpty(goodBean.video_url_local)) {
+                    path = goodBean.video_url;
+                } else {
+                    path = goodBean.video_url_local;
+                }
+                myPresentation.play(path);
+
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -463,8 +455,8 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            GetRequest<File> request = OkGo.<File>get(result.file_url);//.headers("", "").params("", "");
-                            DownloadTask downloadTask = okDownload.request("download", request)
+                            GetRequest<File> request = OkGo.get(result.file_url);//.headers("", "").params("", "");
+                            DownloadTask downloadTask = OkDownload.request("download", request)
                                     .priority(100)
                                     .save()
                                     .folder(ConstantValue.NEW_APK)
@@ -485,7 +477,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
             @Override
             public void onReqFailed(FailBean failBean) {
                 String message = failBean.message;
-//                LogUtils.i("message = \r\n" + message);
+                LogUtils.i("message = \r\n" + message);
             }
 
             @Override
@@ -520,14 +512,13 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                             showEasyLayoutScroll(bannerBeanArrayList, false);
                         }
                     });
-                } else {
                 }
             }
 
             @Override
             public void onReqFailed(FailBean failBean) {
                 String message = failBean.message;
-//                LogUtils.i("message = \r\n" + message);
+                LogUtils.i("message = \r\n" + message);
             }
 
         };
@@ -551,15 +542,16 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                         HttpManager.goods(SPUtils.getInstance().getString("UUID"), cat_id, null, goodReqCallBack);
                         CategoryDAOUtil.insertCategory(categoryBean);
                     }
-                } else {
-                    //TODO 没有数据的时候应该展示什么样的界面
                 }
+//                else {
+//                    //TODO 没有数据的时候应该展示什么样的界面
+//                }
             }
 
             @Override
             public void onReqFailed(FailBean failBean) {
                 String message = failBean.message;
-//                LogUtils.i("message = \r\n" + message);
+                LogUtils.i("message = \r\n" + message);
             }
 
         };
@@ -598,12 +590,19 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                 goodBeanSparseArray.put(cat_id, result);
                 if (goodBeanSparseArray != null && goodBeanSparseArray.size() > currentPosition && categoryBeanList.size() > currentPosition) {
                     try {
-                        List<GoodBean> localList = GoodDAOUtil.queryGoodData(cat_id);
-
                         goodList.clear();
                         goodList.addAll(goodBeanSparseArray.get(categoryBeanList.get(currentPosition).cat_id));
 
-//                        goodDownloadList.addAll(goodList);
+                        //开始播放视频
+                        GoodBean goodBean = goodList.get(0);
+                        String path;
+                        if (TextUtils.isEmpty(goodBean.video_url_local)) {
+                            path = goodBean.video_url;
+                        } else {
+                            path = goodBean.video_url_local;
+                        }
+                        myPresentation.play(path);
+
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -632,6 +631,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
             @Override
             public void onReqFailed(FailBean failBean) {
                 String message = failBean.message;
+                LogUtils.i("message = " + message);
             }
 
             @Override
@@ -640,41 +640,43 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
             }
         };
 
-        updateReqCallBack = new ReqProgressCallBack<UpdateBean>() {
+//        ReqCallBack<UpdateBean> updateReqCallBack = new ReqProgressCallBack<UpdateBean>() {
+//
+//            @Override
+//            public void onReqSuccess(UpdateBean result) {
+//
+//            }
+//
+//            @Override
+//            public void onReqFailed(FailBean failBean) {
+//                String message = failBean.message;
+//                LogUtils.i("message = " + message);
+//
+//            }
+//
+//            @Override
+//            public void onProgress(long total, long current) {
+//
+//            }
+//        };
 
-            @Override
-            public void onReqSuccess(UpdateBean result) {
-
-            }
-
-            @Override
-            public void onReqFailed(FailBean failBean) {
-                String message = failBean.message;
-
-            }
-
-            @Override
-            public void onProgress(long total, long current) {
-
-            }
-        };
-
-        tagReqCallBack = new ReqProgressCallBack<List<TagBean>>() {
-            @Override
-            public void onProgress(long total, long current) {
-
-            }
-
-            @Override
-            public void onReqSuccess(List<TagBean> result) {
-
-            }
-
-            @Override
-            public void onReqFailed(FailBean failBean) {
-                String message = failBean.message;
-            }
-        };
+//        ReqCallBack<List<TagBean>> tagReqCallBack = new ReqProgressCallBack<List<TagBean>>() {
+//            @Override
+//            public void onProgress(long total, long current) {
+//
+//            }
+//
+//            @Override
+//            public void onReqSuccess(List<TagBean> result) {
+//
+//            }
+//
+//            @Override
+//            public void onReqFailed(FailBean failBean) {
+//                String message = failBean.message;
+//                LogUtils.i("message = " + message);
+//            }
+//        };
     }
 
     private void downloadGoodItemVideo(final GoodBean goodBean, int delayTime) {
@@ -684,7 +686,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
             public void run() {
                 GetRequest<File> request = OkGo.get(goodBean.video_url);//.headers("", "").params("", "");
 //                DownloadTask downloadTask = okDownload.request(tag, request)
-                DownloadTask downloadTask = okDownload.request(tag, request)
+                DownloadTask downloadTask = OkDownload.request(tag, request)
                         .extra1(goodBean.name)
                         .extra1(goodBean.good_id)
                         .save()
@@ -711,7 +713,8 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                             public void onFinish(File file, Progress progress) {
 
                                 Log.i("Demo", "视频下载结束");
-                                String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/" + file.getName();
+//                                String path = Environment.getExternalStorageDirectory().getPath() + "/ICBC/" + file.getName();
+                                String path = ConstantValue.GOOD_VIDEO_PATH + file.getName();
                                 String video_url = progress.url;
 
                                 Log.i("Demo", "============================================================");
@@ -746,7 +749,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
             public void run() {
                 GetRequest<File> request = OkGo.get(goodBean.image_url);//.headers("", "").params("", "");
 //                DownloadTask downloadTask = okDownload.request(tag, request)
-                DownloadTask downloadTask = okDownload.request(tag, request)
+                DownloadTask downloadTask = OkDownload.request(tag, request)
                         .extra1(goodBean.name)
                         .extra1(goodBean.good_id)
                         .save()
@@ -804,7 +807,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
             public void run() {
                 GetRequest<File> request = OkGo.get(bannerBean.image_url);//.headers("", "").params("", "");
 //                DownloadTask downloadTask = okDownload.request(tag, request)
-                DownloadTask downloadTask = okDownload.request(tag, request)
+                DownloadTask downloadTask = OkDownload.request(tag, request)
                         .extra1(bannerBean.title)
                         .extra1(bannerBean.banner_id)
                         .save()
@@ -866,9 +869,10 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
         }
         if (flag) {
             downloadNewVersion();
-        } else {
-//            LogUtils.i("flag = false");
         }
+//        else {
+////            LogUtils.i("flag = false");
+//        }
     }
 
     private void downloadNewVersion() {
@@ -994,9 +998,25 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
     }
 
     @Override
-    public String onComplete(String videoPath) {
+    public void onComplete(final String videoPath) {
+        final String nextVideoPath = getNextVideoPath(videoPath);
+        Log.i("Demo", "onComplete \r\n nextVideoPath = " + nextVideoPath);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (TextUtils.isEmpty(nextVideoPath)) {
+                    myPresentation.play(videoPath);
+                } else {
+                    myPresentation.play(nextVideoPath);
+                }
+            }
+        });
+    }
+
+    private String getNextVideoPath(String videoPath) {
         View child = container.getChildAt(0);
         if (child == itemViewContainer) {
+            LogUtils.i("商品列表展示页");
             for (int i = 0; i < goodList.size(); i++) {
                 GoodBean bean = goodList.get(i);
                 if (videoPath.startsWith("http")) {
@@ -1020,6 +1040,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                 }
             }
         } else if (child == detailViewContainer) {
+            LogUtils.i("商品详情展示页");
             return currentPath;
         }
         return videoPath;
@@ -1041,7 +1062,6 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
         if (myPresentation == null) {
             application.UpdatePresent();
         }
-        myPresentation.setCompleteListener(this);
         if (!TextUtils.isEmpty(lastVideoPath)) {
             myPresentation.play(lastVideoPath);
         } else {
@@ -1121,71 +1141,71 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
             //返回最初的界面
             container.removeAllViews();
             container.addView(itemViewContainer);
-        } else {
-            //应该没有第三种可能 了吧
         }
+//        else {
+//            //应该没有第三种可能 了吧
+//        }
     }
 
-/**================================================Unused Method===================================================================================================*/
 
-    /**
-     * 检查是否具有运行时权限（读.写）
-     */
-    private void checkPermissions() {
-//        LogUtils.i("checkPermissions");
-        File temp = new File(Environment.getExternalStorageDirectory() + File.separator, "ICBC_update.apk");
-        if (FileUtils.isFileExists(temp)) {
-//            LogUtils.i("删除已存在的新版本APK");
-            FileUtils.deleteFile(temp);
-        }
-        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
-        if (Build.VERSION.SDK_INT >= 23) {
-            boolean tempBoolean = true;
-            for (String str : permissions) {
-                if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
-//                    LogUtils.i(str + " -- > 无权限");
-                    this.requestPermissions(permissions, ConstantValue.REQUEST_RUN_PERMISSION);
-                    tempBoolean = false;
-                } else {
-//                    LogUtils.i(str + " -- > 有权限");
-                }
-            }
-            if (tempBoolean) {
-                downloadNewVersion();
-//                autoInstall();
-            }
-        }
-    }
-
-    private void autoInstall() {
-        AutoInstaller.Builder builder = new AutoInstaller.Builder(this);
-//        builder.setMode(AutoInstaller.MODE.ROOT_ONLY);
-        builder.setMode(AutoInstaller.MODE.BOTH);
-        builder.setOnStateChangedListener(new AutoInstaller.OnStateChangedListener() {
-            @Override
-            public void onStart() {
-                // 当后台安装线程开始时回调
-//                LogUtils.i("onStart");
-            }
-
-            @Override
-            public void onComplete() {
-                // 当请求安装完成时回调
-//                LogUtils.i("onComplete");
-            }
-
-            @Override
-            public void onNeed2OpenService() {
-                // 当需要用户手动打开 `辅助功能服务` 时回调
-                // 可以在这里提示用户打开辅助功能
-//                LogUtils.i("onNeed2OpenService");
-
-            }
-        });
-
-        AutoInstaller installer = builder.build();
-        installer.installFromUrl("http://3d.leygoo.cn/apk/app-release.apk");
-//        installer.install2(file);
-    }
+//    /**
+//     * 检查是否具有运行时权限（读.写）
+//     */
+//    private void checkPermissions() {
+////        LogUtils.i("checkPermissions");
+//        File temp = new File(Environment.getExternalStorageDirectory() + File.separator, "ICBC_update.apk");
+//        if (FileUtils.isFileExists(temp)) {
+////            LogUtils.i("删除已存在的新版本APK");
+//            FileUtils.deleteFile(temp);
+//        }
+//        String[] permissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+//        if (Build.VERSION.SDK_INT >= 23) {
+//            boolean tempBoolean = true;
+//            for (String str : permissions) {
+//                if (this.checkSelfPermission(str) != PackageManager.PERMISSION_GRANTED) {
+////                    LogUtils.i(str + " -- > 无权限");
+//                    this.requestPermissions(permissions, ConstantValue.REQUEST_RUN_PERMISSION);
+//                    tempBoolean = false;
+//                } else {
+////                    LogUtils.i(str + " -- > 有权限");
+//                }
+//            }
+//            if (tempBoolean) {
+//                downloadNewVersion();
+////                autoInstall();
+//            }
+//        }
+//    }
+//
+//    private void autoInstall() {
+//        AutoInstaller.Builder builder = new AutoInstaller.Builder(this);
+////        builder.setMode(AutoInstaller.MODE.ROOT_ONLY);
+//        builder.setMode(AutoInstaller.MODE.BOTH);
+//        builder.setOnStateChangedListener(new AutoInstaller.OnStateChangedListener() {
+//            @Override
+//            public void onStart() {
+//                // 当后台安装线程开始时回调
+////                LogUtils.i("onStart");
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//                // 当请求安装完成时回调
+////                LogUtils.i("onComplete");
+//            }
+//
+//            @Override
+//            public void onNeed2OpenService() {
+//                // 当需要用户手动打开 `辅助功能服务` 时回调
+//                // 可以在这里提示用户打开辅助功能
+////                LogUtils.i("onNeed2OpenService");
+//
+//            }
+//        });
+//
+//        AutoInstaller installer = builder.build();
+//        installer.installFromUrl("http://3d.leygoo.cn/apk/app-release.apk");
+////        installer.install2(file);
+//    }
 
 }

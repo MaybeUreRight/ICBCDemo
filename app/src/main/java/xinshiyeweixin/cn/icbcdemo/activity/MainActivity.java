@@ -969,31 +969,31 @@ public class MainActivity extends BaseActivity implements GoodItemOnclickListene
 
 
     @Override
-    public String onComplete(String videoPath) {
+    public void onComplete(String videoPath) {
         for (int i = 0; i < goodList.size(); i++) {
             GoodBean bean = goodList.get(i);
             if (videoPath.startsWith("http")) {
                 //网络地址
                 if (bean.video_url.equals(videoPath)) {
                     if (i == goodList.size() - 1) {
-                        return getVideoPath(0);
+//                        return getVideoPath(0);
                     } else {
-                        return getVideoPath(i + 1);
+//                        return getVideoPath(i + 1);
                     }
                 }
             } else {
                 //本地地址
                 if (bean.video_url_local.equals(videoPath)) {
                     if (i == goodList.size() - 1) {
-                        return getVideoPath(0);
+//                        return getVideoPath(0);
                     } else {
-                        return getVideoPath(i + 1);
+//                        return getVideoPath(i + 1);
                     }
                 }
             }
         }
 
-        return videoPath;
+//        return videoPath;
     }
 
     private String getVideoPath(int position) {

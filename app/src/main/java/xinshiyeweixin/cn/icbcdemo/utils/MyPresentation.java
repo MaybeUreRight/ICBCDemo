@@ -61,48 +61,9 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
         holder.addCallback(this);
     }
 
-    /**
-     * 添加方法来播放视频
-     *
-     * @param filePath 文件的路径
-     */
-    public void startVideo(String filePath) {
-        this.path = filePath;
-        Toast.makeText(context, "filePath = " + filePath, Toast.LENGTH_LONG).show();
-        this.videoFile = filePath;
-//        this.uri = Uri.fromFile(new File(this.videoFile));
-//        this.videoView.setVideoURI(this.uri);
-        this.videoView.setVideoURI(Uri.parse(filePath));
-        this.videoView.requestFocus();
-//        this.videoView.start();
-        /**
-         * 设置重播
-         */
-        this.videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mediaPlayer) {
-                MyPresentation.this.videoView.start();
-            }
-        });
-//        this.videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-//            @Override
-//            public void onPrepared(MediaPlayer mp) {
-//                mp.setVideoScalingMode(MediaPlayer.VIDEO_SCALING_MODE_SCALE_TO_FIT);
-//            }
-//        });
-    }
-
-    public boolean isPlaying() {
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     public void play(final String path) {
         this.path = path;
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+        if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
@@ -128,7 +89,7 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
                 @Override
                 public void onPrepared(MediaPlayer mp) {
                     LogUtils.i("装载完成");
-                    mediaPlayer.start();
+                    mp.start();
                     // 按照初始位置播放
 //                    mediaPlayer.seekTo(msec);
                 }
@@ -137,29 +98,21 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
 
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    Toast.makeText(context, "播放完毕", Toast.LENGTH_SHORT).show();
-                    // 在播放完毕被回调
-//                    mp.start();
-                    if (completeListener != null) {
-                        String nextPath = completeListener.onComplete(path);
-                        if (!TextUtils.isEmpty(nextPath)) {
-                            Toast.makeText(context, "播放下一个", Toast.LENGTH_SHORT).show();
-//                            MyPresentation.this.play(nextPath);
-                        } else {
-                            Toast.makeText(context, "获取视频播放地址失败", Toast.LENGTH_SHORT).show();
-                            //继续播放上一个
-                            mp.start();
-                        }
-                    } else {
-                        mp.start();
-                    }
+                    LogUtils.i("MyPresentation >> 播放完毕");
+//                    completeListener.onComplete(path);
+                    mp.start();
+
                 }
             });
+//            int duration = mediaPlayer.getDuration();
+//            LogUtils.i("视频时长 = " + duration);
 
             mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
 
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
+                    LogUtils.i("what = " + what);
+                    LogUtils.i("extra = " + extra);
                     return false;
                 }
             });
