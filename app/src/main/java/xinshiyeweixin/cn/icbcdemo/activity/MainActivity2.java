@@ -834,14 +834,15 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                                 Log.i("Demo", "下载banner图片完毕 >>> " + image_url);
 
                                 //根据下载用到的URL去更新数据库的某条数据
-                                try {
-                                    BannerDAOUtil.updateBannerImageLocalUrl(image_url, path);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
+//                                try {
+//                                    BannerDAOUtil.updateBannerImageLocalUrl(image_url, path);
+//                                } catch (Exception e) {
+//                                    e.printStackTrace();
+//                                }
                                 for (BannerBean bean : bannerBeanArrayList) {
                                     if (image_url.equals(bean.image_url)) {
                                         bean.setImage_url_local(path);
+                                        BannerDAOUtil.insertBanner(bean);
                                     }
                                 }
                             }
@@ -1061,6 +1062,8 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
         super.onResume();
         if (myPresentation == null) {
             application.UpdatePresent();
+            myPresentation = application.getPresentation();
+            //TODO 这里应该判断一下，存在问题：从后台切换到前台，不能自动播放视频
         }
         if (!TextUtils.isEmpty(lastVideoPath)) {
             myPresentation.play(lastVideoPath);
@@ -1084,16 +1087,6 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                 }
             }
         }
-//        DownloadTask task = okDownload.getTask("task");
-//        if (task != null) {
-//            task.start();
-//        }
-//
-//        DownloadTask download = okDownload.getTask("download");
-//        if (download != null) {
-//            download.start();
-//        }
-
         //如果是初次打开，从本地数据库恢复下载任务
         List<Progress> downloading = DownloadManager.getInstance().getDownloading();
         if (downloading != null && downloading.size() > 0) {
@@ -1107,6 +1100,16 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
         super.onPause();
         //暂停下载任务
         okDownload.pauseAll();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //TODO 从后台切换到前台，不能自动播放，所以暂时注释下面的代码
+//        if (myPresentation != null && myPresentation.isShowing()) {
+//            myPresentation.cancel();
+//            myPresentation = null;
+//        }
     }
 
     @Override

@@ -88,32 +88,35 @@ public class MyPresentation extends Presentation implements SurfaceHolder.Callba
 
                 @Override
                 public void onPrepared(MediaPlayer mp) {
-                    LogUtils.i("装载完成");
                     mp.start();
                     // 按照初始位置播放
 //                    mediaPlayer.seekTo(msec);
+                }
+            });
+            mediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+                @Override
+                public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                    int duration = mp.getDuration();
+                    Log.i("Demo", "duration = " + duration);
+                    Log.i("Demo", "(duration / 1000) = " + duration / 1000);
+                    return false;
                 }
             });
             mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
 
                 @Override
                 public void onCompletion(MediaPlayer mp) {
-                    LogUtils.i("MyPresentation >> 播放完毕");
-//                    completeListener.onComplete(path);
+                    Log.i("Demo", "MyPresentation >> 播放完毕");
                     mp.start();
-
+                    completeListener.onComplete(path);
                 }
             });
-//            int duration = mediaPlayer.getDuration();
-//            LogUtils.i("视频时长 = " + duration);
 
             mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
 
                 @Override
                 public boolean onError(MediaPlayer mp, int what, int extra) {
-                    LogUtils.i("what = " + what);
-                    LogUtils.i("extra = " + extra);
-                    return false;
+                    return true;
                 }
             });
         } catch (Exception e) {
