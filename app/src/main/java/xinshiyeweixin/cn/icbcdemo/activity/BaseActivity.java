@@ -35,13 +35,4 @@ public class BaseActivity extends AppCompatActivity {
             decorView.setSystemUiVisibility(uiOptions);
         }
     }
-
-    protected void showDialog(String currentVideoPath) {
-        new AlertDialog.Builder(this).setTitle("提示").setMessage("currentVideoPath = " + currentVideoPath).setNeutralButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        }).create().show();
-    }
 }

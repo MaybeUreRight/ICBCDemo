@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -62,7 +61,6 @@ import xinshiyeweixin.cn.icbcdemo.listener.GoodItemOnclickListener;
 import xinshiyeweixin.cn.icbcdemo.local.ConstantValue;
 import xinshiyeweixin.cn.icbcdemo.service.HorizonService;
 import xinshiyeweixin.cn.icbcdemo.utils.AppUtils2;
-import xinshiyeweixin.cn.icbcdemo.utils.LogUtils;
 import xinshiyeweixin.cn.icbcdemo.utils.MyPresentation;
 import xinshiyeweixin.cn.icbcdemo.utils.SPUtils;
 import xinshiyeweixin.cn.icbcdemo.view.JustifyTextView;
@@ -101,7 +99,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
     private int currentPosition;
     private String lastVideoPath;
-    private ArrayList<String> videoPathList;
+//    private ArrayList<String> videoPathList;
 
     private OkDownload okDownload;
 
@@ -123,8 +121,8 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
         @Override
         public void onProgress(Progress progress) {
-            long currentSize = progress.currentSize;
-            long totalSize = progress.totalSize;
+//            long currentSize = progress.currentSize;
+//            long totalSize = progress.totalSize;
 //            Log.i("Demo", "进度 = " + currentSize * 100 / totalSize);
         }
 
@@ -203,7 +201,7 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
         goodList = new ArrayList<>();
         categoryBeanList = new ArrayList<>();
         bannerBeanArrayList = new ArrayList<>();
-        videoPathList = new ArrayList<>();
+//        videoPathList = new ArrayList<>();
         tagList = new ArrayList<>();
 
         currentPosition = 0;
@@ -577,9 +575,10 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                     if (TextUtils.isEmpty(bean.video_url_local)) {
 //                        Log.i("Demo", cat_id + "_" + bean.good_id + " >>> 需要下载");
                         downloadGoodItemVideo(bean, ConstantValue.DOWNLOAD_VIDEO_DELAY);
-                    } else {
-//                        Log.i("Demo", cat_id + "_" + bean.good_id + " >>> 不需要下载");
                     }
+//                    else {
+//                        Log.i("Demo", cat_id + "_" + bean.good_id + " >>> 不需要下载");
+//                    }
 
                     if (TextUtils.isEmpty(bean.image_url_local)) {
                         downloadGoodItemImage(bean, ConstantValue.DOWNLOAD_VIDEO_DELAY);
@@ -617,15 +616,15 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
                         CrashReport.postCatchedException(e);
                     }
                 }
-                if (goodList.size() > 0) {
-                    for (GoodBean goodBean : goodList) {
-                        if (!TextUtils.isEmpty(goodBean.video_url_local)) {
-                            videoPathList.add(goodBean.video_url_local);
-                        } else {
-                            videoPathList.add(goodBean.video_url);
-                        }
-                    }
-                }
+//                if (goodList.size() > 0) {
+//                    for (GoodBean goodBean : goodList) {
+//                        if (!TextUtils.isEmpty(goodBean.video_url_local)) {
+//                            videoPathList.add(goodBean.video_url_local);
+//                        } else {
+//                            videoPathList.add(goodBean.video_url);
+//                        }
+//                    }
+//                }
             }
 
             @Override
@@ -699,8 +698,8 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
                             @Override
                             public void onProgress(Progress progress) {
-                                final long currentSize = progress.currentSize;
-                                final long totalSize = progress.totalSize;
+//                                final long currentSize = progress.currentSize;
+//                                final long totalSize = progress.totalSize;
 //                                Log.i("Demo", tag + " >>> 进度 = " + currentSize * 100 / totalSize);
                             }
 
@@ -958,6 +957,12 @@ public class MainActivity2 extends BaseActivity implements GoodItemOnclickListen
 
     @Override
     public void onCategoryItemOnclick(int cat_id, int position) {
+        if (goodList != null && goodList.size() > 0) {
+            Integer catId = goodList.get(0).cat_id;
+            if (cat_id == catId) {
+                return;
+            }
+        }
         long currentTimeMillis = System.currentTimeMillis();
         if (currentTimeMillis - lastCategoryItemOnclickTime < 500) {
             return;
