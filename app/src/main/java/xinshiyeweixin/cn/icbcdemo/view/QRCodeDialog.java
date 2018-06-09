@@ -2,21 +2,12 @@ package xinshiyeweixin.cn.icbcdemo.view;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import xinshiyeweixin.cn.icbcdemo.R;
-import xinshiyeweixin.cn.icbcdemo.activity.GoodDetailActivity;
 import xinshiyeweixin.cn.icbcdemo.utils.DisplayUtil;
 
 /**

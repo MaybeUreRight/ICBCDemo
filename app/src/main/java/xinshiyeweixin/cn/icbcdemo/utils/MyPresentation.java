@@ -6,24 +6,13 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.webkit.WebView;
-import android.widget.Toast;
 import android.widget.VideoView;
-
-import java.io.File;
-import java.nio.file.Path;
-import java.util.ArrayList;
 
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.listener.CompleteListener;
-import xinshiyeweixin.cn.icbcdemo.view.CustomVideoView;
 
 public class MyPresentation extends Presentation implements SurfaceHolder.Callback {
     private VideoView videoView;

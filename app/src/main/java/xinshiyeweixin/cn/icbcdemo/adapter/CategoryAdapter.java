@@ -13,7 +13,6 @@ import java.util.ArrayList;
 
 import xinshiyeweixin.cn.icbcdemo.R;
 import xinshiyeweixin.cn.icbcdemo.activity.MainActivity;
-import xinshiyeweixin.cn.icbcdemo.activity.MainActivity2;
 import xinshiyeweixin.cn.icbcdemo.bean.CategoryBean;
 import xinshiyeweixin.cn.icbcdemo.listener.CategoryItemOnclickListener;
 
@@ -45,7 +44,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.MyView
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((MainActivity2) mContext).runOnUiThread(new Runnable() {
+                ((MainActivity) mContext).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Toast.makeText(mContext, "position = " + position, Toast.LENGTH_SHORT).show();
