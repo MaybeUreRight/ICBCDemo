@@ -101,10 +101,10 @@
         <!-- 无标题 -->
         <item name="android:windowNoTitle">true</item>
 
-        <item name="android:windowFullscreen">true</item>
+        <!--<item name="android:windowFullscreen">true</item>-->
 
         <!-- 是否浮现在activity之上 -->
-        <item name="android:windowIsFloating">true</item>
+        <!--<item name="android:windowIsFloating">true</item>-->
 
         <!-- 半透明 -->
         <item name="android:windowIsTranslucent">true</item>
